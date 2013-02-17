@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Flot Test</title>
+    <script language="javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}flot/jquery.flot.js"></script>
+</head>
+
+<h1>Confine Research Device Status</h1>
+<body>
+
+<table border="1">
+    <caption>Last updated {{ last_updated }}</caption>
+
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Disk Size</th>
+        <th>Load Avg-1 min</th>
+        <th>Total Memory</th>
+        <th>Free Memory</th>
+        <th>Uptime</th>
+    </tr>
+    <tr>
+        <td>{{ serial }}</td>
+        <td>{{ name }}</td>
+        <td>{{ disk_size }}</td>
+        <td><a href="http://{{ server_ip }}:{{ server_port }}/loadavg/{{ name }} ">{{ load_avg_1min }}</a></td>
+        <td>{{ total_memory }}</td>
+        <td><a href="http://{{ server_ip }}:{{ server_port }}/freemem/{{ name }} ">{{ free_mem }}</a></td>
+        <td><a href="http://{{ server_ip }}:{{ server_port }}/uptime/{{ name }} ">{{ uptime }}</a></td>
+    </tr>
+
+</table>
+
+<br>
+<br>
+<br>
+
+<script language="javascript" type="text/javascript">
+    {% autoescape off %}
+        var dataRows = {{values_graph}};
+        alert (dataRows)
+    {% endautoescape %}
+
+
+</script>
+
+<div id="placeholder" style="width:600px;height:300px;"></div>
+
+<script type="text/javascript">
+    $(function () {
+
+        $.plot($("#placeholder"), [
+            {
+                data: dataRows,
+                lines: { show: true },
+              <!--  points: { show: true } -->
+            }
+        ] ,{yaxis: {label:"Load_avg_1min"}},
+                {xaxis:
+                {mode:"time"
+                }
+                });
+    });
+</script>
+
+</body>
+</html>

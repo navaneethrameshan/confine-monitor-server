@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Flot Test</title>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1', {packages: ['corechart']});
+    </script>
+    <script type="text/javascript">
+        function drawVisualization() {
+            // Create and populate the data table.
+        {% comment %} var data = google.visualization.arrayToDataTable([
+             ['x', 'Cats' ],
+             ['A',   1    ],
+             ['B',   2    ],
+             ['C',   4    ],
+             ['D',   8    ],
+             ['E',   7    ],
+             ['F',   7    ],
+             ['G',   8    ],
+             ['H',   4    ],
+             ['I',   2    ],
+             ['J',   3.5  ],
+             ['K',   3    ],
+             ['L',   3.5  ],
+             ['M',   1    ],
+             ['N',   1    ]
+         ]);
+ {% endcomment %}
+            var data = google.visualization.arrayToDataTable({{ values_graph|safe }});
+
+            // Create and draw the visualization.
+            new google.visualization.LineChart(document.getElementById('visualization')).
+                    draw(data, {curveType: "function",
+                        width: 1000, height: 600
+                                }
+            );
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>
+</head>
+<body>
+<h1>Node: {{ name }},  Metric: {{ metric }} </h1>
+
+<br>
+<br>
+<br>
+
+<div id="visualization" style="width: 500px; height: 400px;"></div>
+
+</body>
+</html>

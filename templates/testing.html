@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Flot Test</title>
+    <script language="javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}flot/jquery.flot.js"></script>
+</head>
+<body>
+<h1>Flot test- {{ monitor }}</h1>
+
+<script language="javascript" type="text/javascript">
+    {% autoescape off %}
+        var dataRows = {{countries}};
+        alert(dataRows)
+    {% endautoescape %}
+</script>
+
+<div id="placeholder" style="width:600px;height:300px;"></div>
+
+<script type="text/javascript">
+    $(function () {
+
+        $.plot($("#placeholder"), [
+            {
+                data: dataRows,
+                lines: { show: true },
+                points: { show: true }
+            }
+        ]);
+    });
+</script>
+
+</body>
+</html>
