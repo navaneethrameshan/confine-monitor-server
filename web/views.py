@@ -6,6 +6,7 @@ import json
 import string
 from server.process import fetchdocument, util, documentparser
 from server.process.views import getview
+from server import constants
 
 def hello(request):
   #  return HttpResponse("Monitoring Service")
@@ -52,20 +53,25 @@ def index(request):
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
+    all_values = []
+    count = 0
     # the initial page to display
-    document = fetchdocument.fetch_most_recent_document(util.IP)
-    name = documentparser.get_value(document, "name")
-    disk_size = documentparser.get_value(document, "disk_size")
-    load_avg_1min = documentparser.get_value(document, "load_avg_1min")
-    free_mem = documentparser.get_value(document, "free_memory")
-    uptime_secs = documentparser.get_value(document, "uptime")
-    uptime = util.convert_secs_to_time(uptime_secs)
-    last_updated = documentparser.return_server_time(document)
-    total_memory = documentparser.get_value(document,"total_memory")
-    num_cpu = documentparser.get_value(document, "number_of_cpus")
-    cpu_usage = documentparser.get_value(document, "total_cpu_usage")
+    for nodes in  constants.nodes:
+        count+=1
+        document = fetchdocument.fetch_most_recent_document(nodes)
+        name = documentparser.get_value(document, "name")
+        disk_size = documentparser.get_value(document, "disk_size")
+        load_avg_1min = documentparser.get_value(document, "load_avg_1min")
+        free_mem = documentparser.get_value(document, "free_memory")
+        uptime_secs = documentparser.get_value(document, "uptime")
+        uptime = str(util.convert_secs_to_time(uptime_secs))
+        last_updated = documentparser.return_server_time(document)
+        total_memory = documentparser.get_value(document,"total_memory")
+        num_cpu = documentparser.get_value(document, "number_of_cpus")
+        cpu_usage = documentparser.get_value(document, "total_cpu_usage")
 
-    name = str(name)
+        all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port, 'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'uptime':uptime})
+
 
     #get values for graph
     values = getview.get_view_node_id_attribute('127.0.0.1', "load_avg_1min")
@@ -76,7 +82,7 @@ def index(request):
 
     values_graph = json.dumps(values)
 
-    return render_to_response('indexgc.html',{'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port, 'last_updated': last_updated ,'serial':1, 'name':name, 'total_memory': total_memory ,'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'uptime':uptime,'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('indexgc.html',{'all_values':all_values},context_instance=RequestContext(request))
 
 
 def load_avg_1min(request, parameter):

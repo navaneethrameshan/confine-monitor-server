@@ -3,9 +3,10 @@ import store
 from server.process import util, collect
 from server.process.views import createview
 
+
 def start_collecting():
     sched = Schedule(util.TIMEPERIOD)
-    sched.schedule(collect.request_store)
+    sched.schedule()
 
 def create_view():
     db = store.get_db()

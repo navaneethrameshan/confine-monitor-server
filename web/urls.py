@@ -9,10 +9,10 @@ urlpatterns = patterns('',
     url(r'^$', 'web.views.index'),
     url(r'^lol/$', 'web.views.hello'),
     url(r'^gtest/$', 'web.views.gtest'),
-    url(r'^loadavg/(\d+.*)$', 'web.views.load_avg_1min'), # currently accept only ip addresses as names
-    url(r'^freemem/(\d+.*)$', 'web.views.freemem'), # currently accept only ip addresses as names
-    url(r'^uptime/(\d+.*)$', 'web.views.uptime'), # currently accept only ip addresses as names
-    url(r'^cpuusage/(\d+.*)$', 'web.views.cpu_usage'), # currently accept only ip addresses as names
+    url(r'^loadavg/([A-Za-z]*-\d*)$', 'web.views.load_avg_1min'), # currently accept "word - number"
+    url(r'^freemem/([A-Za-z]*-\d*)$', 'web.views.freemem'), # currently accept only ip addresses as names
+    url(r'^uptime/([A-Za-z]*-\d*)$', 'web.views.uptime'), # currently accept only ip addresses as names
+    url(r'^cpuusage/([A-Za-z]*-\d*)$', 'web.views.cpu_usage'), # currently accept only ip addresses as names
     # url(r'^web/', include('web.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

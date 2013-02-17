@@ -20,3 +20,6 @@ used_memory = "memory.virtual.used"
 
 network_total_bytes_sent = "network.total.bytes_sent"
 network_total_bytes_received = "network.total.bytes_recv"
+
+
+nodes=['Node-1','Node-2','Node-3','Node-4','Node-5']
