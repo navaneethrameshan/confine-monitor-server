@@ -44,18 +44,17 @@ def convert_epoch_to_date_time_javascript(epoch):
     return date_time
 
 
-def convert_bytes_to_human_readable(list=[]):
+def convert_bytes_to_human_readable(bytes=[]):
     '''
     Accepts a list
     Returns updated values
     '''
 
-    length = len(list)
+    length = len(bytes)
     for index in range(length):
-        value = bytes2human(list[index])
-        list[index]= value
-        print list[index]
-    return list
+        value = bytes2human(bytes[index])
+        bytes[index]= value
+    return bytes
 
 
 def bytes2human(n):

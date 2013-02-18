@@ -28,14 +28,18 @@ def index(request):
         total_memory = documentparser.get_value(document,"total_memory")
         num_cpu = documentparser.get_value(document, "number_of_cpus")
         cpu_usage = documentparser.get_value(document, "total_cpu_usage")
-
+        data_sent= documentparser.get_value(document, "network_total_bytes_sent")
+        data_received = documentparser.get_value(document, "network_total_bytes_received")
 
         ## Human readability######
         uptime = util.convert_secs_to_time(uptime_secs)
-        (disk_size,total_memory,free_mem)= util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem])
+        disk_size,total_memory,free_mem,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem, data_sent, data_received])
 
 
-        all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port, 'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'uptime':uptime})
+        all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port,
+                           'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,
+                           'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
+                           'data_received':data_received, 'uptime':uptime})
 
 
     #get values for graph
@@ -68,7 +72,7 @@ def cpu_usage(request, parameter):
 
 
 
-def freemem(request, parameter):
+def free_mem(request, parameter):
 
     node_id = parameter
     values_graph = getview.get_view_node_id_attribute_dict(node_id, "free_memory")
@@ -82,3 +86,16 @@ def uptime(request, parameter):
     #values_graph = json.dumps(values)
     return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Uptime', 'values_graph':values_graph},context_instance=RequestContext(request))
 
+def data_sent(request, parameter):
+
+    node_id = parameter
+    values_graph = getview.get_view_node_id_attribute_dict(node_id, "network_total_bytes_sent")
+    #values_graph = json.dumps(values)
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes sent', 'values_graph':values_graph},context_instance=RequestContext(request))
+
+def data_received(request, parameter):
+
+    node_id = parameter
+    values_graph = getview.get_view_node_id_attribute_dict(node_id, "network_total_bytes_received")
+    #values_graph = json.dumps(values)
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes received', 'values_graph':values_graph},context_instance=RequestContext(request))

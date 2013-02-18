@@ -48,6 +48,8 @@
            <th>Load Avg-1 min</th>
            <th>Total Memory</th>
            <th>Free Memory</th>
+           <th>Network Data Sent</th>
+           <th>Network Data Received</th>
            <th>Uptime</th>
        </tr>
         </thead>
@@ -63,6 +65,8 @@
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/loadavg/{{ values.name }} ">{{ values.load_avg_1min }}</a></td>
            <td>{{ values.total_memory }}</td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/freemem/{{ values.name }} ">{{ values.free_mem }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/datasent/{{ values.name }} ">{{ values.data_sent }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/datareceived/{{ values.name }} ">{{ values.data_received }}</a></td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/uptime/{{ values.name }} ">{{ values.uptime }}</a></td>
        </tr>
        {% endfor %}
