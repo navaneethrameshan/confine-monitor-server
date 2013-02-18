@@ -43,6 +43,21 @@ def convert_epoch_to_date_time_javascript(epoch):
     date_time['month'] = int (date_time['month']) -1
     return date_time
 
+
+def convert_bytes_to_human_readable(list=[]):
+    '''
+    Accepts a list
+    Returns updated values
+    '''
+
+    length = len(list)
+    for index in range(length):
+        value = bytes2human(list[index])
+        list[index]= value
+        print list[index]
+    return list
+
+
 def bytes2human(n):
     # http://code.activestate.com/recipes/578019
     # >>> bytes2human(10000)
@@ -58,3 +73,7 @@ def bytes2human(n):
             value = float(n) / prefix[s]
             return '%.1f%s' % (value, s)
     return "%sB" % n
+
+
+if __name__ == '__main__':
+    convert_bytes_to_human_readable(10, 'hello')

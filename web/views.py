@@ -24,11 +24,16 @@ def index(request):
         load_avg_1min = documentparser.get_value(document, "load_avg_1min")
         free_mem = documentparser.get_value(document, "free_memory")
         uptime_secs = documentparser.get_value(document, "uptime")
-        uptime = str(util.convert_secs_to_time(uptime_secs))
         last_updated = documentparser.return_server_time(document)
         total_memory = documentparser.get_value(document,"total_memory")
         num_cpu = documentparser.get_value(document, "number_of_cpus")
         cpu_usage = documentparser.get_value(document, "total_cpu_usage")
+
+
+        ## Human readability######
+        uptime = util.convert_secs_to_time(uptime_secs)
+        (disk_size,total_memory,free_mem)= util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem])
+
 
         all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port, 'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'uptime':uptime})
 
