@@ -14,25 +14,19 @@ def get_value( document, value_type):
 
     return value
 
-
-if __name__ == '__main__':
-    document = fetchdocument.fetch_most_recent_document(util.IP)
-    get_value(document, "network_total_bytes_sent")
-
 def return_server_timestamp(document):
     server_timestamp_secs = document['server_timestamp']
-    elapsed_time = time.time() - server_timestamp_secs
+    #elapsed_time = time.time() - server_timestamp_secs
     #server_timestamp = str(datetime.timedelta(seconds= elapsed_time))
     return server_timestamp_secs
 
 def return_server_time(document):
     server_timestamp = return_server_timestamp(document)
     server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(server_timestamp))
-    return server_time
+    print  server_time
 
-def return_server_timestamp_date_time (document):
-    epoch = document['server_timestamp']
-    value=util.convert_epoch_to_date_time(epoch)
-    javascript_time = 'new Date' + str(value)
-    return javascript_time
-    #print value
+if __name__ == '__main__':
+    document = fetchdocument.fetch_most_recent_document('Node-1')
+    #print document
+    return_server_time(document)
+

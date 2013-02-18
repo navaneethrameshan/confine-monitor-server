@@ -36,7 +36,12 @@ def convert_epoch_to_date_time(epoch):
     (date, local_time) = date_time.split()
     (year, month, date) = date.split('-')
     (hour, minute, second) = local_time.split(':')
-    return (year, month, date, hour, minute, second)
+    return ({'year':year,'month': month, 'date': date, 'hour': hour, 'minute':minute, 'second': second})
+
+def convert_epoch_to_date_time_javascript(epoch):
+    date_time= convert_epoch_to_date_time(epoch)
+    date_time['month'] = int (date_time['month']) -1
+    return date_time
 
 def bytes2human(n):
     # http://code.activestate.com/recipes/578019

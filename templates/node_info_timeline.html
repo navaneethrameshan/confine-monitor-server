@@ -7,10 +7,10 @@
     <script type="text/javascript">
         google.load('visualization', '1', {packages: ['corechart']});
     </script>
-    <script type="text/javascript">
+ {% comment %}   <script type="text/javascript">
         function drawVisualization() {
             // Create and populate the data table.
-        {% comment %} var data = google.visualization.arrayToDataTable([
+        {% endcomment %}{% comment %} var data = google.visualization.arrayToDataTable([
              ['x', 'Cats' ],
              ['A',   1    ],
              ['B',   2    ],
@@ -27,7 +27,7 @@
              ['M',   1    ],
              ['N',   1    ]
          ]);
- {% endcomment %}
+ {% endcomment %}{% comment %}
             var data = google.visualization.arrayToDataTable({{ values_graph|safe }});
 
             // Create and draw the visualization.
@@ -40,7 +40,31 @@
 
 
         google.setOnLoadCallback(drawVisualization);
+    </script>{% endcomment %}
+
+
+
+    <script type="text/javascript">
+        google.load('visualization', '1', {packages: ['annotatedtimeline']});
+        function drawVisualization() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', '{{ metric }}');
+            data.addRows([
+                {% for values in values_graph %}
+                    [ new Date({{ values.year }},{{ values.month }},{{ values.date }},{{ values.hour }},{{ values.minute }},{{ values.second }}), {{ values.value }}],
+                {% endfor %}
+            ]);
+
+            var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+                    document.getElementById('visualization'));
+            annotatedtimeline.draw(data, {'displayAnnotations': true, 'highlightDot': 'nearest', 'scaleType': 'maximized', 'thickness': 2 });
+        }
+
+        google.setOnLoadCallback(drawVisualization);
     </script>
+
+
 </head>
 <body>
 <h1>Node: {{ name }},  Metric: {{ metric }} </h1>
@@ -49,7 +73,7 @@
 <br>
 <br>
 
-<div id="visualization" style="width: 500px; height: 400px;"></div>
+<div id="visualization" style="width: 1000px; height: 600px;"></div>
 
 </body>
 </html>
