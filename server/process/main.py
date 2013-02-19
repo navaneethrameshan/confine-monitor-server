@@ -18,7 +18,21 @@ def create_view():
         }\
     }"
 
+    map_function2 = "function(doc) { \
+        if ('slivers' in doc) { \
+            slivers = doc.slivers; \
+            for (values in slivers){ \
+                container = slivers[values]; \
+                container['nodeid'] =doc.nodeid;\
+                slice = container.slice_name; \
+                emit ([slice, doc.server_timestamp], container); \
+            } \
+        } \
+    }"
+
     createview.create_view(db, 'node-timestamp', map_function1, 'get_node-timestamp')
+
+    createview.create_view(db, 'slice-timestamp', map_function2, 'get_slice-timestamp')
 
 def main():
     create_view()

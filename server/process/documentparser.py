@@ -25,6 +25,7 @@ def return_server_time(document):
     server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(server_timestamp))
     print  server_time
 
+
 if __name__ == '__main__':
     document = fetchdocument.fetch_most_recent_document('Node-1')
     #print document

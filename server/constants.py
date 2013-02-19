@@ -1,4 +1,4 @@
-updated_time = "server_timestamp"
+server_timestamp = "server_timestamp"
 name = "nodeid"
 uptime = "uptime"
 
@@ -21,5 +21,14 @@ used_memory = "memory.virtual.used"
 network_total_bytes_sent = "network.total.bytes_sent"
 network_total_bytes_received = "network.total.bytes_recv"
 
+slivers = "slivers"
+
+## For view document ordered by slice
+sliver_name = "sliver_name"
+sliver_cpu_usage = "cpu.cpu_usage"
+sliver_slice_name = "slice_name"
+sliver_total_cache_memory = "memory.total_cache"
+sliver_total_swap_memory = "memory.total_swap"
+sliver_total_rss_memory = "memory.total_rss"
 
 nodes=['Node-1','Node-2','Node-3','Node-4','Node-5']

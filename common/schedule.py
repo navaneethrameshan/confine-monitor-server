@@ -14,8 +14,12 @@ class Schedule:
 
         monkey.patch_all(thread=False, select=False)
         node_list= []
+
+        #TODO: Get this value from controller API#########
         for name in constants.nodes:
             node_list.append(collect(name))
+        ################################################
+
         while(1):
             gevent.joinall([gevent.spawn(node.collect_store) for node in node_list])
             for node in node_list:

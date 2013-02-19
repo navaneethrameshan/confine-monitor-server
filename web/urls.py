@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^cpuusage/([A-Za-z]*-\d*)$', 'web.views.cpu_usage'), # currently accept "word - number"
     url(r'^datasent/([A-Za-z]*-\d*)$', 'web.views.data_sent'), # currently accept "word - number"
     url(r'^datareceived/([A-Za-z]*-\d*)$', 'web.views.data_received'), # currently accept "word - number"
+    url(r'^nodeslivers/([A-Za-z]*-\d*)$', 'web.views.node_slivers'), # currently accept "word - number"
+    url(r'^slice/([A-Za-z]*-\d*)$', 'web.views.slice_info'), # currently accept "word - number"
     # url(r'^web/', include('web.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Confine Monitor</title>
+    <h1>Confine Research Device Status</h1>
+
+
+    <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
+
+
+
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1', {packages:['treemap']});
+    </script>
+    <script type="text/javascript">
+        function drawVisualization() {
+            // Create and populate the data table.
+            var data = google.visualization.arrayToDataTable([
+                ['Node', 'Parent',    'Cpu Usage'],
+                ['All Nodes',    null,             0],
+                ['Node-1',   'All Nodes',             0],
+                ['Node-2',    'All Nodes',             0],
+                ['Node-3',     'All Nodes',             0],
+                ['Node-4',    'All Nodes',             0],
+                ['Cpu Usage-1',    'Node-1',             10],
+                ['Memory Usage-1',  'Node-1',            11],
+                ['Disk Usage-1',    'Node-1',            52],
+                ['Cpu Usage-2',    'Node-2',             20],
+                ['Memory Usage-2',  'Node-2',            21],
+                ['Disk Usage-2',    'Node-2',            62],
+                ['Cpu Usage-3',    'Node-3',             30],
+                ['Memory Usage-3',  'Node-3',            31],
+                ['Disk Usage-3',    'Node-3',            2],
+                ['Cpu Usage-4',    'Node-4',             10],
+                ['Memory Usage-4',  'Node-4',            12],
+                ['Disk Usage-4',    'Node-4',            52]
+
+            ]);
+
+            // Create and draw the visualization.
+            var treemap = new google.visualization.TreeMap(document.getElementById('visualization'));
+            treemap.draw(data, {
+                minColor: 'red',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true});
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>
+
+
+</head>
+
+<body>
+
+<!-- Row Highlight Javascript -->
+<script type="text/javascript">
+    window.onload=function(){
+        var tfrow = document.getElementById('tfhover').rows.length;
+        var tbRow=[];
+        for (var i=1;i<tfrow;i++) {
+            tbRow[i]=document.getElementById('tfhover').rows[i];
+            tbRow[i].onmouseover = function(){
+                this.style.backgroundColor = '#f3f8aa';
+            };
+            tbRow[i].onmouseout = function() {
+                this.style.backgroundColor = '#ffffff';
+            };
+        }
+    };
+</script>
+
+
+<style type="text/css">
+    table.sortable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
+    table.sortable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
+    table.sortable tr {background-color:#ffffff;}
+    table.sortable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
+</style>
+
+{#   <table id="tfhover" class="tftable" border="1">#}
+<table id="tfhover" class="sortable" border="1">
+    <caption>Last updated ---- {{ all_values.1.last_updated }}</caption>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Sliver Name</th>
+        <th>CPU Usage</th>
+        <th>Slice Name</th>
+        <th>Total Rss Memory</th>
+        <th>Total Cache Memory</th>
+        <th>Total Swap Memory</th>
+
+
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for values in all_values %}
+        <tr>
+            <td>{{ values.serial }}</td>
+            <td>{{ values.sliver_name }}</td>
+            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/cpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
+            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slice/{{ values.sliver_slice_name }} ">{{ values.sliver_slice_name }}</a></td>
+            <td>{{ values.sliver_total_rss }}</td>
+            <td>{{ values.sliver_total_cache }}</td>
+            <td>{{ values.sliver_total_swap }}</td>
+        </tr>
+    {% endfor %}
+
+
+
+    </tbody>
+</table>
+
+<br>
+<br>
+<br>
+
+<div id="visualization" style="width: 600px; height: 400px;"></div>
+
+</body>
+</html>

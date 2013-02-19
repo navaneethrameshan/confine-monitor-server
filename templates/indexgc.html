@@ -5,12 +5,61 @@
     <title>Confine Monitor</title>
     <h1>Confine Research Device Status</h1>
 
-    <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
+
+  <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
+
+
+
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1', {packages:['treemap']});
+    </script>
+    <script type="text/javascript">
+        function drawVisualization() {
+            // Create and populate the data table.
+            var data = google.visualization.arrayToDataTable([
+                ['Node', 'Parent',    'Cpu Usage'],
+                ['All Nodes',    null,             0],
+                ['Node-1',   'All Nodes',             0],
+                ['Node-2',    'All Nodes',             0],
+                ['Node-3',     'All Nodes',             0],
+                ['Node-4',    'All Nodes',             0],
+                ['Cpu Usage-1',    'Node-1',             10],
+                ['Memory Usage-1',  'Node-1',            11],
+                ['Disk Usage-1',    'Node-1',            52],
+                ['Cpu Usage-2',    'Node-2',             20],
+                ['Memory Usage-2',  'Node-2',            21],
+                ['Disk Usage-2',    'Node-2',            62],
+                ['Cpu Usage-3',    'Node-3',             30],
+                ['Memory Usage-3',  'Node-3',            31],
+                ['Disk Usage-3',    'Node-3',            2],
+                ['Cpu Usage-4',    'Node-4',             10],
+                ['Memory Usage-4',  'Node-4',            12],
+                ['Disk Usage-4',    'Node-4',            52]
+
+            ]);
+
+            // Create and draw the visualization.
+            var treemap = new google.visualization.TreeMap(document.getElementById('visualization'));
+            treemap.draw(data, {
+                minColor: 'red',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true});
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>
+
+
 </head>
 
  <body>
 
-   <!-- Row Highlight Javascript -->
+    <!-- Row Highlight Javascript -->
    <script type="text/javascript">
        window.onload=function(){
            var tfrow = document.getElementById('tfhover').rows.length;
@@ -58,7 +107,7 @@
        {% for values in all_values %}
        <tr>
            <td>{{ values.serial }}</td>
-           <td>{{ values.name }}</td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/nodeslivers/{{ values.name }} ">{{ values.name }}</a></td>
            <td>{{ values.disk_size }}</td>
            <td>{{ values.num_cpu }}</td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/cpuusage/{{ values.name }} ">{{ values.percent_usage }}</a></td>
@@ -80,6 +129,7 @@
     <br>
     <br>
 
+   <div id="visualization" style="width: 600px; height: 400px;"></div>
 
  </body>
 </html>

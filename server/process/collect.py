@@ -1,5 +1,7 @@
 from server.process import store
 from server.process import util
+from server import test
+from server.process import documentparser
 
 import urllib2
 import json
@@ -56,6 +58,13 @@ class collect:
             print seq_value
             seq_value.update({'nodeid': self.name})
             seq_value.update({'seq': key})
+
+            ###########################TODO: Testing for generated Sliver and Slice ID. Remove later####################
+
+            test.rename_sliver(seq_value, self.name)
+
+            ############################################################################################################
+
     #convert the relative timestamp to absolute server timestamp. Relative timestamps and server receiving the requests are always causally ordered.
             server_absolute_timestamp = util.get_timestamp()- float (seq_value['relative_timestamp'])
             seq_value.update({'server_timestamp': server_absolute_timestamp})
@@ -74,6 +83,7 @@ class collect:
 
     def collect_store(self):
         self.value = self.collect()
+
 
     def generate_docid(self, node_id, timestamp):
         doc_id = node_id +'-'+str(timestamp)
