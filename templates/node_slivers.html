@@ -17,34 +17,14 @@
     <script type="text/javascript">
         function drawVisualization() {
             // Create and populate the data table.
-            var data = google.visualization.arrayToDataTable([
-                ['Node', 'Parent',    'Cpu Usage'],
-                ['All Nodes',    null,             0],
-                ['Node-1',   'All Nodes',             0],
-                ['Node-2',    'All Nodes',             0],
-                ['Node-3',     'All Nodes',             0],
-                ['Node-4',    'All Nodes',             0],
-                ['Cpu Usage-1',    'Node-1',             10],
-                ['Memory Usage-1',  'Node-1',            11],
-                ['Disk Usage-1',    'Node-1',            52],
-                ['Cpu Usage-2',    'Node-2',             20],
-                ['Memory Usage-2',  'Node-2',            21],
-                ['Disk Usage-2',    'Node-2',            62],
-                ['Cpu Usage-3',    'Node-3',             30],
-                ['Memory Usage-3',  'Node-3',            31],
-                ['Disk Usage-3',    'Node-3',            2],
-                ['Cpu Usage-4',    'Node-4',             10],
-                ['Memory Usage-4',  'Node-4',            12],
-                ['Disk Usage-4',    'Node-4',            52]
-
-            ]);
+            var data = google.visualization.arrayToDataTable({{ values_graph|safe }});
 
             // Create and draw the visualization.
             var treemap = new google.visualization.TreeMap(document.getElementById('visualization'));
             treemap.draw(data, {
-                minColor: 'red',
+                minColor: '#0d0',
                 midColor: '#ddd',
-                maxColor: '#0d0',
+                maxColor: 'red',
                 headerHeight: 15,
                 fontColor: 'black',
                 showScale: true});
@@ -106,7 +86,7 @@
         <tr>
             <td>{{ values.serial }}</td>
             <td>{{ values.sliver_name }}</td>
-            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/cpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
+            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
             <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slice/{{ values.sliver_slice_name }} ">{{ values.sliver_slice_name }}</a></td>
             <td>{{ values.sliver_total_rss }}</td>
             <td>{{ values.sliver_total_cache }}</td>
@@ -127,3 +107,9 @@
 
 </body>
 </html>
+{% comment %} ['Node', 'Parent',    'Cpu Usage'],
+    ['CPU Usage',    '',             0],
+    ['Sliver1',   'CPU Usage',             10],
+    ['Sliver2',    'CPU Usage',             20],
+    ['Sliver3',     'CPU Usage',             40],
+    ['Sliver4',    'CPU Usage',             15]{% endcomment %}

@@ -1,5 +1,5 @@
 import time
-from server.process import store, util
+from server.process import store, util, fetchdocument
 from server.process import documentparser
 
 
@@ -26,7 +26,7 @@ def get_view_node_id_attribute_timeline( node_id, value_type):
 
     #for given node_id get value_type ordered by time (most recent first)
     db = store.get_db()
-    view_by_node_id = db.view('node-timestamp/get_node-timestamp', startkey=[node_id,{}], endkey = [node_id,], descending = True)
+    view_by_node_id = db.view('node-timestamp/get_node-timestamp', startkey=[node_id,{}], endkey = [node_id,], descending = True, limit= 1000)
 
     all_values = []
 
@@ -80,9 +80,56 @@ def get_view_slice_id_attribute_timeline( slice_id, value_type):
     return all_values
 
 
+def get_view_sliver_id_attribute_timeline( sliver_id, value_type):
+    '''
+    Document returned from view sliver-timestamp/get_sliver-timestamp
+    key = [sliver_id, server_timestamp],  value= {'sliver': sliverinfo,'nodeid':nodeid,'server_timestamp': server_timestamp}
+
+    returns
+    '''
+
+    db = store.get_db()
+    view_by_sliver_id = db.view('sliver-timestamp/get_sliver-timestamp', startkey=[sliver_id,{}], endkey = [sliver_id], descending = True)
+
+    all_values = []
+
+    for row in view_by_sliver_id:
+        document = row['value']
+        sliver = document['sliver']
+        value = documentparser.get_value(sliver, value_type)
+        server_timestamp = documentparser.return_server_timestamp(document)
+        date_time_value= util.convert_epoch_to_date_time_javascript(server_timestamp)
+        date_time_value.update({'value': value})
+        all_values.insert(1, date_time_value) # Keep most recent value at the end of the list to show graph as ascending time line
+
+    return all_values
+
+
+def get_view_sliver_most_recent_attribute_treemap( node_id, value_type):
+    '''
+    Document returned from view sliver-timestamp/get_sliver-timestamp
+    key = [sliver_id, server_timestamp],  value= {'sliver': sliverinfo,'nodeid':nodeid,'server_timestamp': server_timestamp}
+
+    returns
+    '''
+
+    all_values = [['Id', 'parent', 'metricvalue'], [value_type, '', 0]]
+
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    slivers = document['slivers']
+
+    for container in slivers:
+        sliver = slivers[container]
+        sliver_id = documentparser.get_value(sliver, 'sliver_name')
+        value = documentparser.get_value(sliver, value_type)
+        all_values.append([sliver_id, value_type, value])
+
+    return all_values
+
+
 def get_view_slice_id_all_slivers_most_recent( slice_id):
     '''
-    Returns a dictionary of the most recent values of all sliver information of a particular slice
+    Returns a list of the most recent values of all sliver information of a particular slice
     EX: [{sliverid:1,... }, {sliverid:2,... }, ...{sliverid:n, ...}]
     '''
 

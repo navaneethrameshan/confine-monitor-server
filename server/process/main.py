@@ -30,9 +30,23 @@ def create_view():
         } \
     }"
 
+    map_function3 = "function(doc) { \
+        if ('slivers' in doc) { \
+            slivers = doc.slivers; \
+            for (values in slivers){ \
+                container = slivers[values]; \
+                container['nodeid'] =doc.nodeid;\
+                sliver = container.sliver_name; \
+                emit ([sliver, doc.server_timestamp],  {'sliver': container,'nodeid':doc.nodeid,'server_timestamp': doc.server_timestamp}) \
+            } \
+        } \
+    }"
+
     createview.create_view(db, 'node-timestamp', map_function1, 'get_node-timestamp')
 
     createview.create_view(db, 'slice-timestamp', map_function2, 'get_slice-timestamp')
+
+    createview.create_view(db, 'sliver-timestamp', map_function3, 'get_sliver-timestamp')
 
 def main():
     create_view()

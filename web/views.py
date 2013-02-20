@@ -124,7 +124,14 @@ def node_slivers (request, parameter):
                            'sliver_total_cache':sliver_total_cache, 'sliver_total_swap': sliver_total_swap,
                            'sliver_total_rss':sliver_total_rss, 'serial':count, 'server_ip': server_ip, 'server_port': server_port})
 
-    return render_to_response('node_slivers.html',{'all_values':all_values},context_instance=RequestContext(request))
+
+    # Populate Treemap graph
+    values = getview.get_view_sliver_most_recent_attribute_treemap( node_id, 'sliver_cpu_usage')
+    values_graph = json.dumps(values)
+
+
+
+    return render_to_response('node_slivers.html',{'all_values':all_values, 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
 
@@ -156,3 +163,12 @@ def slice_info(request, parameter):
                            'sliver_total_rss':sliver_total_rss, 'serial':count, 'server_ip': server_ip, 'server_port': server_port})
 
     return render_to_response('sliceinfo.html',{'all_values':all_values},context_instance=RequestContext(request))
+
+
+def sliver_cpu_usage(request, parameter):
+
+    all_values = []
+    sliver_id = parameter
+    values_graph = getview.get_view_sliver_id_attribute_timeline(sliver_id, "sliver_cpu_usage")
+    #values_graph = json.dumps(values)
+    return render_to_response('node_info_timeline.html',{ 'name':sliver_id, 'metric': 'CPU Usage (%)', 'values_graph':values_graph},context_instance=RequestContext(request))

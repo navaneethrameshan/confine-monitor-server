@@ -43,7 +43,7 @@ class ScanInterface(object):
         pass
 
 
-class ScanNodeInternal(ScanInterface):
+class ScanNode(ScanInterface):
 
     syncclass = None
     primarykey = 'hostname'
@@ -138,7 +138,7 @@ EOF			""")
         values = {}
         try:
             ipaddr = socket.gethostbyname(nodename)
-            # TODO: check that IP returned matches IP in db.
+            # TODO: Implement
             values['external_dns_status'] = True
         except Exception, err:
             values['external_dns_status'] = False
@@ -171,7 +171,7 @@ EOF			""")
 
 
 def probe(hostname):
-    scannode = ScanNodeInternal()
+    scannode = ScanNode()
     try:
         (nodename, values) = scannode.collectExternal(hostname, {})
         return True

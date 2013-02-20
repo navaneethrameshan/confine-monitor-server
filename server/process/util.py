@@ -73,6 +73,3 @@ def bytes2human(n):
             return '%.1f%s' % (value, s)
     return "%sB" % n
 
-
-if __name__ == '__main__':
-    convert_bytes_to_human_readable(10, 'hello')

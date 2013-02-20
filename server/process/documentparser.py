@@ -23,7 +23,7 @@ def return_server_timestamp(document):
 def return_server_time(document):
     server_timestamp = return_server_timestamp(document)
     server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(server_timestamp))
-    print  server_time
+    return server_time
 
 
 if __name__ == '__main__':

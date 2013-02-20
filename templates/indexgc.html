@@ -90,6 +90,7 @@
        <thead>
        <tr>
            <th>#</th>
+           <th>Last Updated (GMT)</th>
            <th>Name</th>
            <th>Disk Size</th>
            <th>Number of CPUs</th>
@@ -107,6 +108,7 @@
        {% for values in all_values %}
        <tr>
            <td>{{ values.serial }}</td>
+           <td>{{ values.last_updated }}</td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/nodeslivers/{{ values.name }} ">{{ values.name }}</a></td>
            <td>{{ values.disk_size }}</td>
            <td>{{ values.num_cpu }}</td>
