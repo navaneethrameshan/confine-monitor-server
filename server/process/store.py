@@ -2,7 +2,7 @@
 from couchdb import *
 
 def get_db(name = 'test'):
-    s = Server("http://127.0.0.1:5984/")
+    s = Server("http://147.83.35.241:5984/")
     if not s.__contains__(name):
         db = s.create(name)
     else:
