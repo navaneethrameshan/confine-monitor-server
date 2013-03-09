@@ -2,7 +2,7 @@ import datetime
 import time
 import calendar
 import server.constants
-from server.process import fetchdocument, util
+from server.couchbase import fetchdocument, util
 
 def get_value( document, value_type):
     value_type = 'server.constants.' + value_type

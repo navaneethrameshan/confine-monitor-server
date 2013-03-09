@@ -1,15 +1,15 @@
 from common.schedule import Schedule
 import store
-from server.process import util, collect
-from server.process.views import createview
+from server.couchbase import util, collect
+from server.couchbase.views import createview
 
 
 def start_collecting():
     sched = Schedule(util.TIMEPERIOD)
-    sched.schedule()
+    sched.schedule_couchbase()
 
 def create_view():
-    db = store.get_db()
+
     map_function1 = "function(doc) { \
         if ('nodeid' in doc) { \
             node_id = doc.nodeid; \
@@ -42,13 +42,14 @@ def create_view():
         } \
     }"
 
-    createview.create_view(db, 'node-timestamp', map_function1, 'get_node-timestamp')
+    createview.create_view( 'node-timestamp', map_function1, 'get_node-timestamp')
 
-    createview.create_view(db, 'slice-timestamp', map_function2, 'get_slice-timestamp')
+    createview.create_view( 'slice-timestamp', map_function2, 'get_slice-timestamp')
 
-    createview.create_view(db, 'sliver-timestamp', map_function3, 'get_sliver-timestamp')
+    createview.create_view( 'sliver-timestamp', map_function3, 'get_sliver-timestamp')
 
 def main():
+    store.create_database()
     create_view()
     start_collecting()
 

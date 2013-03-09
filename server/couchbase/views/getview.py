@@ -1,17 +1,21 @@
+import json
 import time
-from server.process import store, util, fetchdocument
-from server.process import documentparser
+from server.couchbase import store, util, fetchdocument
+from server.couchbase import documentparser
 
 
 def get_view_node_id_attribute( node_id, value_type):
     #for given node_id get value_type ordered by time (most recent first)
-    db = store.get_db()
-    view_by_node_id = db.view('node-timestamp/get_node-timestamp', startkey=[node_id,{}], endkey = [node_id], descending = True)
+    db = store.get_bucket()
+
+    str_startkey = "[\"" + node_id + "\",{}]"
+    str_endkey = "[\"" + node_id + "\"]"
+
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True)
 
 
     all_values = [['Time', str(value_type)]]
 
-    all_values = []
 
     for node in view_by_node_id:
         document = node['value']
@@ -24,9 +28,14 @@ def get_view_node_id_attribute( node_id, value_type):
 
 def get_view_node_id_attribute_timeline( node_id, value_type):
 
+
     #for given node_id get value_type ordered by time (most recent first)
-    db = store.get_db()
-    view_by_node_id = db.view('node-timestamp/get_node-timestamp', startkey=[node_id,{}], endkey = [node_id,], descending = True, limit= 1000)
+    db = store.get_bucket()
+
+    str_startkey = "[\"" + node_id + "\",{}]"
+    str_endkey = "[\"" + node_id + "\"]"
+
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000)
 
     all_values = []
 
@@ -43,8 +52,8 @@ def get_view_node_id_attribute_timeline( node_id, value_type):
 
 def get_view_slice_id_attribute( slice_id, value_type):
     #for given node_id get value_type ordered by time (most recent first)
-    db = store.get_db()
-    view_by_slice_id = db.view('slice-timestamp/get_slice-timestamp', startkey=[slice_id,{}], endkey = [slice_id], descending = True)
+    db = store.get_bucket()
+    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=[slice_id,{}], endkey = [slice_id], descending = True)
 
 
     all_values = [['Time', str(value_type), 'Sliver_ID']]
@@ -63,8 +72,11 @@ def get_view_slice_id_attribute( slice_id, value_type):
 
 def get_view_slice_id_attribute_timeline( slice_id, value_type):
     #for given node_id get value_type ordered by time (most recent first)
-    db = store.get_db()
-    view_by_slice_id = db.view('slice-timestamp/get_slice-timestamp', startkey=[slice_id,{}], endkey = [slice_id], descending = True)
+    db = store.get_bucket()
+    str_startkey = "[\"" + slice_id + "\",{}]"
+    str_endkey = "[\"" + slice_id + "\"]"
+
+    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000)
 
     all_values = []
 
@@ -88,8 +100,13 @@ def get_view_sliver_id_attribute_timeline( sliver_id, value_type):
     returns
     '''
 
-    db = store.get_db()
-    view_by_sliver_id = db.view('sliver-timestamp/get_sliver-timestamp', startkey=[sliver_id,{}], endkey = [sliver_id], descending = True)
+    db = store.get_bucket()
+
+    str_startkey = "[\"" + sliver_id + "\",{}]"
+    str_endkey = "[\"" + sliver_id + "\"]"
+
+
+    view_by_sliver_id = db.view('_design/sliver-timestamp/_view/get_sliver-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000)
 
     all_values = []
 
@@ -133,11 +150,15 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
     EX: [{sliverid:1,... }, {sliverid:2,... }, ...{sliverid:n, ...}]
     '''
 
-    db = store.get_db()
+    db = store.get_bucket()
+
+    str_startkey = "[\"" + slice_id + "\",{}]"
+    str_endkey = "[\"" + slice_id + "\"]"
+
 
     #TODO:###################################################
     # The limit value is hardcoded to 5. This value should be obtained from the controller API. It is equal to the number of slivers in the given sliceID
-    view_by_slice_id = db.view('slice-timestamp/get_slice-timestamp', startkey=[slice_id,{}], endkey = [slice_id], descending = True, limit=5)
+    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=4)
 
     #########################################################
 
@@ -151,7 +172,7 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
 
 
 def main():
-    db = store.get_db()
+    db = store.get_bucket()
 
 #    map_function = "function(doc) { \
 #        load_avg = doc.load_avg; \

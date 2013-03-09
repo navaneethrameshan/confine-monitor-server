@@ -4,11 +4,16 @@ from django.template import Context, RequestContext, Template
 from django.http import HttpResponse, Http404
 import json
 import string
-from server.process import fetchdocument, util, documentparser
-from server.process.views import getview
+from server.couchbase import fetchdocument, util, documentparser
+from server.couchbase.views import getview
 from server import constants
 
 def index(request):
+
+###Testing###########
+    for value in constants.database_list:
+        print value
+#####################
 
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT

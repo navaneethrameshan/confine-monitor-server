@@ -1,4 +1,5 @@
-def create_view (db, doc_name, map_function, view_name ):
+from server.couchbase import store
+def create_view ( doc_name, map_function, view_name ):
 # check if there are entries for same document_id
 
     map_load_avg =  map_function
@@ -11,6 +12,7 @@ def create_view (db, doc_name, map_function, view_name ):
 
     document_id = '_design/'+ doc_name
 
-    db[document_id] = design
+    store.store_document(document_id, design)
+
     #   print str(db['_design/loadavglist'])
 

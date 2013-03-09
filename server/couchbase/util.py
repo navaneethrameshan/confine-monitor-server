@@ -1,9 +1,9 @@
 import time
 import datetime
 
-IP = '127.0.0.1'
+IP = '147.83.35.241'
 PORT = '8002'
-SERVER_IP = '127.0.0.1'
+SERVER_IP = '147.83.35.241'
 SERVER_PORT = '8000'
 
 TIMEPERIOD = 10

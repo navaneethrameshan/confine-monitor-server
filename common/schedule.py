@@ -1,8 +1,6 @@
 import time
-import gevent
-from gevent import monkey
 from server import constants
-from server.process.collect import collect
+from server.couchbase.collect import collect as couchbasecollect
 
 class Schedule:
 
@@ -10,19 +8,19 @@ class Schedule:
             self.time_period = time_period
 
 
-    def schedule (self):
+    def schedule_couchbase (self):
 
-        monkey.patch_all(thread=False, select=False)
+
         node_list= []
 
         #TODO: Get this value from controller API#########
         for name in constants.nodes:
-            node_list.append(collect(name))
-        ################################################
+            node_list.append(couchbasecollect(name))
+            ################################################
 
         while(1):
-            gevent.joinall([gevent.spawn(node.collect_store) for node in node_list])
             for node in node_list:
+                node.collect_store()
                 node.parse_store()
             time.sleep(self.time_period)
             print "scheduling next run"

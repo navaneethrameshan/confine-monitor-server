@@ -1,4 +1,4 @@
-from server.process import documentparser
+from server.couchbase import documentparser
 
 def rename_sliver(seq_value, name):
     slivers = documentparser.get_value(seq_value, 'slivers')
