@@ -31,6 +31,6 @@ sliver_total_cache_memory = "memory.total_cache"
 sliver_total_swap_memory = "memory.total_swap"
 sliver_total_rss_memory = "memory.total_rss"
 
-nodes=['Node-1', 'Node-2', 'Node-3', 'Node-4']
+nodes=['Node-1', 'Node-2']
 
 database_list = []

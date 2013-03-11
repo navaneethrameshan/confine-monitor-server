@@ -1,26 +1,45 @@
+from Queue import Queue
+from threading import Thread
 import time
+import sys
 from server import constants
-from server.couchbase.collect import collect as couchbasecollect
+from server.couchbase.collect import Collect as couchbasecollect
+from server.logger import logger
+from server.couchbase import parallelcollect
 
 class Schedule:
 
     def __init__(self, time_period):
-            self.time_period = time_period
-
+        self.time_period = time_period
+        self.log = logger("Schedule")
+        self.q= Queue()
 
     def schedule_couchbase (self):
 
+        self.node_list= []
 
-        node_list= []
-
-        #TODO: Get this value from controller API#########
         for name in constants.nodes:
-            node_list.append(couchbasecollect(name))
-            ################################################
+            self.node_list.append(couchbasecollect(name))
+
+        self.log.info("Number of Nodes: %d" %len(constants.nodes) )
 
         while(1):
-            for node in node_list:
-                node.collect_store()
-                node.parse_store()
+
+            #TODO: Get this value from controller API and not constant.nodes#########
+            for i in range(len(constants.nodes)):
+                t= parallelcollect.Parallel_collect(self.q)
+                t.daemon=True
+                t.start()
+
+            try:
+                for node in self.node_list:
+                    self.q.put(node)
+
+                self.q.join()
+            except KeyboardInterrupt:
+                sys.exit(1)
+
             time.sleep(self.time_period)
-            print "scheduling next run"
+            self.log.info("Scheduling next run")
+
+

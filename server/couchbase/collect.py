@@ -2,16 +2,20 @@ from server.couchbase import store
 from server.couchbase import util
 from server import test
 from server.couchbase import documentparser
+from server.logger import logger
+
 
 import urllib2
 import json
 
+log = logger("Collect")
 
-class collect:
+class Collect:
 
 # TODO: IP, PORT,Last_seen_sequence_number  needs to be read from class variable. Currently fetching from util for testing
 
-    def __init__(self, name=None, sequence = 0):
+    def __init__(self, name, sequence = 0):
+
         self.name = name
         self.sequence= sequence
         self.value= {}
@@ -28,34 +32,40 @@ class collect:
     def collect(self):
 
         # Possibility to optimize here by maintaining tcp connection? urllib3 and httpconnectionpool or httplib. Also important for
-        # handling cases of out of order message arrival.
+        # handling cases of out of order message arrival. Although out of order messages shouldn't ideally affect anything.
         url = self.generate_url()
-        print url
+        log.info(url)
         request = urllib2.Request(url)
+        response= None
         try:
             response = urllib2.urlopen(request)
         except:
-            print "Error in http request "
+            log.error("Error in http request")
+            response = None
 
 
+        if(response is None):
+            return None
 
         page = json.loads(response.read())
 
         #get and update the last seen sequence number
         sequence = util.get_most_recent_sequence_number(page)
-       # util.LAST_SEEN_SEQ_NUMBER = sequence  #Wouldn't work if the server crashes. Need to persist??
-        self.sequence = sequence
+        self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
 
         # print sequence
         return page
 
 
     def parse_store(self):
-        print "NODE ID: " + self.name
+        log.info("NODE ID: " + self.name)
         db = store.get_bucket()
         most_recent_absolute_timestamp = 0.0
 
-    #parse the dictionary. Strip values of every sequence number and add nodeid, absolute server timestamp
+        if (self.value is None):
+            return
+
+         #parse the dictionary. Strip values of every sequence number and add nodeid, absolute server timestamp
         for key in self.value.keys():
             seq_value = self.value[key]
             seq_value.update({'nodeid': self.name})
@@ -90,3 +100,6 @@ class collect:
     def generate_docid(self, node_id, timestamp):
         doc_id = node_id +'-'+str(timestamp)
         return doc_id
+
+    def get_name(self):
+        return self.name

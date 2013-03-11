@@ -2,10 +2,14 @@ import json
 import time
 from server.couchbase import store, util, fetchdocument
 from server.couchbase import documentparser
+from server.logger import logger
+
+log = logger("Get View")
 
 
 def get_view_node_id_attribute( node_id, value_type):
     #for given node_id get value_type ordered by time (most recent first)
+    log.debug("Get view by node ID for node: %s" %node_id)
     db = store.get_bucket()
 
     str_startkey = "[\"" + node_id + "\",{}]"
@@ -27,7 +31,7 @@ def get_view_node_id_attribute( node_id, value_type):
 
 
 def get_view_node_id_attribute_timeline( node_id, value_type):
-
+    log.debug("Get view by node ID for node: %s" %node_id)
 
     #for given node_id get value_type ordered by time (most recent first)
     db = store.get_bucket()
@@ -50,28 +54,11 @@ def get_view_node_id_attribute_timeline( node_id, value_type):
     return all_values
 
 
-def get_view_slice_id_attribute( slice_id, value_type):
-    #for given node_id get value_type ordered by time (most recent first)
-    db = store.get_bucket()
-    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=[slice_id,{}], endkey = [slice_id], descending = True)
-
-
-    all_values = [['Time', str(value_type), 'Sliver_ID']]
-
-    all_values = []
-
-    for slice in view_by_slice_id:
-        document = slice['value']
-        value = documentparser.get_value(document, value_type)
-        server_time = documentparser.return_server_time(document)
-        sliver_id = documentparser.get_value(document, 'sliver_name')
-        all_values.insert(1,[server_time,value, sliver_id]) # Keep most recent value at the end of the list to show graph as ascending time line
-
-    return all_values
-
-
 def get_view_slice_id_attribute_timeline( slice_id, value_type):
-    #for given node_id get value_type ordered by time (most recent first)
+
+    log.debug("Get view by slice ID for slice: %s" %slice_id)
+
+    #for given slice_id get value_type ordered by time (most recent first)
     db = store.get_bucket()
     str_startkey = "[\"" + slice_id + "\",{}]"
     str_endkey = "[\"" + slice_id + "\"]"
@@ -99,6 +86,8 @@ def get_view_sliver_id_attribute_timeline( sliver_id, value_type):
 
     returns
     '''
+
+    log.debug("Get view by sliver ID for sliver: %s" %sliver_id)
 
     db = store.get_bucket()
 
@@ -130,6 +119,7 @@ def get_view_sliver_most_recent_attribute_treemap( node_id, value_type):
     returns
     '''
 
+    log.debug("Get most recent sliver attributes for Node: %s" %node_id)
     all_values = [['Id', 'parent', 'metricvalue'], [value_type, '', 0]]
 
     document = fetchdocument.fetch_most_recent_document(node_id)
@@ -150,6 +140,7 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
     EX: [{sliverid:1,... }, {sliverid:2,... }, ...{sliverid:n, ...}]
     '''
 
+    log.debug("Get all slivers for slice: %s" %slice_id)
     db = store.get_bucket()
 
     str_startkey = "[\"" + slice_id + "\",{}]"
@@ -171,30 +162,3 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
     return all_values
 
 
-def main():
-    db = store.get_bucket()
-
-#    map_function = "function(doc) { \
-#        load_avg = doc.load_avg; \
-#        load_avg_1min = load_avg['LoadAvg-1min']; \
-#        emit([load_avg_1min,doc.server_timestamp], doc); \
-#        }"
-#
-#    create_view(db, 'loadavglist', map_function, 'get_load_avg'  )
-
-###############################################################################################
-
-#    map_function1 = "function(doc) { \
-#        if ('nodeid' in doc) { \
-#            node_id = doc.nodeid; \
-#            timestamp = doc.server_timestamp; \
-#            emit([node_id,timestamp], doc); \
-#        }\
-#    }"
-#
-#    create_view(db, 'node-timestamp', map_function1, 'get_node-timestamp')
-
-#get_view_node_id_load_avg('127.0.0.1')
-
-if __name__ == "__main__" :
-    main()
