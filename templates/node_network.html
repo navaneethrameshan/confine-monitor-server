@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Confine Monitor</title>
+    <h1>Confine Research Device Status</h1>
+    <h2> {{ name }}</h2>
+
+  <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
+
+
+</head>
+
+ <body>
+
+    <!-- Row Highlight Javascript -->
+   <script type="text/javascript">
+       window.onload=function(){
+           var tfrow = document.getElementById('tfhover').rows.length;
+           var tbRow=[];
+           for (var i=1;i<tfrow;i++) {
+               tbRow[i]=document.getElementById('tfhover').rows[i];
+               tbRow[i].onmouseover = function(){
+                   this.style.backgroundColor = '#f3f8aa';
+               };
+               tbRow[i].onmouseout = function() {
+                   this.style.backgroundColor = '#ffffff';
+               };
+           }
+       };
+   </script>
+
+
+   <style type="text/css">
+       table.sortable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
+       table.sortable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
+       table.sortable tr {background-color:#ffffff;}
+       table.sortable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
+   </style>
+
+{#   <table id="tfhover" class="tftable" border="1">#}
+        <table id="tfhover" class="sortable" border="1">
+       <caption>Last updated ---- {{ all_values.1.last_updated }}</caption>
+       <thead>
+       <tr>
+
+               <th>Interface</th>
+               <th>Bytes Sent</th>
+               <th>Bytes Sent/Second</th>
+               <th>Bytes Received</th>
+               <th>Bytes Received/Second</th>
+
+
+       </tr>
+        </thead>
+
+       <tbody>
+
+       {% for key,value in network_values.items %}
+           <tr>
+           <td>{{ key }}</td>
+           <td>{{ value.bytes_sent|safe }}</td>
+           <td>{{ value.bytes_sent_last_sec }}</td>
+           <td>{{ value.bytes_recv }}</td>
+           <td>{{ value.bytes_recv_last_sec }}</td>
+           </tr>
+       {% endfor %}
+
+      </tbody>
+   </table>
+
+    <br>
+    <br>
+    <br>
+
+ </body>
+</html>
+​

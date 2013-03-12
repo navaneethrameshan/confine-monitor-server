@@ -134,6 +134,37 @@ def get_view_sliver_most_recent_attribute_treemap( node_id, value_type):
     return all_values
 
 
+def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
+    '''
+    Document returned from view sliver-timestamp/get_sliver-timestamp
+    key = [sliver_id, server_timestamp],  value= {'sliver': sliverinfo,'nodeid':nodeid,'server_timestamp': server_timestamp}
+
+    returns
+    '''
+
+    log.debug("Get most recent sliver attributes for slice: %s" %slice_id)
+    all_values = [['Id', 'parent', 'metricvalue'], [value_type, '', 0]]
+
+    db = store.get_bucket()
+
+    str_startkey = "[\"" + slice_id + "\",{}]"
+    str_endkey = "[\"" + slice_id + "\"]"
+
+
+    #TODO:###################################################
+    # The limit value is hardcoded to number of nodes. This value should be obtained from the controller API. It is equal to the number of slivers in the given sliceID
+    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=5)
+
+    #########################################################
+
+    for slice in view_by_slice_id:
+        sliver = slice['value']
+        sliver_id = documentparser.get_value(sliver, 'sliver_name')
+        value = documentparser.get_value(sliver, value_type)
+        all_values.append([sliver_id, value_type, value])
+
+    return all_values
+
 def get_view_slice_id_all_slivers_most_recent( slice_id):
     '''
     Returns a list of the most recent values of all sliver information of a particular slice
@@ -148,8 +179,8 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
 
 
     #TODO:###################################################
-    # The limit value is hardcoded to 5. This value should be obtained from the controller API. It is equal to the number of slivers in the given sliceID
-    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=4)
+    # The limit value is hardcoded to number of nodes. This value should be obtained from the controller API. It is equal to the number of slivers in the given sliceID
+    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=5)
 
     #########################################################
 

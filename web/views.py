@@ -10,11 +10,6 @@ from server import constants
 
 def index(request):
 
-###Testing###########
-    for value in constants.database_list:
-        print value
-#####################
-
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
@@ -33,8 +28,8 @@ def index(request):
         total_memory = documentparser.get_value(document,"total_memory")
         num_cpu = documentparser.get_value(document, "number_of_cpus")
         cpu_usage = documentparser.get_value(document, "total_cpu_usage")
-        data_sent= documentparser.get_value(document, "network_total_bytes_sent")
-        data_received = documentparser.get_value(document, "network_total_bytes_received")
+        data_sent= documentparser.get_value(document, "network_total_bytes_sent_last_sec")
+        data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
 
         ## Human readability######
         uptime = util.convert_secs_to_time(uptime_secs)
@@ -89,16 +84,16 @@ def uptime(request, parameter):
 def data_sent(request, parameter):
 
     node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "network_total_bytes_sent")
+    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "network_total_bytes_sent_last_sec")
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes sent', 'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes sent/Sec', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 def data_received(request, parameter):
 
     node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "network_total_bytes_received")
+    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "network_total_bytes_received_last_sec")
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes received', 'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes received/Sec', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
 def node_slivers (request, parameter):
@@ -167,7 +162,15 @@ def slice_info(request, parameter):
                            'sliver_total_cache':sliver_total_cache, 'sliver_total_swap': sliver_total_swap,
                            'sliver_total_rss':sliver_total_rss, 'serial':count, 'server_ip': server_ip, 'server_port': server_port})
 
-    return render_to_response('sliceinfo.html',{'all_values':all_values},context_instance=RequestContext(request))
+
+    # Populate Treemap graph
+    values = getview.get_view_slice_most_recent_attribute_treemap( slice_id, 'sliver_cpu_usage')
+    values_graph = json.dumps(values)
+
+
+    return render_to_response('sliceinfo.html',{'all_values':all_values, 'values_graph': values_graph},context_instance=RequestContext(request))
+
+
 
 
 def sliver_cpu_usage(request, parameter):
@@ -177,3 +180,12 @@ def sliver_cpu_usage(request, parameter):
     values_graph = getview.get_view_sliver_id_attribute_timeline(sliver_id, "sliver_cpu_usage")
     #values_graph = json.dumps(values)
     return render_to_response('node_info_timeline.html',{ 'name':sliver_id, 'metric': 'CPU Usage (%)', 'values_graph':values_graph},context_instance=RequestContext(request))
+
+def node_network(request, parameter):
+
+   node_id = parameter
+   document = fetchdocument.fetch_most_recent_document(node_id)
+   name = documentparser.get_value(document, "name")
+   network_values= documentparser.get_set(document, "network")
+
+   return render_to_response('node_network.html',{'network_values':network_values, "name":name},context_instance=RequestContext(request))

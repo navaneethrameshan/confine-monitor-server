@@ -17,22 +17,14 @@
     <script type="text/javascript">
         function drawVisualization() {
             // Create and populate the data table.
-            var data = google.visualization.arrayToDataTable([
-                ['Node',         'Parent',    'Cpu Usage'],
-                ['CPU Usage',    null,                  0],
-                ['Sliver-1',       'CPU Usage',           10],
-                ['Sliver-2',       'CPU Usage',           20],
-                ['Sliver-3',       'CPU Usage',           20],
-                ['Sliver-4',       'CPU Usage',           40]
-
-            ]);
+            var data = google.visualization.arrayToDataTable({{ values_graph|safe }});
 
             // Create and draw the visualization.
             var treemap = new google.visualization.TreeMap(document.getElementById('visualization'));
             treemap.draw(data, {
-                minColor: 'red',
+                minColor: '#0d0',
                 midColor: '#ddd',
-                maxColor: '#0d0',
+                maxColor: 'red',
                 headerHeight: 15,
                 fontColor: 'black',
                 showScale: true});

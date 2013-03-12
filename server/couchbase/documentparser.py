@@ -32,6 +32,9 @@ def return_server_time(document):
     log.debug("Server time obtained is " + str(server_time))
     return server_time
 
+def get_set(document, set_type):
+    log.debug("Attempting to get value from document %s for value %s" %(document,set_type))
+    return document[set_type]
 
 if __name__ == '__main__':
     document = fetchdocument.fetch_most_recent_document('Node-1')
