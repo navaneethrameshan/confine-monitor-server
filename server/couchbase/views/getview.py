@@ -54,6 +54,8 @@ def get_view_node_id_attribute_timeline( node_id, value_type):
     return all_values
 
 
+
+
 def get_view_slice_id_attribute_timeline( slice_id, value_type):
 
     log.debug("Get view by slice ID for slice: %s" %slice_id)

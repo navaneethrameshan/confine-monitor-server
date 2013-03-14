@@ -8,10 +8,20 @@ from server.logger import logger
 log = logger("Document Parser")
 
 def get_value( document, value_type):
+    '''
+    Get value from variable name in server.constants if it exists, otherwise
+    Get value directly from attributes. Used for attributes with dynamic names. Example: value of bytesent for a particular interface
+    '''
     log.debug("Attempting to get value from document %s for value %s" %(document,value_type))
-    value_type = 'server.constants.' + value_type
-    attributes = eval(value_type)
-    log.debug("Path for value is %s" %attributes)
+    try:
+        new_value_type = 'server.constants.' + value_type
+        attributes = eval(new_value_type)
+        log.debug("Path for value is %s" %attributes)
+    except:
+        log.debug("Exception in attempting to evaluate value of " + value_type)
+        log.debug("Reset given value to attributes")
+        attributes = value_type
+
     attribute_list = attributes.split('.')
     value = document
     for attribute in attribute_list:
@@ -33,7 +43,7 @@ def return_server_time(document):
     return server_time
 
 def get_set(document, set_type):
-    log.debug("Attempting to get value from document %s for value %s" %(document,set_type))
+    log.debug("Attempting to get set from document %s for value %s" %(document,set_type))
     return document[set_type]
 
 if __name__ == '__main__':

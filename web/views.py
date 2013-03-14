@@ -96,6 +96,28 @@ def data_received(request, parameter):
     return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes received/Sec', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
+def network_timeline(request, parameter):
+    '''
+     Parameter received as (node_name.network.interface_name.attribute)
+    '''
+    (node_id, network, interface, attribute) = string.split(parameter, '.')
+    value_type= network+"."+interface+"."+attribute
+    values_graph = getview.get_view_node_id_attribute_timeline(node_id, value_type)
+    #values_graph = json.dumps(values)
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': interface+" "+attribute, 'values_graph':values_graph},context_instance=RequestContext(request))
+
+
+def disk_timeline(request, parameter):
+    '''
+     Parameter received as (node_name.network.interface_name.attribute)
+    '''
+    (node_id, disk, partition, attribute) = string.split(parameter, '.')
+    value_type= disk+"."+partition+"."+attribute
+    values_graph = getview.get_view_node_id_attribute_timeline(node_id, value_type)
+    #values_graph = json.dumps(values)
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': partition+" "+attribute, 'values_graph':values_graph},context_instance=RequestContext(request))
+
+
 def node_slivers (request, parameter):
 
     server_ip = util.SERVER_IP
@@ -122,7 +144,7 @@ def node_slivers (request, parameter):
 
         all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
                            'sliver_total_cache':sliver_total_cache, 'sliver_total_swap': sliver_total_swap,
-                           'sliver_total_rss':sliver_total_rss, 'serial':count, 'server_ip': server_ip, 'server_port': server_port})
+                           'sliver_total_rss':sliver_total_rss, 'serial':count})
 
 
     # Populate Treemap graph
@@ -130,8 +152,15 @@ def node_slivers (request, parameter):
     values_graph = json.dumps(values)
 
 
+    #Network Values
+    name = documentparser.get_value(document, "name")
+    network_values= documentparser.get_set(document, "network")
 
-    return render_to_response('node_slivers.html',{'all_values':all_values, 'values_graph':values_graph},context_instance=RequestContext(request))
+    #Disk Values
+    name = documentparser.get_value(document, "name")
+    disk_values= documentparser.get_set(document, "disk")
+
+    return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values, 'values_graph':values_graph, 'network_values':network_values, 'name':name, 'server_ip': server_ip, 'server_port': server_port},context_instance=RequestContext(request))
 
 
 
@@ -189,3 +218,21 @@ def node_network(request, parameter):
    network_values= documentparser.get_set(document, "network")
 
    return render_to_response('node_network.html',{'network_values':network_values, "name":name},context_instance=RequestContext(request))
+
+def node_disk(request, parameter):
+
+    node_id = parameter
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    name = documentparser.get_value(document, "name")
+    disk_values= documentparser.get_set(document, "disk")
+
+    return render_to_response('node_disk.html',{'disk_values':disk_values, "name":name},context_instance=RequestContext(request))
+
+def node_cpu(request, parameter):
+
+    node_id = parameter
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    name = documentparser.get_value(document, "name")
+    cpu_values= documentparser.get_set(document, "cpu")
+
+    return render_to_response('node_cpu.html',{'cpu_values':cpu_values, "name":name},context_instance=RequestContext(request))

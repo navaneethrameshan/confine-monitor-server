@@ -40,29 +40,33 @@
 
 {#   <table id="tfhover" class="tftable" border="1">#}
         <table id="tfhover" class="sortable" border="1">
-       <caption>Network</caption>
+       <caption>Disk</caption>
        <thead>
        <tr>
-
-               <th>Interface</th>
-               <th>Bytes Sent</th>
-               <th>Bytes Sent/Second</th>
-               <th>Bytes Received</th>
-               <th>Bytes Received/Second</th>
-
+               <th>Partition</th>
+               <th>Mount</th>
+               <th>Type</th>
+               <th>Total Space</th>
+               <th>Free</th>
+               <th>Used Space</th>
+               <th>Percent Used</th>
 
        </tr>
         </thead>
 
        <tbody>
 
-       {% for key,value in network_values.items %}
+       {% for key,value in disk_values.items %}
            <tr>
+           {%  if key != "size" %}
            <td>{{ key }}</td>
-           <td>{{ value.bytes_sent|safe }}</td>
-           <td>{{ value.bytes_sent_last_sec }}</td>
-           <td>{{ value.bytes_recv }}</td>
-           <td>{{ value.bytes_recv_last_sec }}</td>
+           <td>{{ value.mount }}</td>
+           <td>{{ value.type }}</td>
+           <td>{{ value.total }}</td>
+           <td>{{ value.free}}</td>
+           <td>{{ value.used }}</td>
+           <td>{{ value.percent_usage }}</td>
+           {% endif %}
            </tr>
        {% endfor %}
 

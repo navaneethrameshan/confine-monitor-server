@@ -17,6 +17,10 @@ urlpatterns = patterns('',
     url(r'^slice/([A-Za-z]*-\d*)$', 'web.views.slice_info'), # currently accept "word - number"
     url(r'^slivercpuusage/(.{2,})$', 'web.views.sliver_cpu_usage'), # Accept atleast 2 characters
     url(r'^nodenetwork/(.{2,})$', 'web.views.node_network'), # Accept atleast 2 characters
+    url(r'^nodedisk/(.{2,})$', 'web.views.node_disk'), # Accept atleast 2 characters
+
+    url(r'^network/(.{2,})$', 'web.views.network_timeline'), # currently accept "word - number"
+    url(r'^disk/(.{2,})$', 'web.views.disk_timeline'), # currently accept "word - number"
     # url(r'^web/', include('web.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
