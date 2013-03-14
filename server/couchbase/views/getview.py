@@ -15,14 +15,15 @@ def get_view_node_id_attribute( node_id, value_type):
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
 
-    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True)
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, include_docs= True)
 
 
     all_values = [['Time', str(value_type)]]
 
 
     for node in view_by_node_id:
-        document = node['value']
+        json = node['doc']
+        document = json['json']
         value = documentparser.get_value(document, value_type)
         server_time = documentparser.return_server_time(document)
         all_values.insert(1,[server_time,value]) # Keep most recent value at the end of the list to show graph as ascending time line
@@ -39,12 +40,13 @@ def get_view_node_id_attribute_timeline( node_id, value_type):
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
 
-    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000)
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000, include_docs= True)
 
     all_values = []
 
     for node in view_by_node_id:
-        document = node['value']
+        json = node['doc']
+        document = json['json']
         value = documentparser.get_value(document, value_type)
         server_timestamp = documentparser.return_server_timestamp(document)
         date_time_value= util.convert_epoch_to_date_time_javascript(server_timestamp)

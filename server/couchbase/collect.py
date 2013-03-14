@@ -1,6 +1,6 @@
 from server.couchbase import store
 from server.couchbase import util
-from server import test
+from server import rename
 from server.couchbase import documentparser
 from server.logger import logger
 
@@ -73,7 +73,7 @@ class Collect:
 
             ###########################TODO: Testing for generated Sliver and Slice ID. Remove later####################
 
-            test.rename_sliver(seq_value, self.name)
+            rename.rename_sliver(seq_value, self.name)
 
             ############################################################################################################
 

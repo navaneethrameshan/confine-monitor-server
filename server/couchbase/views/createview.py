@@ -28,7 +28,7 @@ def create_view():
         if ('nodeid' in doc) { \
             node_id = doc.nodeid; \
             timestamp = doc.server_timestamp; \
-            emit([node_id,timestamp], doc); \
+            emit([node_id,timestamp], null); \
         }\
     }"
 
