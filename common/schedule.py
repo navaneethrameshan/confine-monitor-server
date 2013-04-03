@@ -2,6 +2,7 @@ from Queue import Queue
 from threading import Thread
 import time
 import sys
+from common import controller
 from server import constants
 from server.couchbase.collect import Collect as couchbasecollect
 from server.logger import logger
@@ -18,8 +19,11 @@ class Schedule:
 
         self.node_list= []
 
+        #update node list from controller
+        controller.update_node_list()
+
         for name in constants.nodes:
-            self.node_list.append(couchbasecollect(name, port = util.PORT))
+            self.node_list.append(couchbasecollect(name, port = util.RD_PORT))
 
         self.log.info("Number of Nodes: %d" %len(constants.nodes) )
 
@@ -41,5 +45,4 @@ class Schedule:
 
             time.sleep(self.time_period)
             self.log.info("Scheduling next run")
-
 

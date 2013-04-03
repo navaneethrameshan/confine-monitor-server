@@ -4,6 +4,7 @@ import shelve
 import logging
 from couchbase.client import Couchbase
 from server import constants
+from server.couchbase import util
 from server.logger import logger
 
 log = logger("store")
@@ -11,7 +12,7 @@ log = logger("store")
 class Database(object):
 
     def __init__(self, name = 'test'):
-        cb = Couchbase("147.83.35.241:8091", "Administrator", "couchbase")
+        cb = Couchbase(util.DB_IP+":"+util.DB_PORT, "Administrator", "couchbase")
         self.log = logger ("database")
 
         try:

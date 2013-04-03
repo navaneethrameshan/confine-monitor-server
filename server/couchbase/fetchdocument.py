@@ -25,5 +25,3 @@ def fetch_most_recent_timestamp(node_id, db):
     log.debug("Most recent timestamp fetched is: " + str(most_recent_timestamp))
     return most_recent_timestamp
 
-if __name__ == '__main__':
-    print fetch_most_recent_document(util.IP)
