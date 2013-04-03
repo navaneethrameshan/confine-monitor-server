@@ -25,3 +25,15 @@ def fetch_most_recent_timestamp(node_id, db):
     log.debug("Most recent timestamp fetched is: " + str(most_recent_timestamp))
     return most_recent_timestamp
 
+
+def fetch_synthesized_data_document(node_id):
+    db = store.get_bucket()
+    log.debug("Fetching synthesized data document for node: %s" %node_id)
+    doc_id = str(node_id) +"-synthesized"
+    document = ast.literal_eval(db[doc_id][2])
+    log.debug("Document fetched is: " + str(document))
+    return document
+
+str_value='{"external_dns_status": "false", "ping_status": "rtt min/avg/max/mdev = 0.635/0.635/0.635/0.000 ms"}'
+value = ast.literal_eval(str_value)
+print value

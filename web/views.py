@@ -18,6 +18,7 @@ def index(request):
     # the initial page to display
     for nodes in  constants.nodes:
         count+=1
+
         document = fetchdocument.fetch_most_recent_document(nodes)
         name = documentparser.get_value(document, "name")
         disk_size = documentparser.get_value(document, "disk_size")
@@ -31,6 +32,10 @@ def index(request):
         data_sent= documentparser.get_value(document, "network_total_bytes_sent_last_sec")
         data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
 
+        synthesized_document = fetchdocument.fetch_synthesized_data_document(nodes)
+        ping_status = documentparser.get_value(synthesized_document,"ping_status")
+        traceroute = documentparser.get_value(synthesized_document, "traceroute")
+
         ## Human readability######
         uptime = util.convert_secs_to_time(uptime_secs)
         disk_size,total_memory,free_mem,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem, data_sent, data_received])
@@ -39,7 +44,7 @@ def index(request):
         all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port,
                            'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,
                            'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
-                           'data_received':data_received, 'uptime':uptime})
+                           'data_received':data_received, 'uptime':uptime, 'ping_status':ping_status, 'traceroute':traceroute})
 
 
    # Use to strip double quotes and single quotes to pass data for annotated timeline

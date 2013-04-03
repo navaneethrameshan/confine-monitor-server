@@ -25,7 +25,7 @@ network_total_bytes_received_last_sec = "network.total.bytes_recv_last_sec"
 
 slivers = "slivers"
 
-## For view document ordered by slice
+## For view document ordered by slice or for each sliver dict
 sliver_name = "sliver_name"
 slice_name = "slice_name"
 sliver_cpu_usage = "cpu.cpu_usage"
@@ -38,6 +38,10 @@ sliver_total_memory_percent_used = "memory.total_percent_used"
 #sliver_total_swap_memory = "memory.total_swap"
 #sliver_total_rss_memory = "memory.total_rss"
 
+#synthesized data
+port_status = "port_status"
+traceroute= "traceroute"
+ping_status= "ping_status"
 
 
 nodes=['[fd65:fc41:c50f:5::2]']

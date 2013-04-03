@@ -14,6 +14,7 @@ class Schedule:
         self.time_period = time_period
         self.log = logger("Schedule")
         self.q= Queue()
+        self.node_ip6q = Queue()
 
     def schedule_couchbase (self):
 
@@ -29,17 +30,23 @@ class Schedule:
 
         while(1):
 
-            #TODO: Get this value from controller API and not constant.nodes#########
             for i in range(len(constants.nodes)):
-                t= parallelcollect.Parallel_collect(self.q)
-                t.daemon=True
-                t.start()
+                t1= parallelcollect.Parallel_collect(self.q)
+                t1.daemon=True
+                t1.start()
+                t2= parallelcollect.Parallel_collect_synthesized(self.node_ip6q)
+                t2.daemon= True
+                t2.start()
 
             try:
                 for node in self.node_list:
                     self.q.put(node)
 
+                for nodeip6 in constants.nodes:
+                    self.node_ip6q.put(nodeip6)
+
                 self.q.join()
+                self.node_ip6q.join()
             except KeyboardInterrupt:
                 sys.exit(1)
 

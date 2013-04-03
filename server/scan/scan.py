@@ -6,6 +6,7 @@ import socket
 from server.control.util import command
 
 import traceback
+from server.couchbase import store
 
 def nmap_port_status(status):
     ps = {}
@@ -55,7 +56,7 @@ class ScanNode(ScanInterface):
                 values[str(port)] = "open"
             else:
                 values[str(port)] = "closed"
-        print "Port Status: %s \n" % values
+       # print "Port Status: %s \n" % values
         return {'port_status' : values }
 
     def collectNMAP(self, nodename, cohash):
@@ -81,13 +82,13 @@ class ScanNode(ScanInterface):
             else:
                 values['port_status'][p] = o1[p]
 
-        print values['port_status']
+      #  print values['port_status']
         return (nodename, values)
 
     def collectPING(self, nodename, cohash):
         values = {}
         ping = command.CMD()
-        (oval,errval) = ping.run_noexcept("ping -c 1 -q %s | grep rtt" % nodename)
+        (oval,errval) = ping.run_noexcept("ping6 -c 1 -q %s | grep rtt" % nodename)
 
         values = {}
         if oval == "":
@@ -96,17 +97,17 @@ class ScanNode(ScanInterface):
             values['ping_status'] = False
         else:
             print "Ping-->Works "
-            values['ping_status'] = True
-        print "Ping Status: %s \n" % oval
+            values['ping_status'] = oval
+       # print "Ping Status: %s \n" % oval
         return values
 
     def collectTRACEROUTE(self, nodename, cohash):
         values = {}
         trace = command.CMD()
         (oval,errval) = trace.run_noexcept("traceroute %s" % nodename)
-
+        oval = oval.replace("\n", " ")
         values['traceroute'] = oval
-        print "Traceroute Status: %s \n" % oval
+        #print "Traceroute Status: %s \n" % oval
         return values
 
     def collectSSH(self, nodename, cohash):
@@ -154,11 +155,11 @@ EOF			""")
             v = self.collectPorts(nodename)
             values.update(v)
 
-            v = self.collectSSH(nodename, cohash)
-            values.update(v)
+          #  v = self.collectSSH(nodename, cohash)
+          #  values.update(v)
 
-            v = self.collectDNS(nodename, cohash)
-            values.update(v)
+          #  v = self.collectDNS(nodename, cohash)
+          #  values.update(v)
 
             v = self.collectTRACEROUTE(nodename, cohash)
             values.update(v)
@@ -173,14 +174,24 @@ def probe(hostname):
     scannode = ScanNode()
     try:
         (nodename, values) = scannode.collectExternal(hostname, {})
-        return True
+        return values
     except:
         print traceback.print_exc()
         return False
 
+def probe_and_store(hostname):
+
+    nodeip6 = hostname
+
+    hostname= hostname.lstrip('[')
+    hostname= hostname.rstrip(']')
+
+    values = probe(hostname)
+    doc_id = nodeip6+'-synthesized'
+    store.store_document(doc_id, values)
 
 def main():
-    probe('127.0.0.1')
+    probe('fd65:fc41:c50f:5::2')
 
 
 if __name__ == "__main__":
