@@ -14,15 +14,16 @@ class Collect:
 
 # TODO: IP, PORT,Last_seen_sequence_number  needs to be read from class variable. Currently fetching from util for testing
 
-    def __init__(self, name, sequence = 0):
+    def __init__(self, name, port, sequence = 0):
 
         self.name = name
+        self.port = port
         self.sequence= sequence
         self.value= {}
 
     def generate_url(self):
     # Need to absolutely ensure that the same sequence number values are never fetched twice. This will most likely result in a collision and resource conflict on updating the database.
-        request_url = 'http://'+ util.IP +':' + util.PORT + "/get/all/seqnumber=" + str(self.sequence)
+        request_url = 'http://'+ self.name +':' + self.port + "/get/all/seqnumber=" + str(self.sequence)
         return request_url
 
     def generate_reference_docid(self, node_id):
@@ -50,8 +51,9 @@ class Collect:
         page = json.loads(response.read())
 
         #get and update the last seen sequence number
-        sequence = util.get_most_recent_sequence_number(page)
-        self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
+        if(page!={}):
+            sequence = util.get_most_recent_sequence_number(page)
+            self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
 
         # print sequence
         return page
@@ -73,7 +75,7 @@ class Collect:
 
             ###########################TODO: Testing for generated Sliver and Slice ID. Remove later####################
 
-            rename.rename_sliver(seq_value, self.name)
+            #rename.rename_sliver(seq_value, self.name)
 
             ############################################################################################################
 
