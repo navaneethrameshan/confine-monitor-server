@@ -136,15 +136,15 @@ def node_slivers (request, parameter):
         sliver_name = documentparser.get_value(sliver, 'sliver_name')
         sliver_cpu_usage = documentparser.get_value(sliver,'sliver_cpu_usage')
         sliver_slice_name = documentparser.get_value(sliver, 'sliver_slice_name')
-        sliver_total_cache = documentparser.get_value(sliver, 'sliver_total_cache_memory')
-        sliver_total_swap = documentparser.get_value(sliver, 'sliver_total_swap_memory')
-        sliver_total_rss = documentparser.get_value(sliver, 'sliver_total_rss_memory')
+        sliver_total_memory = documentparser.get_value(sliver, 'sliver_total_memory')
+        sliver_total_memory_free = documentparser.get_value(sliver, 'sliver_total_memory_free')
+        sliver_total_memory_percent_used = documentparser.get_value(sliver, 'sliver_total_memory_percent_used')
 
-        sliver_total_cache, sliver_total_swap, sliver_total_rss = util.convert_bytes_to_human_readable([sliver_total_cache, sliver_total_swap, sliver_total_rss])
+        sliver_total_memory, sliver_total_memory_free = util.convert_bytes_to_human_readable([sliver_total_memory, sliver_total_memory_free])
 
         all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
-                           'sliver_total_cache':sliver_total_cache, 'sliver_total_swap': sliver_total_swap,
-                           'sliver_total_rss':sliver_total_rss, 'serial':count})
+                           'sliver_total_memory':sliver_total_memory, 'sliver_total_memory_free': sliver_total_memory_free,
+                           'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'serial':count})
 
 
     # Populate Treemap graph

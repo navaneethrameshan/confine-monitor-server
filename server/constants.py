@@ -27,12 +27,17 @@ slivers = "slivers"
 
 ## For view document ordered by slice
 sliver_name = "sliver_name"
+slice_name = "slice_name"
 sliver_cpu_usage = "cpu.cpu_usage"
 sliver_slice_name = "slice_name"
-sliver_total_cache_memory = "memory.total_cache"
-sliver_total_swap_memory = "memory.total_swap"
-sliver_total_rss_memory = "memory.total_rss"
+sliver_total_memory = "memory.total"
+sliver_total_memory_free = "memory.total_free"
+sliver_total_memory_used = "memory.total_used"
+sliver_total_memory_percent_used = "memory.total_percent_used"
+#sliver_total_cache_memory = "memory.total_cache"
+#sliver_total_swap_memory = "memory.total_swap"
+#sliver_total_rss_memory = "memory.total_rss"
 
-nodes=['Node-1', 'Node-2', 'Node-3', 'Node-4', 'Node-5' ]
+nodes=['[fd65:fc41:c50f:5::2]']
 
 database_list = []

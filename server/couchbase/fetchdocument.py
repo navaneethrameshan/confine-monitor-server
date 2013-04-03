@@ -11,7 +11,7 @@ def fetch_most_recent_document(node_id):
     db = store.get_bucket()
     most_recent_timestamp = fetch_most_recent_timestamp(node_id,db)
     doc_id = str (node_id) + "-" + str(most_recent_timestamp)
-    document = ast.literal_eval(db[doc_id][2])
+    document =  ast.literal_eval(db[doc_id][2])
     log.debug("Document fetched is: " + str(document))
     return document
 

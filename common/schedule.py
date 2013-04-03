@@ -5,7 +5,7 @@ import sys
 from server import constants
 from server.couchbase.collect import Collect as couchbasecollect
 from server.logger import logger
-from server.couchbase import parallelcollect
+from server.couchbase import parallelcollect, util
 
 class Schedule:
 
@@ -19,7 +19,7 @@ class Schedule:
         self.node_list= []
 
         for name in constants.nodes:
-            self.node_list.append(couchbasecollect(name))
+            self.node_list.append(couchbasecollect(name, port = util.PORT))
 
         self.log.info("Number of Nodes: %d" %len(constants.nodes) )
 

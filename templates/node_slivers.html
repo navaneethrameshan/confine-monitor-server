@@ -82,9 +82,9 @@ return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
         <th>Sliver Name</th>
         <th>CPU Usage</th>
         <th>Slice Name</th>
-        <th>Total Rss Memory</th>
-        <th>Total Cache Memory</th>
-        <th>Total Swap Memory</th>
+        <th>Total Memory</th>
+        <th>Total Free Memory</th>
+        <th>Percent Memory Used</th>
 
 
     </tr>
@@ -97,9 +97,9 @@ return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
             <td>{{ values.sliver_name }}</td>
             <td><a href="http://{{ server_ip }}:{{ server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
             <td><a href="http://{{ server_ip }}:{{ server_port }}/slice/{{ values.sliver_slice_name }} ">{{ values.sliver_slice_name }}</a></td>
-            <td>{{ values.sliver_total_rss }}</td>
-            <td>{{ values.sliver_total_cache }}</td>
-            <td>{{ values.sliver_total_swap }}</td>
+            <td>{{ values.sliver_total_memory }}</td>
+            <td>{{ values.sliver_total_memory_free }}</td>
+            <td>{{ values.sliver_total_memory_percent_used }}</td>
         </tr>
     {% endfor %}
 
