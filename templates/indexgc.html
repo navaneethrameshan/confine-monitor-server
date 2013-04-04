@@ -125,10 +125,15 @@
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/pingstatus/{{ values.name }} ">{{ values.ping_status }}</a></td>
            <td>
                {% for key, value in values.port_status.items %}
-                   port-{{ key }} : {{ value }},
+
+                   {% if value == 'open' %}
+                       <span style="color: #ff0000;">port-{{ key }}:{{ value }}</span>,
+                   {% else %}
+                       port-{{ key }}:{{ value }},
+                   {% endif %}
+
                {% endfor %}
            </td>
-
 
        </tr>
        {% endfor %}
