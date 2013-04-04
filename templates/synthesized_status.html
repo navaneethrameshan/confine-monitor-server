@@ -51,7 +51,14 @@
     {% for values in all_values %}
         <tr>
             <td>{{ values.time }}</td>
-            <td>{{ values.value }}</td>
+            <td>
+                {% if values.value == 'Fail' %}
+                    <span style="color: #ff0000;">{{ values.value }}</span>
+                {% else %}
+                    {{ values.value }}
+                {% endif %}
+            </td>
+            
         </tr>
     {% endfor %}
 
