@@ -4,6 +4,7 @@ from django.template import Context, RequestContext, Template
 from django.http import HttpResponse, Http404
 import json
 import string
+from common import nodelist
 from server.couchbase import fetchdocument, util, documentparser
 from server.couchbase.views import getview
 from server import constants
@@ -16,10 +17,12 @@ def index(request):
     all_values = []
     count = 0
     # the initial page to display
-    for nodes in  constants.nodes:
+    nodes = nodelist.get_node_list()
+
+    for node in nodes:
         count+=1
 
-        document = fetchdocument.fetch_most_recent_document(nodes)
+        document = fetchdocument.fetch_most_recent_document(node)
         name = documentparser.get_value(document, "name")
         disk_size = documentparser.get_value(document, "disk_size")
         load_avg_1min = documentparser.get_value(document, "load_avg_1min")
@@ -33,8 +36,8 @@ def index(request):
         data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
 
 
-        ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(nodes,"ping_status")
-        port_status = getview.get_view_node_id_synthesized_attribute_most_recent(nodes,"port_status")
+        ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"ping_status")
+        port_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"port_status")
 
         ## Human readability######
         uptime = util.convert_secs_to_time(uptime_secs)
@@ -165,7 +168,7 @@ def node_slivers (request, parameter):
     name = documentparser.get_value(document, "name")
     disk_values= documentparser.get_set(document, "disk")
 
-    return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values, 'values_graph':values_graph, 'network_values':network_values, 'name':name, 'server_ip': server_ip, 'server_port': server_port},context_instance=RequestContext(request))
+    return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values, 'values_graph':values_graph, 'network_values':network_values, 'name':name, 'server_ip': server_ip, 'server_port': server_port, 'numberslivers': count},context_instance=RequestContext(request))
 
 
 

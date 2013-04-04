@@ -1,5 +1,6 @@
 import json
 import urllib2
+from common import nodelist
 from server import constants
 from server.couchbase import util
 from server.logger import logger
@@ -8,6 +9,8 @@ from server.logger import logger
 log = logger("controller")
 
 def update_node_list():
+
+    nodes =[]
 
     url = 'http://'+ util.CONTROLLER_IP + '/api/nodes/'
     request = urllib2.Request(url)
@@ -20,8 +23,6 @@ def update_node_list():
 
     if(response):
         log.info("Updating Node list from Controller")
-        #clear list of nodes and regenerate node list to account for new nodes
-        constants.nodes[:] = []
 
         nodes_uri = json.loads(response.read())
         log.debug("Nodes list obtained from controller: "+ str(nodes_uri))
@@ -30,7 +31,10 @@ def update_node_list():
             node_ip6= get_node_ip_from_node_uri(node_uri)
             log.info("Node IP: " + node_ip6)
             if (node_ip6):
-                constants.nodes.append(node_ip6)
+                nodes.append(node_ip6)
+
+        nodelist.write_node_list(nodes)
+
 
 
 

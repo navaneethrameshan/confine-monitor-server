@@ -44,6 +44,6 @@ traceroute= "traceroute"
 ping_status= "ping_status"
 timestamp = "timestamp"
 
-nodes=['[fd65:fc41:c50f:5::2]']
+nodes=[]
 
 database_list = []

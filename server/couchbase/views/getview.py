@@ -1,5 +1,6 @@
 import json
 import time
+from common import nodelist
 from server import constants
 from server.couchbase import store, util, fetchdocument
 from server.couchbase import documentparser
@@ -154,12 +155,14 @@ def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
 
     view_by_slice_id =[]
 
-    for node in constants.nodes:
+    nodes = nodelist.get_node_list()
+
+    for node in nodes:
 
         str_startkey = "[\"" + slice_id +"\",\""+ node+ "\",{}]"
         str_endkey = "[\"" + slice_id + "\",\""+ node+ "\"]"
 
-        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
+        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, stale=False)
 
         if(len(most_recent_slice)>0):
             view_by_slice_id.append(most_recent_slice[0])
@@ -185,12 +188,14 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
 
     view_by_slice_id =[]
 
-    for node in constants.nodes:
+    nodes = nodelist.get_node_list()
+
+    for node in nodes:
 
         str_startkey = "[\"" + slice_id +"\",\""+ node+ "\",{}]"
         str_endkey = "[\"" + slice_id + "\",\""+ node+ "\"]"
 
-        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
+        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, stale= False)
 
         if(len(most_recent_slice)>0):
             view_by_slice_id.append(most_recent_slice[0])
@@ -237,7 +242,7 @@ def get_view_node_id_synthesized_attribute_most_recent( node_id, value_type):
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
 
-    view_by_node_id = db.view('_design/synthesized-timestamp/_view/get_synthesized-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, include_docs= True)
+    view_by_node_id = db.view('_design/synthesized-timestamp/_view/get_synthesized-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, include_docs= True, stale= False)
 
     all_values = []
 

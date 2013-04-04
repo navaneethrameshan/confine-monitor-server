@@ -2,7 +2,7 @@ from Queue import Queue
 from threading import Thread
 import time
 import sys
-from common import controller
+from common import controller, nodelist
 from server import constants
 from server.couchbase.collect import Collect as couchbasecollect
 from server.logger import logger
@@ -23,14 +23,16 @@ class Schedule:
         #update node list from controller
         controller.update_node_list()
 
-        for name in constants.nodes:
+        nodes = nodelist.get_node_list()
+
+        for name in nodes:
             self.node_list.append(couchbasecollect(name, port = util.RD_PORT))
 
-        self.log.info("Number of Nodes: %d" %len(constants.nodes) )
+        self.log.info("Number of Nodes: %d" %len(nodes) )
 
         while(1):
 
-            for i in range(len(constants.nodes)):
+            for i in range(len(nodes)):
                 t1= parallelcollect.Parallel_collect(self.q)
                 t1.daemon=True
                 t1.start()
@@ -42,7 +44,7 @@ class Schedule:
                 for node in self.node_list:
                     self.q.put(node)
 
-                for nodeip6 in constants.nodes:
+                for nodeip6 in nodes:
                     self.node_ip6q.put(nodeip6)
 
                 self.q.join()
