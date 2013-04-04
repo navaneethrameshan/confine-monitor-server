@@ -102,7 +102,7 @@
            <th>Network Data Received/Sec</th>
            <th>Uptime</th>
            <th>Ping Status</th>
-           <th>Traceroute</th>
+           <th>Port Status</th>
 
        </tr>
         </thead>
@@ -123,7 +123,7 @@
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/datareceived/{{ values.name }} ">{{ values.data_received }}</a></td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/uptime/{{ values.name }} ">{{ values.uptime }}</a></td>
            <td>{{ values.ping_status }}</td>
-           <td>{{ values.traceroute }}</td>
+           <td>{{ values.port_status }}</td>
        </tr>
        {% endfor %}
 

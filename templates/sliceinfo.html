@@ -73,9 +73,9 @@
         <th>Slice Name</th>
         <th>CPU Usage</th>
         <th>Sliver Name</th>
-        <th>Total Rss Memory</th>
-        <th>Total Cache Memory</th>
-        <th>Total Swap Memory</th>
+        <th>Total Memory</th>
+        <th>Total Free Memory</th>
+        <th>Percent Memory Used</th>
 
 
     </tr>
@@ -88,9 +88,9 @@
             <td>{{ values.sliver_slice_name }}</td>
             <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
             <td>{{ values.sliver_name }}</td>
-            <td>{{ values.sliver_total_rss }}</td>
-            <td>{{ values.sliver_total_cache }}</td>
-            <td>{{ values.sliver_total_swap }}</td>
+            <td>{{ values.sliver_total_memory }}</td>
+            <td>{{ values.sliver_total_memory_free }}</td>
+            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slivermemoryusage/{{ values.sliver_name }} ">{{ values.sliver_total_memory_percent_used }}</a></td>
         </tr>
     {% endfor %}
 

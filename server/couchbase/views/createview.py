@@ -39,7 +39,7 @@ def create_view():
                 container = slivers[values]; \
                 container['nodeid'] =doc.nodeid;\
                 slice = container.slice_name; \
-                emit ([slice, doc.server_timestamp], container); \
+                emit ([slice, doc.nodeid, doc.server_timestamp], container); \
             } \
         } \
     }"

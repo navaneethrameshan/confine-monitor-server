@@ -1,5 +1,6 @@
 import json
 import time
+from server import constants
 from server.couchbase import store, util, fetchdocument
 from server.couchbase import documentparser
 from server.logger import logger
@@ -91,13 +92,13 @@ def get_view_sliver_id_attribute_timeline( sliver_id, value_type):
     returns
     '''
 
+
     log.debug("Get view by sliver ID for sliver: %s" %sliver_id)
 
     db = store.get_bucket()
 
     str_startkey = "[\"" + sliver_id + "\",{}]"
     str_endkey = "[\"" + sliver_id + "\"]"
-
 
     view_by_sliver_id = db.view('_design/sliver-timestamp/_view/get_sliver-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000)
 
@@ -151,15 +152,17 @@ def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
 
     db = store.get_bucket()
 
-    str_startkey = "[\"" + slice_id + "\",{}]"
-    str_endkey = "[\"" + slice_id + "\"]"
+    view_by_slice_id =[]
 
+    for node in constants.nodes:
 
-    #TODO:###################################################
-    # The limit value is hardcoded to number of nodes. This value should be obtained from the controller API. It is equal to the number of slivers in the given sliceID
-    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=5)
+        str_startkey = "[\"" + slice_id +"\",\""+ node+ "\",{}]"
+        str_endkey = "[\"" + slice_id + "\",\""+ node+ "\"]"
 
-    #########################################################
+        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
+
+        view_by_slice_id.append(most_recent_slice[0])
+
 
     for slice in view_by_slice_id:
         sliver = slice['value']
@@ -168,6 +171,7 @@ def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
         all_values.append([sliver_id, value_type, value])
 
     return all_values
+
 
 def get_view_slice_id_all_slivers_most_recent( slice_id):
     '''
@@ -178,15 +182,16 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
     log.debug("Get all slivers for slice: %s" %slice_id)
     db = store.get_bucket()
 
-    str_startkey = "[\"" + slice_id + "\",{}]"
-    str_endkey = "[\"" + slice_id + "\"]"
+    view_by_slice_id =[]
 
+    for node in constants.nodes:
 
-    #TODO:###################################################
-    # The limit value is hardcoded to number of nodes. This value should be obtained from the controller API. It is equal to the number of slivers in the given sliceID
-    view_by_slice_id = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=5)
+        str_startkey = "[\"" + slice_id +"\",\""+ node+ "\",{}]"
+        str_endkey = "[\"" + slice_id + "\",\""+ node+ "\"]"
 
-    #########################################################
+        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
+
+        view_by_slice_id.append(most_recent_slice[0])
 
     all_values = []
 
@@ -195,5 +200,4 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
         all_values.append(document)
 
     return all_values
-
 

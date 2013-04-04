@@ -99,7 +99,7 @@ return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
             <td><a href="http://{{ server_ip }}:{{ server_port }}/slice/{{ values.sliver_slice_name }} ">{{ values.sliver_slice_name }}</a></td>
             <td>{{ values.sliver_total_memory }}</td>
             <td>{{ values.sliver_total_memory_free }}</td>
-            <td>{{ values.sliver_total_memory_percent_used }}</td>
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/slivermemoryusage/{{ values.sliver_name }} ">{{ values.sliver_total_memory_percent_used }}</a></td>
         </tr>
     {% endfor %}
 

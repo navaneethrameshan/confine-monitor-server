@@ -93,10 +93,10 @@ class ScanNode(ScanInterface):
         values = {}
         if oval == "":
             # An error occurred
-            print "Ping-->Error "
-            values['ping_status'] = False
+          #  print "Ping-->Error "
+            values['ping_status'] = "Fail"
         else:
-            print "Ping-->Works "
+          #  print "Ping-->Works "
             values['ping_status'] = oval
        # print "Ping Status: %s \n" % oval
         return values
