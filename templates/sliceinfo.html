@@ -73,6 +73,7 @@
     <tr>
         <th>#</th>
         <th>Slice Name</th>
+        <th>Node Name</th>
         <th>CPU Usage</th>
         <th>Sliver Name</th>
         <th>Total Memory</th>
@@ -88,6 +89,7 @@
         <tr>
             <td>{{ values.serial }}</td>
             <td>{{ values.sliver_slice_name }}</td>
+            <td>{{ values.nodeid }}</td>
             <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
             <td>{{ values.sliver_name }}</td>
             <td>{{ values.sliver_total_memory }}</td>

@@ -184,7 +184,7 @@ def slice_info(request, parameter):
 
     count = 0
     for container in slivers:
-        sliver= slivers[count]
+        sliver= container
         count +=1
         sliver_name = documentparser.get_value(sliver, 'sliver_name')
         sliver_cpu_usage = documentparser.get_value(sliver,'sliver_cpu_usage')
@@ -192,12 +192,13 @@ def slice_info(request, parameter):
         sliver_total_memory = documentparser.get_value(sliver, 'sliver_total_memory')
         sliver_total_memory_free = documentparser.get_value(sliver, 'sliver_total_memory_free')
         sliver_total_memory_percent_used = documentparser.get_value(sliver, 'sliver_total_memory_percent_used')
+        nodeid = documentparser.get_value(sliver, "nodeid")
 
         sliver_total_memory, sliver_total_memory_free = util.convert_bytes_to_human_readable([sliver_total_memory, sliver_total_memory_free])
 
         all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
                            'sliver_total_memory':sliver_total_memory, 'sliver_total_memory_free': sliver_total_memory_free,
-                           'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'serial':count, 'server_ip': server_ip, 'server_port': server_port})
+                           'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'serial':count, 'server_ip': server_ip, 'server_port': server_port, 'nodeid': nodeid})
 
 
     # Populate Treemap graph

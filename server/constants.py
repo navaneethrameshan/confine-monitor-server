@@ -37,6 +37,7 @@ sliver_total_memory_percent_used = "memory.total_percent_used"
 #sliver_total_cache_memory = "memory.total_cache"
 #sliver_total_swap_memory = "memory.total_swap"
 #sliver_total_rss_memory = "memory.total_rss"
+nodeid ="nodeid"
 
 #synthesized data
 port_status = "port_status"
