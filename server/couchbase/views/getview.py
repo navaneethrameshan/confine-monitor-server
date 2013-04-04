@@ -161,7 +161,8 @@ def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
 
         most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
 
-        view_by_slice_id.append(most_recent_slice[0])
+        if(len(most_recent_slice)>0):
+            view_by_slice_id.append(most_recent_slice[0])
 
 
     for slice in view_by_slice_id:
@@ -191,7 +192,8 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
 
         most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
 
-        view_by_slice_id.append(most_recent_slice[0])
+        if(len(most_recent_slice)>0):
+            view_by_slice_id.append(most_recent_slice[0])
 
     all_values = []
 
