@@ -56,8 +56,18 @@ def create_view():
         } \
     }"
 
+    map_function4 = "function(doc) { \
+        if ('ping_status' in doc) { \
+            node_id = doc.node_id; \
+            timestamp = doc.timestamp; \
+            emit([node_id,timestamp], null); \
+        } \
+    }"
+
     generate_view_document( 'node-timestamp', map_function1, 'get_node-timestamp')
 
     generate_view_document( 'slice-timestamp', map_function2, 'get_slice-timestamp')
 
     generate_view_document( 'sliver-timestamp', map_function3, 'get_sliver-timestamp')
+
+    generate_view_document( 'synthesized-timestamp', map_function4, 'get_synthesized-timestamp')

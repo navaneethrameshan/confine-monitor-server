@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^slivermemoryusage/(.{2,})$', 'web.views.sliver_memory_usage'),
     url(r'^nodenetwork/(.{2,})$', 'web.views.node_network'),
     url(r'^nodedisk/(.{2,})$', 'web.views.node_disk'),
+    url(r'^pingstatus/(.{2,})$', 'web.views.node_ping'),
 
     url(r'^network/(.{2,})$', 'web.views.network_timeline'), # currently accept "word - number"
     url(r'^disk/(.{2,})$', 'web.views.disk_timeline'), # currently accept "word - number"

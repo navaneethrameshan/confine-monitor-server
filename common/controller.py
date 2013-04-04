@@ -53,4 +53,3 @@ def get_node_ip_from_node_uri(node_uri):
 
     return None
 
-update_node_list()

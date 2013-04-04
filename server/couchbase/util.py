@@ -19,6 +19,7 @@ LAST_SEEN_SEQ_NUMBER = 0
 def convert_secs_to_time(secs):
     return((datetime.timedelta(seconds = secs)))
 
+
 def get_most_recent_sequence_number(page):
     max=0
     for key in page.keys():
@@ -37,7 +38,11 @@ def find_recent_timestamp(max_so_far, absolute_value):
     else:
         return max_so_far
 
-def convert_epoch_to_date_time(epoch):
+def convert_epoch_to_date_time_dict(epoch):
+    date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
+    return ({'time': date_time})
+
+def convert_epoch_to_date_time_dict_attributes(epoch):
     date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
     (date, local_time) = date_time.split()
     (year, month, date) = date.split('-')
@@ -45,7 +50,7 @@ def convert_epoch_to_date_time(epoch):
     return ({'year':year,'month': month, 'date': date, 'hour': hour, 'minute':minute, 'second': second})
 
 def convert_epoch_to_date_time_javascript(epoch):
-    date_time= convert_epoch_to_date_time(epoch)
+    date_time= convert_epoch_to_date_time_dict_attributes(epoch)
     date_time['month'] = int (date_time['month']) -1
     return date_time
 

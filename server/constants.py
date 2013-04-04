@@ -42,7 +42,7 @@ sliver_total_memory_percent_used = "memory.total_percent_used"
 port_status = "port_status"
 traceroute= "traceroute"
 ping_status= "ping_status"
-
+timestamp = "timestamp"
 
 nodes=['[fd65:fc41:c50f:5::2]']
 

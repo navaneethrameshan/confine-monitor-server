@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Confine Monitor</title>
+    <h1>Confine Research Device Status</h1>
+
+
+    <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
+</head>
+<body>
+
+<h1>Node: {{ name }},  Metric: {{ metric }} </h1>
+
+<!-- Row Highlight Javascript -->
+<script type="text/javascript">
+    window.onload=function(){
+        var tfrow = document.getElementById('tfhover').rows.length;
+        var tbRow=[];
+        for (var i=1;i<tfrow;i++) {
+            tbRow[i]=document.getElementById('tfhover').rows[i];
+            tbRow[i].onmouseover = function(){
+                this.style.backgroundColor = '#f3f8aa';
+            };
+            tbRow[i].onmouseout = function() {
+                this.style.backgroundColor = '#ffffff';
+            };
+        }
+    };
+</script>
+
+
+<style type="text/css">
+    table.sortable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
+    table.sortable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
+    table.sortable tr {background-color:#ffffff;}
+    table.sortable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
+</style>
+
+{#   <table id="tfhover" class="tftable" border="1">#}
+<table id="tfhover" class="sortable" border="1">
+
+    <thead>
+    <tr>
+        <th>Time (GMT)</th>
+        <th>{{ metric }}</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for values in all_values %}
+        <tr>
+            <td>{{ values.time }}</td>
+            <td>{{ values.value }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+</body>
+</html>

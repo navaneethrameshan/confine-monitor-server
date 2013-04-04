@@ -122,8 +122,14 @@
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/datasent/{{ values.name }} ">{{ values.data_sent }}</a></td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/datareceived/{{ values.name }} ">{{ values.data_received }}</a></td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/uptime/{{ values.name }} ">{{ values.uptime }}</a></td>
-           <td>{{ values.ping_status }}</td>
-           <td>{{ values.port_status }}</td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/pingstatus/{{ values.name }} ">{{ values.ping_status }}</a></td>
+           <td>
+               {% for key, value in values.port_status.items %}
+                   port-{{ key }} : {{ value }},
+               {% endfor %}
+           </td>
+
+
        </tr>
        {% endfor %}
 

@@ -88,6 +88,7 @@ class Collect:
             # should only fetch the document timestamp and not generate a new one
             # print str(server_absolute_timestamp) + "--" + str(key) + "-- time" + str(config.get_timestamp())
             doc_id = self.generate_docid(self.name, server_absolute_timestamp)
+
             store.store_document(doc_id,seq_value)
 
         # After all the documents are stored, find the most recent timestamp and update the reference document to speedup lookups

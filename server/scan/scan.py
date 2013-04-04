@@ -1,4 +1,4 @@
-
+import json
 import os
 import sys
 
@@ -6,7 +6,7 @@ import socket
 from server.control.util import command
 
 import traceback
-from server.couchbase import store
+from server.couchbase import store, util
 
 def nmap_port_status(status):
     ps = {}
@@ -187,7 +187,12 @@ def probe_and_store(hostname):
     hostname= hostname.rstrip(']')
 
     values = probe(hostname)
-    doc_id = nodeip6+'-synthesized'
+    timestamp = util.get_timestamp()
+    values.update({"timestamp":timestamp})
+    values.update({'node_id': nodeip6})
+
+    doc_id = nodeip6+'-synthesized'+str(timestamp)
+
     store.store_document(doc_id, values)
 
 def main():

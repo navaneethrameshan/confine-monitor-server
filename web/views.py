@@ -32,9 +32,9 @@ def index(request):
         data_sent= documentparser.get_value(document, "network_total_bytes_sent_last_sec")
         data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
 
-        synthesized_document = fetchdocument.fetch_synthesized_data_document(nodes)
-        ping_status = documentparser.get_value(synthesized_document,"ping_status")
-        port_status = documentparser.get_value(synthesized_document, "port_status")
+
+        ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(nodes,"ping_status")
+        port_status = getview.get_view_node_id_synthesized_attribute_most_recent(nodes,"port_status")
 
         ## Human readability######
         uptime = util.convert_secs_to_time(uptime_secs)
@@ -251,3 +251,11 @@ def node_cpu(request, parameter):
     cpu_values= documentparser.get_set(document, "cpu")
 
     return render_to_response('node_cpu.html',{'cpu_values':cpu_values, "name":name},context_instance=RequestContext(request))
+
+def node_ping(request, parameter):
+
+    all_values = []
+    node_id = parameter
+    all_values = getview.get_view_node_id_synthesized_attribute_timeline(node_id, "ping_status")
+    #values_graph = json.dumps(values)
+    return render_to_response('synthesized_status.html',{ 'name':node_id, 'metric': 'Ping Status', 'all_values':all_values},context_instance=RequestContext(request))

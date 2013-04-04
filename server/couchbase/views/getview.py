@@ -201,3 +201,46 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
 
     return all_values
 
+
+def get_view_node_id_synthesized_attribute_timeline( node_id, value_type):
+    log.debug("Get view by node ID for node: %s" %node_id)
+
+    #for given node_id get value_type ordered by time (most recent first)
+    db = store.get_bucket()
+
+    str_startkey = "[\"" + node_id + "\",{}]"
+    str_endkey = "[\"" + node_id + "\"]"
+
+    view_by_node_id = db.view('_design/synthesized-timestamp/_view/get_synthesized-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000, include_docs= True)
+
+    all_values = []
+
+    for node in view_by_node_id:
+        json = node['doc']
+        document = json['json']
+        value = documentparser.get_value(document, value_type)
+        server_timestamp = documentparser.get_value(document, "timestamp")
+        date_time_value= util.convert_epoch_to_date_time_dict(server_timestamp)
+        date_time_value.update({'value': value})
+        all_values.append(date_time_value)
+
+    return all_values
+
+def get_view_node_id_synthesized_attribute_most_recent( node_id, value_type):
+    log.debug("Get view by node ID for node: %s" %node_id)
+
+    #for given node_id get value_type ordered by time (most recent first)
+    db = store.get_bucket()
+
+    str_startkey = "[\"" + node_id + "\",{}]"
+    str_endkey = "[\"" + node_id + "\"]"
+
+    view_by_node_id = db.view('_design/synthesized-timestamp/_view/get_synthesized-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, include_docs= True)
+
+    all_values = []
+
+    node = view_by_node_id[0]
+    json = node['doc']
+    document = json['json']
+    value = documentparser.get_value(document, value_type)
+    return value
