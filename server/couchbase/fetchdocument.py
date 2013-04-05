@@ -11,7 +11,13 @@ def fetch_most_recent_document(node_id):
     db = store.get_bucket()
     most_recent_timestamp = fetch_most_recent_timestamp(node_id,db)
     doc_id = str (node_id) + "-" + str(most_recent_timestamp)
-    document =  ast.literal_eval(db[doc_id][2])
+
+    try:
+        str_doc= db[doc_id][2]
+    except:
+        return {}
+
+    document =  ast.literal_eval(str_doc)
     log.debug("Document fetched is: " + str(document))
     return document
 
@@ -20,7 +26,13 @@ def fetch_most_recent_document(node_id):
 def fetch_most_recent_timestamp(node_id, db):
     log.debug("Fetching most recent timestamp for node: %s" %node_id)
     doc_id = str(node_id) +"-most_recent_timestamp"
-    document = ast.literal_eval(db[doc_id][2])
+
+    try:
+        str_doc= db[doc_id][2]
+    except:
+        return {}
+
+    document = ast.literal_eval(str_doc)
     most_recent_timestamp = document ["most_recent_timestamp"]
     log.debug("Most recent timestamp fetched is: " + str(most_recent_timestamp))
     return most_recent_timestamp
@@ -30,7 +42,13 @@ def fetch_synthesized_data_document(node_id):
     db = store.get_bucket()
     log.debug("Fetching synthesized data document for node: %s" %node_id)
     doc_id = str(node_id) +"-synthesized"
-    document = ast.literal_eval(db[doc_id][2])
+
+    try:
+        str_doc= db[doc_id][2]
+    except:
+        return {}
+
+    document = ast.literal_eval(str_doc)
     log.debug("Document fetched is: " + str(document))
     return document
 
