@@ -162,7 +162,7 @@ def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
         str_startkey = "[\"" + slice_id +"\",\""+ node+ "\",{}]"
         str_endkey = "[\"" + slice_id + "\",\""+ node+ "\"]"
 
-        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, stale=False)
+        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
 
         if(len(most_recent_slice)>0):
             view_by_slice_id.append(most_recent_slice[0])
@@ -195,7 +195,7 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
         str_startkey = "[\"" + slice_id +"\",\""+ node+ "\",{}]"
         str_endkey = "[\"" + slice_id + "\",\""+ node+ "\"]"
 
-        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, stale= False)
+        most_recent_slice = db.view('_design/slice-timestamp/_view/get_slice-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1)
 
         if(len(most_recent_slice)>0):
             view_by_slice_id.append(most_recent_slice[0])
@@ -242,12 +242,13 @@ def get_view_node_id_synthesized_attribute_most_recent( node_id, value_type):
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
 
-    view_by_node_id = db.view('_design/synthesized-timestamp/_view/get_synthesized-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, include_docs= True, stale= False)
+    view_by_node_id = db.view('_design/synthesized-timestamp/_view/get_synthesized-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1, include_docs= True)
 
     all_values = []
 
-    node = view_by_node_id[0]
-    json = node['doc']
-    document = json['json']
-    value = documentparser.get_value(document, value_type)
-    return value
+    if(len(view_by_node_id)>0):
+        node = view_by_node_id[0]
+        json = node['doc']
+        document = json['json']
+        value = documentparser.get_value(document, value_type)
+        return value
