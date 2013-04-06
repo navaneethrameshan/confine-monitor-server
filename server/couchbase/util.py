@@ -3,7 +3,7 @@ import datetime
 
 RD_PORT = '8080'
 
-SERVER_IP = '147.83.35.241'
+SERVER_IP = '127.0.0.1'
 SERVER_PORT = '8000'
 
 DB_IP = '147.83.35.241'
@@ -16,8 +16,9 @@ TIMEPERIOD = 20
 
 LAST_SEEN_SEQ_NUMBER = 0
 
-def convert_secs_to_time(secs):
-    return((datetime.timedelta(seconds = secs)))
+def convert_secs_to_time_elapsed(secs):
+    if(secs):
+        return((datetime.timedelta(seconds = secs)))
 
 
 def get_most_recent_sequence_number(page):

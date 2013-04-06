@@ -17,7 +17,7 @@ def get_view_node_id_attribute( node_id, value_type):
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
 
-    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, include_docs= True)
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, limit=1000, descending = True, include_docs= True)
 
 
     all_values = [['Time', str(value_type)]]
@@ -42,7 +42,7 @@ def get_view_node_id_attribute_timeline( node_id, value_type):
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
 
-    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000, include_docs= True)
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey,limit=1000, descending = True, include_docs= True)
 
     all_values = []
 
@@ -129,13 +129,16 @@ def get_view_sliver_most_recent_attribute_treemap( node_id, value_type):
     all_values = [['Id', 'parent', 'metricvalue'], [value_type, '', 0]]
 
     document = fetchdocument.fetch_most_recent_document(node_id)
-    slivers = document['slivers']
+    
+    if(document):
 
-    for container in slivers:
-        sliver = slivers[container]
-        sliver_id = documentparser.get_value(sliver, 'sliver_name')
-        value = documentparser.get_value(sliver, value_type)
-        all_values.append([sliver_id, value_type, value])
+        slivers = document['slivers']
+
+        for container in slivers:
+            sliver = slivers[container]
+            sliver_id = documentparser.get_value(sliver, 'sliver_name')
+            value = documentparser.get_value(sliver, value_type)
+            all_values.append([sliver_id, value_type, value])
 
     return all_values
 

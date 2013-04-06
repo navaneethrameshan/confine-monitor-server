@@ -12,6 +12,8 @@ def get_value( document, value_type):
     Get value from variable name in server.constants if it exists, otherwise
     Get value directly from attributes. Used for attributes with dynamic names. Example: value of bytesent for a particular interface
     '''
+    value = None
+
     if(len(document)>0):
 
         log.debug("Attempting to get value from document %s for value %s" %(document,value_type))
@@ -29,7 +31,9 @@ def get_value( document, value_type):
         for attribute in attribute_list:
             value = value[attribute]
         log.debug("Value obtained is: " + str(value))
-        return value
+
+    return value
+
 
 def return_server_timestamp(document):
 
@@ -50,7 +54,11 @@ def return_server_time(document):
 
 def get_set(document, set_type):
     log.debug("Attempting to get set from document %s for value %s" %(document,set_type))
-    return document[set_type]
+    if(document):
+        set = document[set_type]
+    else:
+        set = None
+    return set
 
 if __name__ == '__main__':
     document = fetchdocument.fetch_most_recent_document('Node-1')

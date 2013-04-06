@@ -75,39 +75,86 @@
 
 <br>
 
-{% if numberslivers > 0 %}
 
-    {#   <table id="tfhover" class="tftable" border="1">#}
+{% if node_in_db %}
+    {% if numberslivers > 0 %}
+
+        {#   <table id="tfhover" class="tftable" border="1">#}
+        <table id="tfhover" class="sortable" border="1">
+            <caption><h2>Sliver Status</h2></caption>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Sliver Name</th>
+                <th>CPU Usage</th>
+                <th>Slice Name</th>
+                <th>Total Memory</th>
+                <th>Total Free Memory</th>
+                <th>Percent Memory Used</th>
+
+
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for values in all_values %}
+                <tr>
+                    <td>{{ values.serial }}</td>
+                    <td>{{ values.sliver_name }}</td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/slice/{{ values.sliver_slice_name }} ">{{ values.sliver_slice_name }}</a></td>
+                    <td>{{ values.sliver_total_memory }}</td>
+                    <td>{{ values.sliver_total_memory_free }}</td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/slivermemoryusage/{{ values.sliver_name }} ">{{ values.sliver_total_memory_percent_used }}</a></td>
+                </tr>
+            {% endfor %}
+
+
+
+            </tbody>
+        </table>
+
+        <br>
+        <br>
+        <br>
+
+        <div id="visualization" style="width: 600px; height: 400px;"></div>
+
+    {% else %}
+        <span style="color: #ff0000;"><big>No Running Slivers</big></span>
+
+        <br>
+        <br>
+        <br>
+
+    {% endif %}
+
     <table id="tfhover" class="sortable" border="1">
-        <caption><h2>Sliver Status</h2></caption>
+        <caption><h2>Network</h2></caption>
         <thead>
         <tr>
-            <th>#</th>
-            <th>Sliver Name</th>
-            <th>CPU Usage</th>
-            <th>Slice Name</th>
-            <th>Total Memory</th>
-            <th>Total Free Memory</th>
-            <th>Percent Memory Used</th>
+
+            <th>Interface</th>
+            <th>Total Bytes Sent</th>
+            <th>Bytes Sent/Second</th>
+            <th>Total Bytes Received</th>
+            <th>Bytes Received/Second</th>
 
 
         </tr>
         </thead>
 
         <tbody>
-        {% for values in all_values %}
+
+        {% for key,value in network_values.items %}
             <tr>
-                <td>{{ values.serial }}</td>
-                <td>{{ values.sliver_name }}</td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/slice/{{ values.sliver_slice_name }} ">{{ values.sliver_slice_name }}</a></td>
-                <td>{{ values.sliver_total_memory }}</td>
-                <td>{{ values.sliver_total_memory_free }}</td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/slivermemoryusage/{{ values.sliver_name }} ">{{ values.sliver_total_memory_percent_used }}</a></td>
+                <td>{{ key }}</td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent "> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent_last_sec ">{{ value.bytes_sent_last_sec }}</a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv "><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv_last_sec ">{{ value.bytes_recv_last_sec }}</a></td>
             </tr>
         {% endfor %}
-
-
 
         </tbody>
     </table>
@@ -116,85 +163,52 @@
     <br>
     <br>
 
-    <div id="visualization" style="width: 600px; height: 400px;"></div>
+    <table id="tfhover" class="sortable" border="1">
+        <caption><h2>Disk</h2></caption>
+        <thead>
+        <tr>
+            <th>Partition</th>
+            <th>Mount</th>
+            <th>Type</th>
+            <th>Total Space</th>
+            <th>Free</th>
+            <th>Used Space</th>
+            <th>Percent Used</th>
 
+        </tr>
+        </thead>
+
+        <tbody>
+
+        {% for key,value in disk_values.items %}
+            <tr>
+                {%  if key != "size" %}
+                    <td>{{ key }}</td>
+                    <td>{{ value.mount }}</td>
+                    <td>{{ value.type }}</td>
+                    <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.free "><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.used "><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
+                    <td>{{ value.percent_usage}}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
 {% else %}
-    <span style="color: #ff0000;"><big>No Running Slivers</big></span>
+    <br>
+    <br>
 
+    <span style="color: #ff0000;"><big>No Information from this Research Device has been received yet.</big></span>
     <br>
     <br>
+    <span style="color: #ff0000;"><big>1) Check if the monitoring service is running on the Research Device.</big></span>
+    <br>
+    <span style="color: #ff0000;"><big>2) Check ping status to this Research Device.</big></span>
     <br>
 
 {% endif %}
-
-<table id="tfhover" class="sortable" border="1">
-    <caption><h2>Network</h2></caption>
-    <thead>
-    <tr>
-
-        <th>Interface</th>
-        <th>Total Bytes Sent</th>
-        <th>Bytes Sent/Second</th>
-        <th>Total Bytes Received</th>
-        <th>Bytes Received/Second</th>
-
-
-    </tr>
-    </thead>
-
-    <tbody>
-
-    {% for key,value in network_values.items %}
-        <tr>
-            <td>{{ key }}</td>
-            <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent "> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
-            <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent_last_sec ">{{ value.bytes_sent_last_sec }}</a></td>
-            <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv "><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></a></td>
-            <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv_last_sec ">{{ value.bytes_recv_last_sec }}</a></td>
-        </tr>
-    {% endfor %}
-
-    </tbody>
-</table>
-
-<br>
-<br>
-<br>
-
-<table id="tfhover" class="sortable" border="1">
-    <caption><h2>Disk</h2></caption>
-    <thead>
-    <tr>
-        <th>Partition</th>
-        <th>Mount</th>
-        <th>Type</th>
-        <th>Total Space</th>
-        <th>Free</th>
-        <th>Used Space</th>
-        <th>Percent Used</th>
-
-    </tr>
-    </thead>
-
-    <tbody>
-
-    {% for key,value in disk_values.items %}
-        <tr>
-            {%  if key != "size" %}
-                <td>{{ key }}</td>
-                <td>{{ value.mount }}</td>
-                <td>{{ value.type }}</td>
-                <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.free "><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.used "><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
-                <td>{{ value.percent_usage}}</td>
-            {% endif %}
-        </tr>
-    {% endfor %}
-
-    </tbody>
-</table>
-
 </body>
 </html>
 {% comment %} ['Node', 'Parent',    'Cpu Usage'],

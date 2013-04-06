@@ -16,6 +16,7 @@ def index(request):
 
     all_values = []
     count = 0
+
     # the initial page to display
     nodes = nodelist.get_node_list()
 
@@ -23,8 +24,21 @@ def index(request):
         count+=1
 
         document = fetchdocument.fetch_most_recent_document(node)
-        if(len(document)>0):
-            name = documentparser.get_value(document, "name")
+        name = node
+
+        disk_size = None
+        load_avg_1min = None
+        free_mem = None
+        uptime_secs = None
+        last_updated = None
+        total_memory = None
+        num_cpu = None
+        cpu_usage = None
+        data_sent= None
+        data_received = None
+        uptime = None
+
+        if document:
             disk_size = documentparser.get_value(document, "disk_size")
             load_avg_1min = documentparser.get_value(document, "load_avg_1min")
             free_mem = documentparser.get_value(document, "free_memory")
@@ -36,16 +50,17 @@ def index(request):
             data_sent= documentparser.get_value(document, "network_total_bytes_sent_last_sec")
             data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
 
-
-            ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"ping_status")
-            port_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"port_status")
-
-        ## Human readability######
-            uptime = util.convert_secs_to_time(uptime_secs)
+            ## Human readability######
+            uptime = util.convert_secs_to_time_elapsed(uptime_secs)
             disk_size,total_memory,free_mem,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem, data_sent, data_received])
 
+        ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"ping_status")
+        port_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"port_status")
 
-            all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port,
+
+
+
+        all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port,
                            'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,
                            'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
                            'data_received':data_received, 'uptime':uptime, 'ping_status':ping_status, 'port_status':port_status})
@@ -133,43 +148,54 @@ def node_slivers (request, parameter):
     server_port = util.SERVER_PORT
 
     all_values = []
+    values_graph = []
+    network_values = []
+    disk_values = []
+    node_in_db = False
+    name= parameter
 
     node_id = parameter
     document = fetchdocument.fetch_most_recent_document(node_id)
     slivers = documentparser.get_value(document, 'slivers')
 
     count = 0
-    for container in slivers:
-        sliver= slivers[container]
-        count +=1
-        sliver_name = documentparser.get_value(sliver, 'sliver_name')
-        sliver_cpu_usage = documentparser.get_value(sliver,'sliver_cpu_usage')
-        sliver_slice_name = documentparser.get_value(sliver, 'sliver_slice_name')
-        sliver_total_memory = documentparser.get_value(sliver, 'sliver_total_memory')
-        sliver_total_memory_free = documentparser.get_value(sliver, 'sliver_total_memory_free')
-        sliver_total_memory_percent_used = documentparser.get_value(sliver, 'sliver_total_memory_percent_used')
+    if(document):
+        node_in_db = True
+        for container in slivers:
+            sliver= slivers[container]
+            count +=1
+            sliver_name = documentparser.get_value(sliver, 'sliver_name')
+            sliver_cpu_usage = documentparser.get_value(sliver,'sliver_cpu_usage')
+            sliver_slice_name = documentparser.get_value(sliver, 'sliver_slice_name')
+            sliver_total_memory = documentparser.get_value(sliver, 'sliver_total_memory')
+            sliver_total_memory_free = documentparser.get_value(sliver, 'sliver_total_memory_free')
+            sliver_total_memory_percent_used = documentparser.get_value(sliver, 'sliver_total_memory_percent_used')
 
-        sliver_total_memory, sliver_total_memory_free = util.convert_bytes_to_human_readable([sliver_total_memory, sliver_total_memory_free])
+            sliver_total_memory, sliver_total_memory_free = util.convert_bytes_to_human_readable([sliver_total_memory, sliver_total_memory_free])
 
-        all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
+            all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
                            'sliver_total_memory':sliver_total_memory, 'sliver_total_memory_free': sliver_total_memory_free,
                            'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'serial':count})
 
 
-    # Populate Treemap graph
-    values = getview.get_view_sliver_most_recent_attribute_treemap( node_id, 'sliver_cpu_usage')
-    values_graph = json.dumps(values)
+             # Populate Treemap graph
+            values = getview.get_view_sliver_most_recent_attribute_treemap( node_id, 'sliver_cpu_usage')
+            values_graph = json.dumps(values)
 
 
-    #Network Values
-    name = documentparser.get_value(document, "name")
-    network_values= documentparser.get_set(document, "network")
+            #Network Values
+            name = documentparser.get_value(document, "name")
+            network_values= documentparser.get_set(document, "network")
 
-    #Disk Values
-    name = documentparser.get_value(document, "name")
-    disk_values= documentparser.get_set(document, "disk")
+            #Disk Values
+            name = documentparser.get_value(document, "name")
+            disk_values= documentparser.get_set(document, "disk")
 
-    return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values, 'values_graph':values_graph, 'network_values':network_values, 'name':name, 'server_ip': server_ip, 'server_port': server_port, 'numberslivers': count},context_instance=RequestContext(request))
+
+    return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values,
+                                                   'values_graph':values_graph, 'network_values':network_values,
+                                                   'name':name, 'server_ip': server_ip, 'server_port': server_port,
+                                                   'numberslivers': count, 'node_in_db':node_in_db},context_instance=RequestContext(request))
 
 
 
