@@ -29,16 +29,17 @@ class Schedule:
             self.node_list.append(couchbasecollect(name, port = util.RD_PORT))
 
         self.log.info("Number of Nodes: %d" %len(nodes) )
-
-        while(1):
-
-            for i in range(len(nodes)):
+	
+	for i in range(len(nodes)):
                 t1= parallelcollect.Parallel_collect(self.q)
                 t1.daemon=True
                 t1.start()
                 t2= parallelcollect.Parallel_collect_synthesized(self.node_ip6q)
                 t2.daemon= True
                 t2.start()
+
+
+        while(1):
 
             try:
                 for node in self.node_list:
