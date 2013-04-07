@@ -22,6 +22,7 @@ def convert_secs_to_time_elapsed(secs):
 
 
 def get_most_recent_sequence_number(page):
+    #TODO: Remove the use of max=0 and instead use first key as max, then compare. After this change make changes in collect().
     max=0
     for key in page.keys():
         if int(key) > max:

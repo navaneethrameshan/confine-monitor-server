@@ -20,6 +20,7 @@ class Collect:
         self.port = port
         self.sequence= sequence
         self.value= {}
+        self.most_recent_absolute_timestamp = 0.0
 
     def generate_url(self):
     # Need to absolutely ensure that the same sequence number values are never fetched twice. This will most likely result in a collision and resource conflict on updating the database.
@@ -62,7 +63,6 @@ class Collect:
     def parse_store(self):
         log.info("NODE ID: " + self.name)
         db = store.get_bucket()
-        most_recent_absolute_timestamp = 0.0
 
         if (self.value is None):
             return
@@ -83,7 +83,7 @@ class Collect:
             server_absolute_timestamp = util.get_timestamp()- float (seq_value['relative_timestamp'])
             seq_value.update({'server_timestamp': server_absolute_timestamp})
 
-            most_recent_absolute_timestamp = util.find_recent_timestamp(most_recent_absolute_timestamp, server_absolute_timestamp)
+            self.most_recent_absolute_timestamp = util.find_recent_timestamp(self.most_recent_absolute_timestamp, server_absolute_timestamp)
 
             # should only fetch the document timestamp and not generate a new one
             # print str(server_absolute_timestamp) + "--" + str(key) + "-- time" + str(config.get_timestamp())
@@ -93,7 +93,7 @@ class Collect:
 
         # After all the documents are stored, find the most recent timestamp and update the reference document to speedup lookups
         reference_doc_id = self.generate_reference_docid(self.name)
-        store.update_document(reference_doc_id, {"most_recent_timestamp": most_recent_absolute_timestamp})
+        store.update_document(reference_doc_id, {"most_recent_timestamp": self.most_recent_absolute_timestamp})
 
 
     def collect_store(self):
