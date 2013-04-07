@@ -5,7 +5,7 @@ from django.http import HttpResponse, Http404
 import json
 import string
 from common import nodelist
-from server.couchbase import fetchdocument, util, documentparser
+from server.couchbase import fetchdocument, util, documentparser, store
 from server.couchbase.views import getview
 from server import constants
 
@@ -19,11 +19,12 @@ def index(request):
 
     # the initial page to display
     nodes = nodelist.get_node_list()
+    db = store.get_bucket()
 
     for node in nodes:
         count+=1
 
-        document = fetchdocument.fetch_most_recent_document(node)
+        document = fetchdocument.fetch_most_recent_document(node, db= db)
         name = node
 
         disk_size = None
