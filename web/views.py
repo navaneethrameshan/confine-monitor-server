@@ -85,10 +85,21 @@ def load_avg_1min(request, parameter):
 def cpu_usage(request, parameter):
 
     all_values = []
-    node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "total_cpu_usage")
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    metric, node_id, arguments = parameter.split('/')
+    arg_dict = util.split_arguments_return_dict(arguments)
+
+    print arg_dict
+
+    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "total_cpu_usage", start_time =arg_dict['start_time_epoch'],
+                                                                    end_time=arg_dict['end_time_epoch'], limit=arg_dict['limit'])
+
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'CPU Usage (%)', 'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'value': 'CPU Usage (%)', 'metric':metric,
+                        'server_ip': server_ip, 'server_port': server_port, 'values_graph':values_graph, 'arguments':arg_dict}
+                        ,context_instance=RequestContext(request))
 
 
 

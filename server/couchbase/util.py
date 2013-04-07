@@ -86,3 +86,61 @@ def bytes2human(n):
             return '%.1f%s' % (value, s)
     return "%sB" % n
 
+
+def split_arguments_return_dict(arguments):
+    '''
+    Accepts an argument of the form [start_time=2013-03-14&end_time=2013-03-16&limit=123] or any combination of elements
+    in the list.
+
+    Returns a dict of the form {'start_time_epoch':epoch, 'end_time_epoch':epoch, 'limit':123, 'start_time_year' =year,
+    'start_time_month' = month, 'start_time_day' = day, 'end_time_day,month,year'=...}, whichever exists.
+
+    The default values are {'start_time_year,month,day':"", 'end_time':"{}", 'limit':1000, start_time_epoch= "",
+    end_time_epoch= "{}"}
+    '''
+
+    ret_dict = {'start_time_epoch':"", 'end_time_epoch':"{}", 'start_time_year': None,'start_time_month': None,
+                'start_time_day': None,'end_time_year': None,'end_time_month': None,
+                'end_time_day': None,'limit':1000}
+
+    arguments_list = arguments.split('&')
+    for value in arguments_list:
+        temp = value.split('=')
+        if(len(temp)==2):
+            type = compare_and_return_argument(temp[0])
+            if type:
+                if type!='limit':
+                    epoch= convert_time_to_epoch(temp[1])
+                    ret_dict[type+'_epoch']=str(epoch)
+                    ret_dict[type+'_year'] = return_year_month_day_from_time(temp[1]).tm_year
+                    ret_dict[type+'_month'] = return_year_month_day_from_time(temp[1]).tm_mon
+                    ret_dict[type+'_day'] = return_year_month_day_from_time(temp[1]).tm_mday
+                else:
+                    ret_dict[type]=int(temp[1])
+        else:
+            continue
+
+    return ret_dict
+
+
+def compare_and_return_argument(type):
+    if(type == 'start_time'):
+        return 'start_time'
+    elif(type == 'end_time'):
+        return 'end_time'
+    elif(type == 'limit'):
+        return 'limit'
+    else:
+        return None
+
+def return_year_month_day_from_time(date_time):
+    pattern = '%Y-%m-%d'
+    return(time.strptime(date_time, pattern))
+
+def convert_time_to_epoch(date_time):
+    #date_time = '2007-02-05'
+    pattern = '%Y-%m-%d'
+    epoch = int(time.mktime(time.strptime(date_time, pattern)))
+    return epoch
+
+return_year_month_day_from_time('2007-02-05')

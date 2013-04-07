@@ -33,16 +33,19 @@ def get_view_node_id_attribute( node_id, value_type):
     return all_values
 
 
-def get_view_node_id_attribute_timeline( node_id, value_type):
+def get_view_node_id_attribute_timeline( node_id, value_type, limit=1000, start_time="", end_time ="{}"):
     log.debug("Get view by node ID for node: %s" %node_id)
 
     #for given node_id get value_type ordered by time (most recent first)
     db = store.get_bucket()
 
-    str_startkey = "[\"" + node_id + "\",{}]"
-    str_endkey = "[\"" + node_id + "\"]"
+    if(start_time==""):
+        str_startkey = "[\"" + node_id + "\"]"
+    else:
+        str_startkey = "[\"" + node_id + "\"," + start_time+"]"
+    str_endkey = "[\"" + node_id + "\"," + end_time+"]"
 
-    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey,limit=1000, descending = True, include_docs= True)
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_endkey, endkey = str_startkey,limit=limit, descending = True, include_docs= True)
 
     all_values = []
 

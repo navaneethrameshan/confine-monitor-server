@@ -7,10 +7,27 @@
     <script type="text/javascript">
         google.load('visualization', '1', {packages: ['corechart']});
     </script>
- {% comment %}   <script type="text/javascript">
-        function drawVisualization() {
-            // Create and populate the data table.
-        {% endcomment %}{% comment %} var data = google.visualization.arrayToDataTable([
+
+    <script>
+        onload=function() {
+            if((document.getElementById("start_time_month").name)!="None"){
+                document.getElementById("start.month."+ document.getElementById("start_time_month").name).selected=true;
+                document.getElementById("start.day."+ document.getElementById("start_time_day").name).selected=true;
+                document.getElementById("start.year."+ document.getElementById("start_time_year").name).selected=true;
+            }
+            if((document.getElementById("end_time_month").name)!="None"){
+                document.getElementById("end.month."+ document.getElementById("end_time_month").name).selected=true;
+                document.getElementById("end.day."+ document.getElementById("end_time_day").name).selected=true;
+                document.getElementById("end.year."+ document.getElementById("end_time_year").name).selected=true;
+            }
+        }
+    </script>
+
+
+    {% comment %}   <script type="text/javascript">
+           function drawVisualization() {
+               // Create and populate the data table.
+           {% endcomment %}{% comment %} var data = google.visualization.arrayToDataTable([
              ['x', 'Cats' ],
              ['A',   1    ],
              ['B',   2    ],
@@ -43,7 +60,6 @@
     </script>{% endcomment %}
 
 
-
     <script type="text/javascript">
         google.load('visualization', '1', {packages: ['annotatedtimeline']});
         function drawVisualization() {
@@ -64,10 +80,195 @@
         google.setOnLoadCallback(drawVisualization);
     </script>
 
+    <script type="text/javascript">
+        function go(){
+
+            var start_month=document.getElementById("start.month").value;
+            var start_year=document.getElementById("start.year").value;
+            var start_day=document.getElementById("start.day").value;
+
+            var end_month=document.getElementById("end.month").value;
+            var end_year=document.getElementById("end.year").value;
+            var end_day=document.getElementById("end.day").value;
+
+            var start_date = new Date(start_year,start_month-1,start_day);
+            var end_date = new Date(end_year,end_month-1,end_day);
+
+
+            if (start_date.getFullYear() == start_year && start_date.getMonth() + 1 == start_month &&
+                    start_date.getDate() == start_day) {
+            } else {
+                alert('Enter a valid start date');
+                return
+            }
+
+            if (end_date.getFullYear() == end_year && end_date.getMonth() + 1 == end_month &&
+                    end_date.getDate() == end_day) {
+            } else {
+                alert('Enter a valid end date');
+                return
+            }
+
+            if(Date.parse(start_date)>=Date.parse(end_date)){
+                alert("End date must be greater than start date.")
+                return
+            }
+
+            var go =document.getElementById("go").value;
+
+            var node = document.getElementById("node").name;
+            var attribute = document.getElementById("metric").name;
+            var server_ip = document.getElementById("server_ip").name;
+            var server_port = document.getElementById("server_port").name;
+            var url = 'http://'+server_ip+':'+server_port+'/'+attribute+'/'+node+'/start_time='+start_year+'-'+start_month
+                    +'-'+start_day+'&end_time='+end_year+'-'+end_month+'-'+end_day;
+
+            alert (url);
+            window.location = url;
+        }
+    </script>
+
+
 
 </head>
 <body>
-<h1>Node: {{ name }},  Metric: {{ metric }} </h1>
+
+<form>
+    <input type="hidden" id="node" name={{ name }}>
+    <input type="hidden" id="metric" name={{ metric }}>
+    <input type="hidden" id="server_ip" name={{ server_ip }}>
+    <input type="hidden" id="server_port" name={{ server_port }}>
+    <input type="hidden" id="start_time_month" name={{ arguments.start_time_month }}>
+    <input type="hidden" id="start_time_year" name={{ arguments.start_time_year }}>
+    <input type="hidden" id="start_time_day" name={{ arguments.start_time_day }}>
+    <input type="hidden" id="end_time_month" name={{ arguments.end_time_month }}>
+    <input type="hidden" id="end_time_year" name={{ arguments.end_time_year }}>
+    <input type="hidden" id="end_time_day" name={{ arguments.end_time_day }}>
+</form>
+
+
+<h1>Node: {{ name }},  Value: {{ value }} </h1>
+
+
+<br>
+<br>
+<br>
+
+Start Time::
+<select id= "start.month" name="month" onchange="selectDropdown()">
+    <option id="start.month.default" value="None">None
+    <option id="start.month.1" value="1">January
+    <option id="start.month.2" value="2">February
+    <option id="start.month.3"  value="3">March
+    <option id="start.month.4" value="4">April
+    <option id="start.month.5" value="5">May
+    <option id="start.month.6" value="6">June
+    <option id="start.month.7" value="7">July
+    <option id="start.month.8" value="8">August
+    <option id="start.month.9" value="9">September
+    <option id="start.month.10"value="10">October
+    <option id="start.month.11"value="11">November
+    <option id="start.month.12"value="12">December
+</select>
+<select name="day" id= "start.day" onchange="selectDropdown()">
+    <option id="start.day.default" value="None">None
+    <option id="start.day.1"value="1">1
+    <option id="start.day.2"value="2">2
+    <option id="start.day.3"value="3">3
+    <option id="start.day.4"value="4">4
+    <option id="start.day.5"value="5">5
+    <option id="start.day.6"value="6">6
+    <option id="start.day.7"value="7">7
+    <option id="start.day.8"value="8">8
+    <option id="start.day.9"value="9">9
+    <option id="start.day.10"value="10">10
+    <option id="start.day.11"value="11">11
+    <option id="start.day.12"value="12">12
+    <option id="start.day.13"value="13">13
+    <option id="start.day.14"value="14">14
+    <option id="start.day.15"value="15">15
+    <option id="start.day.16"value="16">16
+    <option id="start.day.17"value="17">17
+    <option id="start.day.18"value="18">18
+    <option id="start.day.19"value="19">19
+    <option id="start.day.20"value="20">20
+    <option id="start.day.21"value="21">21
+    <option id="start.day.22"value="22">22
+    <option id="start.day.23"value="23">23
+    <option id="start.day.24"value="24">24
+    <option id="start.day.25"value="25">25
+    <option id="start.day.26"value="26">26
+    <option id="start.day.27"value="27">27
+    <option id="start.day.28"value="28">28
+    <option id="start.day.29"value="29">29
+    <option id="start.day.30"value="30">30
+    <option id="start.day.31"value="31">31
+</select>
+<select name="year" id= "start.year" onchange="selectDropdown()">
+    <option id="start.year.default" value="None">None
+    <option id = "start.year.2013" value="2013">2013
+    <option id = "start.year.2014" value="2014">2014
+
+</select>
+---------------
+End Time::
+<select id= "end.month" name="month" onchange="selectDropdown()">
+    <option id="end.month.default" value="None">None
+    <option id="end.month.1" value="1">January
+    <option id="end.month.2" value="2">February
+    <option id="end.month.3" value="3">March
+    <option id="end.month.4" value="4">April
+    <option id="end.month.5" value="5">May
+    <option id="end.month.6" value="6">June
+    <option id="end.month.7" value="7">July
+    <option id="end.month.8" value="8">August
+    <option id="end.month.9" value="9">September
+    <option id="end.month.10"value="10">October
+    <option id="end.month.11"value="11">November
+    <option id="end.month.12"value="12">December
+</select>
+<select name="day" id= "end.day" onchange="selectDropdown()">
+    <option id="end.day.default" value="None">None
+    <option id="end.day.1"value="1">1
+    <option id="end.day.2"value="2">2
+    <option id="end.day.3"value="3">3
+    <option id="end.day.4"value="4">4
+    <option id="end.day.5"value="5">5
+    <option id="end.day.6"value="6">6
+    <option id="end.day.7"value="7">7
+    <option id="end.day.8"value="8">8
+    <option id="end.day.9"value="9">9
+    <option id="end.day.10"value="10">10
+    <option id="end.day.11"value="11">11
+    <option id="end.day.12"value="12">12
+    <option id="end.day.13"value="13">13
+    <option id="end.day.14"value="14">14
+    <option id="end.day.15"value="15">15
+    <option id="end.day.16"value="16">16
+    <option id="end.day.17"value="17">17
+    <option id="end.day.18"value="18">18
+    <option id="end.day.19"value="19">19
+    <option id="end.day.20"value="20">20
+    <option id="end.day.21"value="21">21
+    <option id="end.day.22"value="22">22
+    <option id="end.day.23"value="23">23
+    <option id="end.day.24"value="24">24
+    <option id="end.day.25"value="25">25
+    <option id="end.day.26"value="26">26
+    <option id="end.day.27"value="27">27
+    <option id="end.day.28"value="28">28
+    <option id="end.day.29"value="29">29
+    <option id="end.day.30"value="30">30
+    <option id="end.day.31"value="31">31
+</select>
+<select name="year" id= "end.year" onchange="selectDropdown()">
+    <option id="end.year.default" value="None">None
+    <option id = "end.year.2013" value="2013">2013
+    <option id = "end.year.2014" value="2014">2014
+</select>
+
+
+<input id="go" type="button" value="go" onclick="go()" />
 
 <br>
 <br>
