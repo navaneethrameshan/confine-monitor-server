@@ -22,8 +22,9 @@ urlpatterns = patterns('',
     url(r'^pingstatus/(.{2,})$', 'web.views.node_ping'),
 
 
-    url(r'^(network/.{2,})$', 'web.views.node_info_set_timeline'), # currently accept "word - number"
-    url(r'^(disk/.{2,})$', 'web.views.node_info_set_timeline'), # currently accept "word - number"
+    url(r'^(network/.{2,})$', 'web.views.node_info_set_timeline'),
+    url(r'^(disk/.{2,})$', 'web.views.node_info_set_timeline'),
+    url(r'^(memory/.{2,})$', 'web.views.node_info_set_timeline'),
 
     # url(r'^web/', include('web.foo.urls')),
     #url(r'^slice/([A-Za-z]*-\d*)$', 'web.views.slice_info'), # currently accept "word - number"

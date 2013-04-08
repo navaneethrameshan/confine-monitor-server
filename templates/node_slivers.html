@@ -3,7 +3,8 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Confine Monitor</title>
-    <center><h1>Confine Research Device Status</h1></center>
+    <center><h1><a href="http://{{server_ip }}:{{server_port }}">Confine Research Device Status</a></h1></center>
+
     <center><h2>Node: {{ name }}</h2></center>
 
     <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
@@ -192,6 +193,42 @@
 
         </tbody>
     </table>
+    <br>
+    <br>
+    <br>
+
+    <table id="tfhover" class="sortable" border="1">
+        <caption><h2>Memory</h2></caption>
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Available Memory</th>
+            <th>Total Memory</th>
+            <th>Free Memory</th>
+            <th>Used Memory</th>
+            <th>Percent Used</th>
+
+        </tr>
+        </thead>
+
+        <tbody>
+
+        {% for key,value in memory_values.items %}
+            <tr>
+
+                    <td>{{ key }}</td>
+                    <td><script>document.write(bytesToSize({{ value.available }}))</script></td>
+                    <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.used/">{{ value.percent_used}}</a></td>
+
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
 {% else %}
     <br>
     <br>

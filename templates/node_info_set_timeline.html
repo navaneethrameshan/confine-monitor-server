@@ -3,6 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Info timeline</title>
+    <center><h1><a href="http://{{server_ip }}:{{server_port }}">Confine Research Device Status</a></h1></center>
+
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
         google.load('visualization', '1', {packages: ['corechart']});
@@ -76,7 +78,7 @@
 
             var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
                     document.getElementById('visualization'));
-            annotatedtimeline.draw(data, {'displayAnnotations': true,'fill': 50 ,'highlightDot': 'nearest', 'scaleType': 'maximized', 'thickness': 1 });
+            annotatedtimeline.draw(data, {'displayAnnotations': true,'fill': 50 ,'highlightDot': 'nearest', 'scaleType': 'maximized', 'thickness': 1 ,'displayZoomButtons':false});
         }
 
         google.setOnLoadCallback(drawVisualization);

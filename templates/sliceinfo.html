@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Confine Monitor</title>
-    <center><h1>Confine Research Device Status</h1></center>
+    <center><h1><a href="http://{{ server_ip }}:{{ server_port }}">Confine Research Device Status</a></h1></center>
 
 
     <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
@@ -86,11 +86,11 @@
             <td>{{ values.serial }}</td>
             <td>{{ values.sliver_slice_name }}</td>
             <td>{{ values.nodeid }}</td>
-            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/slivercpuusage/{{ values.sliver_name }} ">{{ values.sliver_cpu_usage }}</a></td>
             <td>{{ values.sliver_name }}</td>
             <td>{{ values.sliver_total_memory }}</td>
             <td>{{ values.sliver_total_memory_free }}</td>
-            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/slivermemoryusage/{{ values.sliver_name }} ">{{ values.sliver_total_memory_percent_used }}</a></td>
+            <td><a href="http://{{server_ip }}:{{ server_port }}/slivermemoryusage/{{ values.sliver_name }} ">{{ values.sliver_total_memory_percent_used }}</a></td>
         </tr>
     {% endfor %}
 

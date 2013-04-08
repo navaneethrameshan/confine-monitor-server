@@ -194,11 +194,15 @@ def node_slivers (request, parameter):
             name = documentparser.get_value(document, "name")
             disk_values= documentparser.get_set(document, "disk")
 
+            #Disk Values
+            name = documentparser.get_value(document, "name")
+            memory_values= documentparser.get_set(document, "memory")
 
     return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values,
                                                    'values_graph':values_graph, 'network_values':network_values,
                                                    'name':name, 'server_ip': server_ip, 'server_port': server_port,
-                                                   'numberslivers': count, 'node_in_db':node_in_db},context_instance=RequestContext(request))
+                                                   'numberslivers': count, 'node_in_db':node_in_db, 'memory_values': memory_values},
+                                                    context_instance=RequestContext(request))
 
 
 
@@ -228,7 +232,7 @@ def slice_info(request, parameter):
 
         all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
                            'sliver_total_memory':sliver_total_memory, 'sliver_total_memory_free': sliver_total_memory_free,
-                           'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'serial':count, 'server_ip': server_ip, 'server_port': server_port, 'nodeid': nodeid})
+                           'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'serial':count, 'nodeid': nodeid})
 
 
     # Populate Treemap graph
@@ -236,7 +240,7 @@ def slice_info(request, parameter):
     values_graph = json.dumps(values)
 
 
-    return render_to_response('sliceinfo.html',{'all_values':all_values, 'values_graph': values_graph},context_instance=RequestContext(request))
+    return render_to_response('sliceinfo.html',{'server_ip': server_ip, 'server_port': server_port,'all_values':all_values, 'values_graph': values_graph},context_instance=RequestContext(request))
 
 
 
