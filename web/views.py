@@ -21,7 +21,6 @@ def index(request):
 
     # the initial page to display
     nodes = nodelist.get_node_list()
-    db = store.get_bucket()
 
     #Treemap--CPU Usage and Free memory
     values_treemap_cpu = [['Id', 'parent', 'metricvalue'], ['Most Recent CPU Usage', '', 0]]
@@ -31,7 +30,7 @@ def index(request):
     for node in nodes:
         count+=1
 
-        document = fetchdocument.fetch_most_recent_document(node, db= db)
+        document = fetchdocument.fetch_most_recent_document(node)
         name = node
 
         disk_size = None

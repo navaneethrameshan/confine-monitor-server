@@ -6,8 +6,9 @@ from server.logger import logger
 
 log = logger("Fetch Document")
 
-def fetch_most_recent_document(node_id, db = store.get_bucket()):
+def fetch_most_recent_document(node_id):
     log.debug("Fetching most recent document for node: %s" %node_id)
+    db = store.get_bucket()
     most_recent_timestamp = fetch_most_recent_timestamp(node_id,db)
     doc_id = str (node_id) + "-" + str(most_recent_timestamp)
 

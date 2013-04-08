@@ -30,13 +30,13 @@ class Schedule:
 
         self.log.info("Number of Nodes: %d" %len(nodes) )
 	
-	for i in range(len(nodes)):
-                t1= parallelcollect.Parallel_collect(self.q)
-                t1.daemon=True
-                t1.start()
-                t2= parallelcollect.Parallel_collect_synthesized(self.node_ip6q)
-                t2.daemon= True
-                t2.start()
+        for i in range(len(nodes)):
+            t1= parallelcollect.Parallel_collect(self.q)
+            t1.daemon=True
+            t1.start()
+            t2= parallelcollect.Parallel_collect_synthesized(self.node_ip6q)
+            t2.daemon= True
+            t2.start()
 
 
         while(1):
