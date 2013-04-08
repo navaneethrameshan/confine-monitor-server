@@ -154,6 +154,7 @@ def node_slivers (request, parameter):
     values_graph = []
     network_values = []
     disk_values = []
+    memory_values=[]
     node_in_db = False
     name= parameter
 
