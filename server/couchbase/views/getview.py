@@ -148,7 +148,7 @@ def get_view_sliver_most_recent_attribute_treemap( node_id, value_type):
 
 def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
     '''
-    Document returned from view sliver-timestamp/get_sliver-timestamp
+    Document returned from view sliver-timestamp/get_slice-timestamp
     key = [sliver_id, server_timestamp],  value= {'sliver': sliverinfo,'nodeid':nodeid,'server_timestamp': server_timestamp}
 
     returns

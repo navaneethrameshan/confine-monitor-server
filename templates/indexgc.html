@@ -14,7 +14,7 @@
     <script type="text/javascript">
         google.load('visualization', '1', {packages:['treemap']});
     </script>
-    <script type="text/javascript">
+   {% comment %} <script type="text/javascript">
         function drawVisualization() {
             // Create and populate the data table.
             var data = google.visualization.arrayToDataTable([
@@ -48,6 +48,32 @@
                 headerHeight: 15,
                 fontColor: 'black',
                 showScale: true});
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>{% endcomment %}
+
+    <script type="text/javascript">
+        function drawVisualization() {
+            // Create and populate the data table.
+            var data_cpu = google.visualization.arrayToDataTable({{ values_treemap_cpu|safe }});
+
+            // Create and draw the visualization.
+            var treemap_cpu = new google.visualization.TreeMap(document.getElementById('cpu'));
+            treemap_cpu.draw(data_cpu, {
+
+                showScale: true});
+
+            // Create and populate the data table.
+            var data_mem = google.visualization.arrayToDataTable({{ values_treemap_free_mem|safe }});
+
+            // Create and draw the visualization.
+            var treemap_mem = new google.visualization.TreeMap(document.getElementById('mem'));
+            treemap_mem.draw(data_mem, {
+
+                showScale: true});
+
         }
 
 
@@ -148,7 +174,8 @@
     <br>
     <br>
 
-   <div id="visualization" style="width: 600px; height: 400px;"></div>
+    <div id="cpu" style="width: 600px; height: 400px; float:left;"></div>
+    <div id="mem" style="width: 600px; height: 400px; float:right;"></div>
 
  </body>
 </html>

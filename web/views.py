@@ -23,6 +23,11 @@ def index(request):
     nodes = nodelist.get_node_list()
     db = store.get_bucket()
 
+    #Treemap--CPU Usage and Free memory
+    values_treemap_cpu = [['Id', 'parent', 'metricvalue'], ['Most Recent CPU Usage', '', 0]]
+    values_treemap_free_mem = [['Id', 'parent', 'metricvalue'], ['Free Memory', '', 0]]
+
+
     for node in nodes:
         count+=1
 
@@ -53,7 +58,13 @@ def index(request):
             data_sent= documentparser.get_value(document, "network_total_bytes_sent_last_sec")
             data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
 
-            ## Human readability######
+            #Update Treemap--CPU Usage and Free memory
+            values_treemap_cpu.append([name, 'Most Recent CPU Usage', cpu_usage])
+            values_treemap_free_mem.append([name, 'Free Memory', free_mem])
+
+
+
+        ## Human readability######
             uptime = util.convert_secs_to_time_elapsed(uptime_secs)
             disk_size,total_memory,free_mem,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem, data_sent, data_received])
 
@@ -69,11 +80,19 @@ def index(request):
                            'data_received':data_received, 'uptime':uptime, 'ping_status':ping_status, 'port_status':port_status})
 
 
+
+
+    #Send as JSON objects
+    values_treemap_cpu= json.dumps(values_treemap_cpu)
+    values_treemap_free_mem =json.dumps(values_treemap_free_mem)
+
+
    # Use to strip double quotes and single quotes to pass data for annotated timeline
    # str_values = str(values)
    # modified_string = str_values.replace('\"', ' ').strip().replace("\'", ' ').strip()
 
-    return render_to_response('indexgc.html',{'all_values':all_values},context_instance=RequestContext(request))
+    return render_to_response('indexgc.html',{'all_values':all_values, 'values_treemap_cpu':values_treemap_cpu,
+                                              'values_treemap_free_mem':values_treemap_free_mem },context_instance=RequestContext(request))
 
 
 def node_info_timeline(request, parameter):
