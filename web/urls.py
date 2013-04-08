@@ -7,12 +7,12 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
 
     url(r'^$', 'web.views.index'),
-    url(r'^loadavg/(.{2,})$', 'web.views.load_avg_1min'),
-    url(r'^freemem/(.{2,})$', 'web.views.free_mem'),
-    url(r'^uptime/(.{2,})$', 'web.views.uptime'),
-    url(r'^(cpuusage/.{2,})$', 'web.views.cpu_usage'),
-    url(r'^datasent/(.{2,})$', 'web.views.data_sent'),
-    url(r'^datareceived/(.{2,})$', 'web.views.data_received'),
+    url(r'^(load_avg_1min/.{2,})$', 'web.views.node_info_timeline'),
+    url(r'^(free_memory/.{2,})$', 'web.views.node_info_timeline'),
+    url(r'^(uptime/.{2,})$', 'web.views.node_info_timeline'),
+    url(r'^(total_cpu_usage/.{2,})$', 'web.views.node_info_timeline'),
+    url(r'^(network_total_bytes_sent_last_sec/.{2,})$', 'web.views.node_info_timeline'),
+    url(r'^(network_total_bytes_received_last_sec/.{2,})$', 'web.views.node_info_timeline'),
     url(r'^nodeslivers/(.{2,})$', 'web.views.node_slivers'),
     url(r'^slice/(.{2,})$', 'web.views.slice_info'),
     url(r'^slivercpuusage/(.{2,})$', 'web.views.sliver_cpu_usage'),
@@ -21,8 +21,8 @@ urlpatterns = patterns('',
     url(r'^nodedisk/(.{2,})$', 'web.views.node_disk'),
     url(r'^pingstatus/(.{2,})$', 'web.views.node_ping'),
 
-    url(r'^network/(.{2,})$', 'web.views.network_timeline'), # currently accept "word - number"
-    url(r'^disk/(.{2,})$', 'web.views.disk_timeline'), # currently accept "word - number"
+    url(r'^(network/.{2,})$', 'web.views.node_info_set_timeline'), # currently accept "word - number"
+    url(r'^(disk/.{2,})$', 'web.views.node_info_set_timeline'), # currently accept "word - number"
 
     # url(r'^web/', include('web.foo.urls')),
     #url(r'^slice/([A-Za-z]*-\d*)$', 'web.views.slice_info'), # currently accept "word - number"

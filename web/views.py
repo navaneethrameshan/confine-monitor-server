@@ -1,3 +1,4 @@
+import ast
 from django.shortcuts import render_to_response
 from django.template.loader import get_template
 from django.template import Context, RequestContext, Template
@@ -8,6 +9,7 @@ from common import nodelist
 from server.couchbase import fetchdocument, util, documentparser, store
 from server.couchbase.views import getview
 from server import constants
+import web.metricvalue
 
 def index(request):
 
@@ -92,14 +94,38 @@ def cpu_usage(request, parameter):
     arg_dict = util.split_arguments_return_dict(arguments)
 
     print arg_dict
+    value = 'web.metricvalue.' + metric
+
 
     values_graph = getview.get_view_node_id_attribute_timeline(node_id, "total_cpu_usage", start_time =arg_dict['start_time_epoch'],
                                                                     end_time=arg_dict['end_time_epoch'], limit=arg_dict['limit'])
 
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'value': 'CPU Usage (%)', 'metric':metric,
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'value': eval(value), 'metric':metric,
                         'server_ip': server_ip, 'server_port': server_port, 'values_graph':values_graph, 'arguments':arg_dict}
                         ,context_instance=RequestContext(request))
+
+
+def node_info_timeline(request, parameter):
+
+    all_values = []
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    metric, node_id, arguments = parameter.split('/')
+
+    arg_dict = util.split_arguments_return_dict(arguments)
+
+    value = 'web.metricvalue.' + metric
+
+    values_graph = getview.get_view_node_id_attribute_timeline(node_id, metric, start_time =arg_dict['start_time_epoch'],
+                                                               end_time=arg_dict['end_time_epoch'], limit=arg_dict['limit'])
+
+    #values_graph = json.dumps(values)
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'value': eval(value), 'metric':metric,
+                                                          'server_ip': server_ip, 'server_port': server_port, 'values_graph':values_graph, 'arguments':arg_dict}
+        ,context_instance=RequestContext(request))
+
 
 
 
@@ -132,26 +158,49 @@ def data_received(request, parameter):
     return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes received/Sec', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
-def network_timeline(request, parameter):
+def node_info_set_timeline(request, parameter):
     '''
-     Parameter received as (node_name.network.interface_name.attribute)
+     Parameter received as (metric/node_name.network.interface_name.attribute/start_time0=...)
     '''
-    (node_id, network, interface, attribute) = string.split(parameter, '.')
-    value_type= network+"."+interface+"."+attribute
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, value_type)
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    (metric_nodeid, resource, resource_spec1, attribute_arguments) = string.split(parameter, '.')
+
+    metric, node_id = metric_nodeid.split("/")
+    attribute, arguments = attribute_arguments.split("/")
+
+    parameter = metric_nodeid+'.'+resource+'.'+resource_spec1+'.'+attribute
+
+    value_type= resource+"."+resource_spec1+"."+attribute
+
+
+    arg_dict = util.split_arguments_return_dict(arguments)
+
+    values_graph = getview.get_view_node_id_attribute_timeline(node_id, value_type, start_time =arg_dict['start_time_epoch'],
+                                                                end_time=arg_dict['end_time_epoch'], limit=arg_dict['limit'])
+
+
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': interface+" "+attribute, 'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('node_info_set_timeline.html',{ 'name':node_id, 'value': resource_spec1+" "+attribute,
+                                                          'server_ip': server_ip, 'server_port': server_port,
+                                                          'parameter':parameter,  'arguments':arg_dict, 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
 def disk_timeline(request, parameter):
     '''
-     Parameter received as (node_name.network.interface_name.attribute)
+     Parameter received as (node_name.disk.partition.attribute)
     '''
+
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
     (node_id, disk, partition, attribute) = string.split(parameter, '.')
     value_type= disk+"."+partition+"."+attribute
     values_graph = getview.get_view_node_id_attribute_timeline(node_id, value_type)
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': partition+" "+attribute, 'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': partition+" "+attribute,
+                                                          'server_ip': server_ip, 'server_port': server_port,'parameter':parameter,'values_graph':values_graph},context_instance=RequestContext(request))
 
 
 def node_slivers (request, parameter):
@@ -256,7 +305,7 @@ def sliver_cpu_usage(request, parameter):
     sliver_id = parameter
     values_graph = getview.get_view_sliver_id_attribute_timeline(sliver_id, "sliver_cpu_usage")
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':sliver_id, 'metric': 'CPU Usage (%)', 'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('sliver_info_timeline.html',{ 'name':sliver_id, 'metric': 'CPU Usage (%)', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 def sliver_memory_usage(request, parameter):
 
@@ -264,7 +313,7 @@ def sliver_memory_usage(request, parameter):
     sliver_id = parameter
     values_graph = getview.get_view_sliver_id_attribute_timeline(sliver_id, "sliver_total_memory_used")
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':sliver_id, 'metric': 'Memory used', 'values_graph':values_graph},context_instance=RequestContext(request))
+    return render_to_response('sliver_info_timeline.html',{ 'name':sliver_id, 'metric': 'Memory used', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
 

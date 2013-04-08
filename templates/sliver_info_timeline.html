@@ -1,0 +1,78 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Info timeline</title>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1', {packages: ['corechart']});
+    </script>
+    {% comment %}   <script type="text/javascript">
+           function drawVisualization() {
+               // Create and populate the data table.
+           {% endcomment %}{% comment %} var data = google.visualization.arrayToDataTable([
+             ['x', 'Cats' ],
+             ['A',   1    ],
+             ['B',   2    ],
+             ['C',   4    ],
+             ['D',   8    ],
+             ['E',   7    ],
+             ['F',   7    ],
+             ['G',   8    ],
+             ['H',   4    ],
+             ['I',   2    ],
+             ['J',   3.5  ],
+             ['K',   3    ],
+             ['L',   3.5  ],
+             ['M',   1    ],
+             ['N',   1    ]
+         ]);
+ {% endcomment %}{% comment %}
+            var data = google.visualization.arrayToDataTable({{ values_graph|safe }});
+
+            // Create and draw the visualization.
+            new google.visualization.LineChart(document.getElementById('visualization')).
+                    draw(data, {curveType: "function",
+                        width: 1000, height: 600
+                                }
+            );
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>{% endcomment %}
+
+
+
+    <script type="text/javascript">
+        google.load('visualization', '1', {packages: ['annotatedtimeline']});
+        function drawVisualization() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', '{{ metric }}');
+            data.addRows([
+                {% for values in values_graph %}
+                    [ new Date({{ values.year }},{{ values.month }},{{ values.date }},{{ values.hour }},{{ values.minute }},{{ values.second }}), {{ values.value }}],
+                {% endfor %}
+            ]);
+
+            var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+                    document.getElementById('visualization'));
+            annotatedtimeline.draw(data, {'displayAnnotations': true,'fill': 50 ,'highlightDot': 'nearest', 'scaleType': 'maximized', 'thickness': 1 });
+        }
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>
+
+
+</head>
+<body>
+<h1>Sliver: {{ name }},  Metric: {{ metric }} </h1>
+
+<br>
+<br>
+<br>
+
+<div id="visualization" style="width: 1000px; height: 600px;"></div>
+
+</body>
+</html>

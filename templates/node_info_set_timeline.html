@@ -20,6 +20,7 @@
                 document.getElementById("end.day."+ document.getElementById("end_time_day").name).selected=true;
                 document.getElementById("end.year."+ document.getElementById("end_time_year").name).selected=true;
             }
+
             document.getElementById("limit."+ document.getElementById("limit_chosen").name).selected=true;
         }
     </script>
@@ -112,17 +113,16 @@
             }
 
             if(Date.parse(start_date)>=Date.parse(end_date)){
-                alert("End date must be greater than start date.");
+                alert("End date must be greater than start date.")
                 return
             }
 
-            var go =document.getElementById("go").value;
 
-            var node = document.getElementById("node").name;
+            var parameter = document.getElementById("parameter").name;
             var metric = document.getElementById("metric").name;
             var server_ip = document.getElementById("server_ip").name;
             var server_port = document.getElementById("server_port").name;
-            var url = 'http://'+server_ip+':'+server_port+'/'+metric+'/'+node+'/start_time='+start_year+'-'+start_month
+            var url = 'http://'+server_ip+':'+server_port+'/'+parameter+'/start_time='+start_year+'-'+start_month
                     +'-'+start_day+'&end_time='+end_year+'-'+end_month+'-'+end_day+'&limit='+limit;
 
             window.location = url;
@@ -133,12 +133,12 @@
     <script type="text/javascript">
         function mostrecent(){
 
-            var node = document.getElementById("node").name;
+            var parameter = document.getElementById("parameter").name;
             var metric = document.getElementById("metric").name;
             var server_ip = document.getElementById("server_ip").name;
             var server_port = document.getElementById("server_port").name;
             var limit = document.getElementById("limit").value;
-            var url = 'http://'+server_ip+':'+server_port+'/'+metric+'/'+node+'/'+'&limit='+limit;
+            var url = 'http://'+server_ip+':'+server_port+'/'+parameter+'/'+'&limit='+limit;
 
             window.location = url;
         }
@@ -153,6 +153,7 @@
     <input type="hidden" id="metric" name={{ metric }}>
     <input type="hidden" id="server_ip" name={{ server_ip }}>
     <input type="hidden" id="server_port" name={{ server_port }}>
+    <input type="hidden" id="parameter" name={{ parameter }}>
     <input type="hidden" id="start_time_month" name={{ arguments.start_time_month }}>
     <input type="hidden" id="start_time_year" name={{ arguments.start_time_year }}>
     <input type="hidden" id="start_time_day" name={{ arguments.start_time_day }}>
@@ -160,13 +161,13 @@
     <input type="hidden" id="end_time_year" name={{ arguments.end_time_year }}>
     <input type="hidden" id="end_time_day" name={{ arguments.end_time_day }}>
     <input type="hidden" id="limit_chosen" name={{ arguments.limit}}>
+
 </form>
 
 
 <h1>Node: {{ name }},  Value: {{ value }} </h1>
 
 <br>
-
 <br>
 <br>
 

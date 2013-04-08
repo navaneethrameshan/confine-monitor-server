@@ -88,11 +88,10 @@
 
 {#   <table id="tfhover" class="tftable" border="1">#}
         <table id="tfhover" class="sortable" border="1">
-       <caption>Last updated ---- {{ all_values.1.last_updated }}</caption>
        <thead>
        <tr>
            <th>#</th>
-           <th>Last Updated (GMT)</th>
+           <th>Last Seen (GMT)</th>
            <th>Name</th>
            <th>Disk Size</th>
            <th>Number of CPUs</th>
@@ -117,13 +116,13 @@
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/nodeslivers/{{ values.name }} ">{{ values.name }}</a></td>
            <td>{{ values.disk_size }}</td>
            <td>{{ values.num_cpu }}</td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/cpuusage/{{ values.name }} ">{{ values.percent_usage }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/loadavg/{{ values.name }} ">{{ values.load_avg_1min }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/total_cpu_usage/{{ values.name }}/ ">{{ values.percent_usage }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/load_avg_1min/{{ values.name }}/ ">{{ values.load_avg_1min }}</a></td>
            <td>{{ values.total_memory }}</td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/freemem/{{ values.name }} ">{{ values.free_mem }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/datasent/{{ values.name }} ">{{ values.data_sent }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/datareceived/{{ values.name }} ">{{ values.data_received }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/uptime/{{ values.name }} ">{{ values.uptime }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/free_memory/{{ values.name }}/ ">{{ values.free_mem }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/network_total_bytes_sent_last_sec/{{ values.name }}/ ">{{ values.data_sent }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/network_total_bytes_received_last_sec/{{ values.name }}/ ">{{ values.data_received }}</a></td>
+           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/uptime/{{ values.name }}/ ">{{ values.uptime }}</a></td>
            <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/pingstatus/{{ values.name }} ">{{ values.ping_status }}</a></td>
            <td>
                {% for key, value in values.port_status.items %}

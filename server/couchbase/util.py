@@ -3,7 +3,7 @@ import datetime
 
 RD_PORT = '8080'
 
-SERVER_IP = '127.0.0.1'
+SERVER_IP = '147.83.35.241'
 SERVER_PORT = '8000'
 
 DB_IP = '147.83.35.241'

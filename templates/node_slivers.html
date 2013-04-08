@@ -149,10 +149,10 @@
         {% for key,value in network_values.items %}
             <tr>
                 <td>{{ key }}</td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent "> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent_last_sec ">{{ value.bytes_sent_last_sec }}</a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv "><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv_last_sec ">{{ value.bytes_recv_last_sec }}</a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent/"> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent_last_sec/">{{ value.bytes_sent_last_sec }}</a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv/"><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv_last_sec/">{{ value.bytes_recv_last_sec }}</a></td>
             </tr>
         {% endfor %}
 
@@ -187,8 +187,8 @@
                     <td>{{ value.mount }}</td>
                     <td>{{ value.type }}</td>
                     <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.free "><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.used "><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
                     <td>{{ value.percent_usage}}</td>
                 {% endif %}
             </tr>
@@ -200,12 +200,33 @@
     <br>
     <br>
 
-    <span style="color: #ff0000;"><big>No Information from this Research Device has been received yet.</big></span>
+    <form>
+        <input type="hidden" id="node" name={{ name }}>
+        <input type="hidden" id="metric" name={{ metric }}>
+        <input type="hidden" id="server_ip" name={{ server_ip }}>
+        <input type="hidden" id="server_port" name={{ server_port }}>
+    </form>
+
+    <script type="text/javascript">
+        function redirect(){
+
+            var node = document.getElementById("node").name;
+            var metric = document.getElementById("metric").name;
+            var server_ip = document.getElementById("server_ip").name;
+            var server_port = document.getElementById("server_port").name;
+            var url = 'http://'+server_ip+':'+server_port+'/pingstatus/'+node;
+
+            window.location = url;
+        }
+    </script>
+
+    <center><span style="color: #ff0000;"><big>No Information from this Research Device has been received yet.</big></span>
     <br>
     <br>
     <span style="color: #ff0000;"><big>1) Check if the monitoring service is running on the Research Device.</big></span>
     <br>
-    <span style="color: #ff0000;"><big>2) Check ping status to this Research Device.</big></span>
+    <span style="color: #ff0000;"><big>2) <input id="check_ping" type="button" value="Check" onclick="redirect()" /> ping status to this Research Device.</big></span>
+    </center>
     <br>
 
 {% endif %}
