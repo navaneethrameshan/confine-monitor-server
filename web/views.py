@@ -76,36 +76,6 @@ def index(request):
     return render_to_response('indexgc.html',{'all_values':all_values},context_instance=RequestContext(request))
 
 
-def load_avg_1min(request, parameter):
-
-    node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "load_avg_1min")
-   # values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Load Average 1 min', 'values_graph':values_graph},context_instance=RequestContext(request))
-
-
-def cpu_usage(request, parameter):
-
-    all_values = []
-    server_ip = util.SERVER_IP
-    server_port = util.SERVER_PORT
-
-    metric, node_id, arguments = parameter.split('/')
-    arg_dict = util.split_arguments_return_dict(arguments)
-
-    print arg_dict
-    value = 'web.metricvalue.' + metric
-
-
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "total_cpu_usage", start_time =arg_dict['start_time_epoch'],
-                                                                    end_time=arg_dict['end_time_epoch'], limit=arg_dict['limit'])
-
-    #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'value': eval(value), 'metric':metric,
-                        'server_ip': server_ip, 'server_port': server_port, 'values_graph':values_graph, 'arguments':arg_dict}
-                        ,context_instance=RequestContext(request))
-
-
 def node_info_timeline(request, parameter):
 
     all_values = []
@@ -126,36 +96,6 @@ def node_info_timeline(request, parameter):
                                                           'server_ip': server_ip, 'server_port': server_port, 'values_graph':values_graph, 'arguments':arg_dict}
         ,context_instance=RequestContext(request))
 
-
-
-
-def free_mem(request, parameter):
-
-    node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "free_memory")
-    #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Free Memory', 'values_graph':values_graph},context_instance=RequestContext(request))
-
-def uptime(request, parameter):
-
-    node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "uptime")
-    #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Uptime', 'values_graph':values_graph},context_instance=RequestContext(request))
-
-def data_sent(request, parameter):
-
-    node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "network_total_bytes_sent_last_sec")
-    #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes sent/Sec', 'values_graph':values_graph},context_instance=RequestContext(request))
-
-def data_received(request, parameter):
-
-    node_id = parameter
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, "network_total_bytes_received_last_sec")
-    #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': 'Total Bytes received/Sec', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
 def node_info_set_timeline(request, parameter):
@@ -185,22 +125,6 @@ def node_info_set_timeline(request, parameter):
     return render_to_response('node_info_set_timeline.html',{ 'name':node_id, 'value': resource_spec1+" "+attribute,
                                                           'server_ip': server_ip, 'server_port': server_port,
                                                           'parameter':parameter,  'arguments':arg_dict, 'values_graph':values_graph},context_instance=RequestContext(request))
-
-
-def disk_timeline(request, parameter):
-    '''
-     Parameter received as (node_name.disk.partition.attribute)
-    '''
-
-    server_ip = util.SERVER_IP
-    server_port = util.SERVER_PORT
-
-    (node_id, disk, partition, attribute) = string.split(parameter, '.')
-    value_type= disk+"."+partition+"."+attribute
-    values_graph = getview.get_view_node_id_attribute_timeline(node_id, value_type)
-    #values_graph = json.dumps(values)
-    return render_to_response('node_info_timeline.html',{ 'name':node_id, 'metric': partition+" "+attribute,
-                                                          'server_ip': server_ip, 'server_port': server_port,'parameter':parameter,'values_graph':values_graph},context_instance=RequestContext(request))
 
 
 def node_slivers (request, parameter):
@@ -316,33 +240,6 @@ def sliver_memory_usage(request, parameter):
     return render_to_response('sliver_info_timeline.html',{ 'name':sliver_id, 'metric': 'Memory used', 'values_graph':values_graph},context_instance=RequestContext(request))
 
 
-
-def node_network(request, parameter):
-
-   node_id = parameter
-   document = fetchdocument.fetch_most_recent_document(node_id)
-   name = documentparser.get_value(document, "name")
-   network_values= documentparser.get_set(document, "network")
-
-   return render_to_response('node_network.html',{'network_values':network_values, "name":name},context_instance=RequestContext(request))
-
-def node_disk(request, parameter):
-
-    node_id = parameter
-    document = fetchdocument.fetch_most_recent_document(node_id)
-    name = documentparser.get_value(document, "name")
-    disk_values= documentparser.get_set(document, "disk")
-
-    return render_to_response('node_disk.html',{'disk_values':disk_values, "name":name},context_instance=RequestContext(request))
-
-def node_cpu(request, parameter):
-
-    node_id = parameter
-    document = fetchdocument.fetch_most_recent_document(node_id)
-    name = documentparser.get_value(document, "name")
-    cpu_values= documentparser.get_set(document, "cpu")
-
-    return render_to_response('node_cpu.html',{'cpu_values':cpu_values, "name":name},context_instance=RequestContext(request))
 
 def node_ping(request, parameter):
 
