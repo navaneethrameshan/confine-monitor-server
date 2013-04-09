@@ -1,5 +1,6 @@
 import time
 import datetime
+import calendar
 
 RD_PORT = '8080'
 
@@ -140,7 +141,7 @@ def return_year_month_day_from_time(date_time):
 def convert_time_to_epoch(date_time):
     #date_time = '2007-02-05'
     pattern = '%Y-%m-%d'
-    epoch = int(time.mktime(time.strptime(date_time, pattern)))
+    epoch = int(calendar.timegm(time.strptime(date_time, pattern)))
     return epoch
 
-return_year_month_day_from_time('2007-02-05')
+return_year_month_day_from_time('2013-01-01')
