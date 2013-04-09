@@ -221,7 +221,7 @@
                     <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
                     <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
                     <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.used/">{{ value.percent_used}}</a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.percent_used/">{{ value.percent_used}}</a></td>
 
             </tr>
         {% endfor %}

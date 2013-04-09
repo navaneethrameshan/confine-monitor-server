@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Confine Monitor</title>
-    <center><h1><a href="http://{{ values.server_ip }}:{{ values.server_port }}">Confine Research Device Status</a></h1></center>
+    <center><h1><a href="http://{{ server_ip }}:{{ server_port }}">Confine Research Device Status</a></h1></center>
 
 
   <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
@@ -139,17 +139,17 @@
        <tr>
            <td>{{ values.serial }}</td>
            <td>{{ values.last_updated }}</td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/nodeslivers/{{ values.name }} ">{{ values.name }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/nodeslivers/{{ values.name }} ">{{ values.name }}</a></td>
            <td>{{ values.disk_size }}</td>
            <td>{{ values.num_cpu }}</td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/total_cpu_usage/{{ values.name }}/ ">{{ values.percent_usage }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/load_avg_1min/{{ values.name }}/ ">{{ values.load_avg_1min }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/total_cpu_usage/{{ values.name }}/ ">{{ values.percent_usage }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/load_avg_1min/{{ values.name }}/ ">{{ values.load_avg_1min }}</a></td>
            <td>{{ values.total_memory }}</td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/free_memory/{{ values.name }}/ ">{{ values.free_mem }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/network_total_bytes_sent_last_sec/{{ values.name }}/ ">{{ values.data_sent }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/network_total_bytes_received_last_sec/{{ values.name }}/ ">{{ values.data_received }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/uptime/{{ values.name }}/ ">{{ values.uptime }}</a></td>
-           <td><a href="http://{{ values.server_ip }}:{{ values.server_port }}/pingstatus/{{ values.name }} ">{{ values.ping_status }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/free_memory/{{ values.name }}/ ">{{ values.free_mem }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/network_total_bytes_sent_last_sec/{{ values.name }}/ ">{{ values.data_sent }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/network_total_bytes_received_last_sec/{{ values.name }}/ ">{{ values.data_received }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/uptime/{{ values.name }}/ ">{{ values.uptime }}</a></td>
+           <td><a href="http://{{ server_ip }}:{{ server_port }}/pingstatus/{{ values.name }} ">{{ values.ping_status }}</a></td>
            <td>
                {% for key, value in values.port_status.items %}
 
