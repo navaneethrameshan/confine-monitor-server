@@ -1,4 +1,5 @@
 import shelve
+from server import constants
 from server.logger import logger
 
 
@@ -13,6 +14,8 @@ def write_node_list(nodes):
     finally:
         s.close()
 
+    #cache this list::
+    constants.nodes = get_node_list()
 
 def get_node_list():
 

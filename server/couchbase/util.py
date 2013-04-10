@@ -102,7 +102,7 @@ def split_arguments_return_dict(arguments):
 
     ret_dict = {'start_time_epoch':"", 'end_time_epoch':"{}", 'start_time_year': None,'start_time_month': None,
                 'start_time_day': None,'end_time_year': None,'end_time_month': None,
-                'end_time_day': None,'limit':1000}
+                'end_time_day': None,'limit':100}
 
     arguments_list = arguments.split('&')
     for value in arguments_list:

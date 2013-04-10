@@ -1,14 +1,60 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Info timeline</title>
-    <center><h1><a href="http://{{server_ip }}:{{server_port }}">Confine Research Device Status</a></h1></center>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Confine Monitor</title>
+    <center><h1><a href="http://{{ server_ip }}:{{ server_port }}">Confine Research Device Status</a></h1></center>
+
 
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
-        google.load('visualization', '1', {packages: ['corechart']});
+        google.load('visualization', '1', {packages:['treemap']});
     </script>
+
+
+    <script type="text/javascript">
+        function drawVisualization() {
+            // Create and populate the data table.
+            var data_cpu = google.visualization.arrayToDataTable({{ values_treemap_cpu|safe }});
+
+            // Create and draw the visualization.
+            var treemap_cpu = new google.visualization.TreeMap(document.getElementById('cpu'));
+            treemap_cpu.draw(data_cpu, {
+
+                showScale: true});
+
+            // Create and populate the data table.
+            var data_mem = google.visualization.arrayToDataTable({{ values_treemap_mem_used|safe }});
+
+            // Create and draw the visualization.
+            var treemap_mem = new google.visualization.TreeMap(document.getElementById('mem'));
+            treemap_mem.draw(data_mem, {
+
+                showScale: true});
+
+            // Create and populate the data table.
+            var data_sent = google.visualization.arrayToDataTable({{ values_treemap_data_sent|safe }});
+
+            // Create and draw the visualization.
+            var treemap_data_sent = new google.visualization.TreeMap(document.getElementById('data_sent'));
+            treemap_data_sent.draw(data_sent, {
+
+                showScale: true});
+
+            // Create and populate the data table.
+            var data_received = google.visualization.arrayToDataTable({{ values_treemap_data_received|safe }});
+
+            // Create and draw the visualization.
+            var treemap_data_received = new google.visualization.TreeMap(document.getElementById('data_received'));
+            treemap_data_received.draw(data_received, {
+
+                showScale: true});
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>
+
 
     <script>
         onload=function() {
@@ -26,62 +72,6 @@
         }
     </script>
 
-
-    {% comment %}   <script type="text/javascript">
-           function drawVisualization() {
-               // Create and populate the data table.
-           {% endcomment %}{% comment %} var data = google.visualization.arrayToDataTable([
-             ['x', 'Cats' ],
-             ['A',   1    ],
-             ['B',   2    ],
-             ['C',   4    ],
-             ['D',   8    ],
-             ['E',   7    ],
-             ['F',   7    ],
-             ['G',   8    ],
-             ['H',   4    ],
-             ['I',   2    ],
-             ['J',   3.5  ],
-             ['K',   3    ],
-             ['L',   3.5  ],
-             ['M',   1    ],
-             ['N',   1    ]
-         ]);
- {% endcomment %}{% comment %}
-            var data = google.visualization.arrayToDataTable({{ values_graph|safe }});
-
-            // Create and draw the visualization.
-            new google.visualization.LineChart(document.getElementById('visualization')).
-                    draw(data, {curveType: "function",
-                        width: 1000, height: 600
-                                }
-            );
-        }
-
-
-        google.setOnLoadCallback(drawVisualization);
-    </script>{% endcomment %}
-
-
-    <script type="text/javascript">
-        google.load('visualization', '1', {packages: ['annotatedtimeline']});
-        function drawVisualization() {
-            var data = new google.visualization.DataTable();
-            data.addColumn('datetime', 'Date');
-            data.addColumn('number', '{{ metric }}');
-            data.addRows([
-                {% for values in values_graph %}
-                    [ new Date({{ values.year }},{{ values.month }},{{ values.date }},{{ values.hour }},{{ values.minute }},{{ values.second }}), {{ values.value }}],
-                {% endfor %}
-            ]);
-
-            var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
-                    document.getElementById('visualization'));
-            annotatedtimeline.draw(data, {'displayAnnotations': true,'fill': 50 ,'highlightDot': 'nearest', 'scaleType': 'maximized', 'thickness': 1,'displayZoomButtons':false });
-        }
-
-        google.setOnLoadCallback(drawVisualization);
-    </script>
 
     <script type="text/javascript">
         function go(){
@@ -124,7 +114,7 @@
             var metric = document.getElementById("metric").name;
             var server_ip = document.getElementById("server_ip").name;
             var server_port = document.getElementById("server_port").name;
-            var url = 'http://'+server_ip+':'+server_port+'/'+metric+'/'+node+'/start_time='+start_year+'-'+start_month
+            var url = 'http://'+server_ip+':'+server_port+'/'+metric+'/start_time='+start_year+'-'+start_month
                     +'-'+start_day+'&end_time='+end_year+'-'+end_month+'-'+end_day+'&limit='+limit;
 
             window.location = url;
@@ -140,14 +130,14 @@
             var server_ip = document.getElementById("server_ip").name;
             var server_port = document.getElementById("server_port").name;
             var limit = document.getElementById("limit").value;
-            var url = 'http://'+server_ip+':'+server_port+'/'+metric+'/'+node+'/'+'&limit='+limit;
+            var url = 'http://'+server_ip+':'+server_port+'/'+metric+'/'+'&limit='+limit;
 
             window.location = url;
         }
     </script>
 
-
 </head>
+
 <body>
 
 <form>
@@ -164,8 +154,6 @@
     <input type="hidden" id="limit_chosen" name={{ arguments.limit}}>
 </form>
 
-
-<h1>Node: {{ name }},  Value: {{ value }} </h1>
 
 <br>
 
@@ -288,18 +276,17 @@ End Time::
 
 <br>
 <br>
-No. of values to show:
+No. of values to calculate average:
 <select id= "limit" name="limit" onchange="selectDropdown()">
     <option id="limit.10" value="10">10
     <option id="limit.100" value="100"  selected="selected">100
-    <option id="limit.500" value="500" >500
-    <option id="limit.1000"  value="1000">1000
-    <option id="limit.5000" value="5000">5000
+    <option id="limit.500" value="500">500
 </select>
 &nbsp;
 &nbsp;
 
 <input id="go" type="button" value="go" onclick="go()" />
+
 <br>
 <br>
 
@@ -309,7 +296,10 @@ No. of values to show:
 <br>
 <br>
 
-<div id="visualization" style="width: 1000px; height: 600px;"></div>
+<div id="cpu" style="width: 600px; height: 400px; float:left;"></div>
+<div id="mem" style="width: 600px; height: 400px; float:right;"></div>
+<div id="data_sent" style="width: 600px; height: 400px; clear:both; float:left" ></div>
+<div id="data_received" style="width: 600px; height: 400px; float:right;" ></div>
 
 </body>
 </html>

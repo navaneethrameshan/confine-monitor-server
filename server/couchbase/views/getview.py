@@ -1,12 +1,16 @@
 import json
+import numpy
 import time
 from common import nodelist
 from server import constants
 from server.couchbase import store, util, fetchdocument
 from server.couchbase import documentparser
 from server.logger import logger
+from collections import namedtuple
 
 log = logger("Get View")
+
+node_treemap = namedtuple("node_treemap", 'cpu_usage memory_usage data_sent data_received')
 
 
 def get_view_node_id_attribute( node_id, value_type):
@@ -60,6 +64,63 @@ def get_view_node_id_attribute_timeline( node_id, value_type, limit=1000, start_
 
     return all_values
 
+
+def get_view_all_nodes_average_attribute_treemap(limit =10, start_time="", end_time ="{}"):
+    log.debug("Get view for most recent attribute for all nodes")
+
+    #for given node_id get value_type ordered by time (most recent first)
+    db = store.get_bucket()
+    count = 0
+
+
+    #Treemap--CPU Usage and Free memory
+    values_treemap_cpu = [['Id', 'parent', 'metricvalue'], ['Average CPU Usage', '', 0]]
+    values_treemap_mem_used = [['Id', 'parent', 'metricvalue'], ['Average Memory Usage', '', 0]]
+    values_treemap_data_sent = [['Id', 'parent', 'metricvalue'], ['Average Data Sent', '', 0]]
+    values_treemap_data_received = [['Id', 'parent', 'metricvalue'], ['Average Data Received', '', 0]]
+
+
+    for node_id in constants.nodes:
+        count+=1
+        name = node_id
+
+        load_avg_1min = []
+        mem_usage = []
+        cpu_usage = []
+        data_sent= []
+        data_received = []
+
+        if(start_time==""):
+            str_startkey = "[\"" + node_id + "\"]"
+        else:
+            str_startkey = "[\"" + node_id + "\"," + start_time+"]"
+        str_endkey = "[\"" + node_id + "\"," + end_time+"]"
+
+        view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_endkey, endkey = str_startkey,limit=limit, descending = True, include_docs= True)
+
+        count = 0
+        for node in view_by_node_id:
+            json_value = node['doc']
+            document = json_value['json']
+
+            if document:
+                load_avg_1min.append(documentparser.get_value(document, "load_avg_1min"))
+                mem_usage.append(documentparser.get_value(document, "memory_percent_used"))
+                cpu_usage.append(documentparser.get_value(document, "total_cpu_usage"))
+                data_sent.append(documentparser.get_value(document, "network_total_bytes_sent_last_sec"))
+                data_received.append(documentparser.get_value(document, "network_total_bytes_received_last_sec"))
+
+
+        #Update Treemap--CPU Usage and Free memory
+        values_treemap_cpu.append([name, 'Average CPU Usage', numpy.average(cpu_usage)])
+        values_treemap_mem_used.append([name, 'Average Memory Usage', numpy.average(mem_usage)])
+        values_treemap_data_sent.append([name, 'Average Data Sent', numpy.average(data_sent)])
+        values_treemap_data_received.append([name, 'Average Data Received', numpy.average(data_received)])
+
+
+
+    return node_treemap(cpu_usage= values_treemap_cpu, memory_usage= values_treemap_mem_used, data_sent= values_treemap_data_sent,
+                        data_received= values_treemap_data_received)
 
 
 
@@ -161,7 +222,8 @@ def get_view_slice_most_recent_attribute_treemap( slice_id, value_type):
 
     view_by_slice_id =[]
 
-    nodes = nodelist.get_node_list()
+    #nodes = nodelist.get_node_list()
+    nodes = constants.nodes
 
     for node in nodes:
 
@@ -194,7 +256,8 @@ def get_view_slice_id_all_slivers_most_recent( slice_id):
 
     view_by_slice_id =[]
 
-    nodes = nodelist.get_node_list()
+   # nodes = nodelist.get_node_list()
+    nodes = constants.nodes
 
     for node in nodes:
 

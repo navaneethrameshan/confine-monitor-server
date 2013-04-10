@@ -60,8 +60,5 @@ def get_set(document, set_type):
         set = None
     return set
 
-if __name__ == '__main__':
-    document = fetchdocument.fetch_most_recent_document('Node-1')
-    #print document
-    return_server_time(document)
+
 

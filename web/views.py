@@ -20,7 +20,8 @@ def index(request):
     count = 0
 
     # the initial page to display
-    nodes = nodelist.get_node_list()
+    #nodes = nodelist.get_node_list()
+    nodes = constants.nodes
 
     #Treemap--CPU Usage and Free memory
     values_treemap_cpu = [['Id', 'parent', 'metricvalue'], ['Most Recent CPU Usage', '', 0]]
@@ -73,7 +74,7 @@ def index(request):
 
 
 
-        all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage , 'server_ip': server_ip, 'server_port': server_port,
+        all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
                            'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,
                            'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
                            'data_received':data_received, 'uptime':uptime, 'ping_status':ping_status, 'port_status':port_status})
@@ -90,8 +91,41 @@ def index(request):
    # str_values = str(values)
    # modified_string = str_values.replace('\"', ' ').strip().replace("\'", ' ').strip()
 
+
+
     return render_to_response('indexgc.html',{'all_values':all_values, 'values_treemap_cpu':values_treemap_cpu,
-                                              'values_treemap_free_mem':values_treemap_free_mem },context_instance=RequestContext(request))
+                                              'values_treemap_free_mem':values_treemap_free_mem, 'server_ip': server_ip, 'server_port': server_port },
+						context_instance=RequestContext(request))
+
+
+def node_info_treemap(request, parameter):
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    metric, arguments = parameter.split('/')
+
+    arg_dict = util.split_arguments_return_dict(arguments)
+
+
+    all_values = getview.get_view_all_nodes_average_attribute_treemap(arg_dict['limit'])
+
+    values_treemap_cpu = all_values.cpu_usage
+    values_treemap_mem_used = all_values.memory_usage
+    values_treemap_data_sent = all_values.data_sent
+    values_treemap_data_received = all_values.data_received
+
+    #Send as JSON objects
+    values_treemap_cpu= json.dumps(values_treemap_cpu)
+    values_treemap_mem_used =json.dumps(values_treemap_mem_used)
+    values_treemap_data_sent = json.dumps(values_treemap_data_sent)
+    values_treemap_data_received = json.dumps(values_treemap_data_received)
+
+    return render_to_response('node_treemap.html', {'values_treemap_cpu':values_treemap_cpu,
+                                                    'values_treemap_mem_used':values_treemap_mem_used,
+                                                    'values_treemap_data_sent':values_treemap_data_sent,
+                                                    'values_treemap_data_received': values_treemap_data_received,
+                                                    'server_ip': server_ip, 'server_port': server_port,
+                                                    'metric':metric, 'arguments':arg_dict}, context_instance=RequestContext(request))
 
 
 def node_info_timeline(request, parameter):
