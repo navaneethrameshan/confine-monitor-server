@@ -84,7 +84,8 @@ SECRET_KEY = 'wn@b43efo$c6bxwg8&amp;i*z3)xb5k20jla1w(cg5cu6fiq@c8the'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    'django.template.loaders.eggs.Loader',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -119,7 +120,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'web'
+    'web',
+    'server',
 )
 
 # A sample logging configuration. The only tangible logging

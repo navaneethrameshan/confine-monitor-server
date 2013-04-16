@@ -64,6 +64,90 @@ def get_view_node_id_attribute_timeline( node_id, value_type, limit=1000, start_
 
     return all_values
 
+def get_view_all_nodes_most_recent():
+    log.debug("Get most recent view for all nodes")
+
+    db = store.get_bucket()
+
+    all_values = {}
+
+    view_by_node_most_recent = db.view('_design/node-mostrecent/_view/get_node-mostrecent', include_docs= True)
+
+    disk_size = None
+    load_avg_1min = None
+    free_mem = None
+    uptime_secs = None
+    last_updated = None
+    total_memory = None
+    num_cpu = None
+    cpu_usage = None
+    data_sent= None
+    data_received = None
+    uptime = None
+
+
+    for node in view_by_node_most_recent:
+
+        json_value = node['doc']
+        document = json_value['json']
+
+        name = documentparser.get_value(document, "nodeid")
+        disk_size = documentparser.get_value(document, "disk_size")
+        load_avg_1min = documentparser.get_value(document, "load_avg_1min")
+        free_mem = documentparser.get_value(document, "free_memory")
+        uptime_secs = documentparser.get_value(document, "uptime")
+        last_updated = documentparser.return_server_time(document)
+        total_memory = documentparser.get_value(document,"total_memory")
+        num_cpu = documentparser.get_value(document, "number_of_cpus")
+        cpu_usage = documentparser.get_value(document, "total_cpu_usage")
+        data_sent= documentparser.get_value(document, "network_total_bytes_sent_last_sec")
+        data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
+
+        ## Human readability######
+        uptime = util.convert_secs_to_time_elapsed(uptime_secs)
+        disk_size,total_memory,free_mem,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem, data_sent, data_received])
+
+
+        all_values.update({name:{'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
+                       'last_updated': last_updated , 'name':name, 'total_memory': total_memory ,
+                       'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
+                       'data_received':data_received, 'uptime':uptime}})
+
+
+
+
+    return all_values
+
+
+def get_view_all_nodes_synthesized_most_recent():
+    log.debug("Get most recent synthesized view for all nodes")
+
+    db = store.get_bucket()
+
+    all_synthesized_values = {}
+
+    view_by_node_synthesized_most_recent = db.view('_design/node-synthesized-mostrecent/_view/get_node-synthesized-mostrecent', include_docs= True)
+
+    print view_by_node_synthesized_most_recent
+
+    ping_status = None
+    port_status = None
+    count = 0
+    for node in view_by_node_synthesized_most_recent:
+        count += 1
+        json_value = node['doc']
+        document = json_value['json']
+
+        ping_status =  documentparser.get_value(document, "ping_status")
+        port_status = documentparser.get_value(document, "port_status")
+
+        name = documentparser.get_value(document, "nodeid")
+
+        all_synthesized_values.update({name: {'ping_status':ping_status, 'port_status':port_status, 'serial':count}})
+
+
+    return all_synthesized_values
+
 
 def get_view_all_nodes_average_attribute_treemap(limit =10, start_time="", end_time ="{}"):
     log.debug("Get view for most recent attribute for all nodes")
@@ -286,7 +370,6 @@ def get_view_node_id_synthesized_attribute_timeline( node_id, value_type):
 
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
-
     view_by_node_id = db.view('_design/synthesized-timestamp/_view/get_synthesized-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, limit=1000, include_docs= True)
 
     all_values = []
@@ -295,7 +378,7 @@ def get_view_node_id_synthesized_attribute_timeline( node_id, value_type):
         json = node['doc']
         document = json['json']
         value = documentparser.get_value(document, value_type)
-        server_timestamp = documentparser.get_value(document, "timestamp")
+        server_timestamp = documentparser.get_value(document, "server_timestamp")
         date_time_value= util.convert_epoch_to_date_time_dict(server_timestamp)
         date_time_value.update({'value': value})
         all_values.append(date_time_value)

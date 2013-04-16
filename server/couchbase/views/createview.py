@@ -25,15 +25,18 @@ def create_view():
     log.debug("Creating Views")
 
     map_function1 = "function(doc) { \
-        if ('nodeid' in doc) { \
+        if(doc.type== 'node'){\
+    if ('nodeid' in doc) { \
             node_id = doc.nodeid; \
             timestamp = doc.server_timestamp; \
             emit([node_id,timestamp], null); \
         }\
+    }\
     }"
 
     map_function2 = "function(doc) { \
-        if ('slivers' in doc) { \
+    if(doc.type== 'node'){\
+    if ('slivers' in doc) { \
             slivers = doc.slivers; \
             for (values in slivers){ \
                 container = slivers[values]; \
@@ -42,10 +45,12 @@ def create_view():
                 emit ([slice, doc.nodeid, doc.server_timestamp], container); \
             } \
         } \
+        }\
     }"
 
     map_function3 = "function(doc) { \
-        if ('slivers' in doc) { \
+    if(doc.type== 'node'){\
+    if ('slivers' in doc) { \
             slivers = doc.slivers; \
             for (values in slivers){ \
                 container = slivers[values]; \
@@ -53,15 +58,28 @@ def create_view():
                 sliver = container.sliver_name; \
                 emit ([sliver, doc.server_timestamp],  {'sliver': container,'nodeid':doc.nodeid,'server_timestamp': doc.server_timestamp}) \
             } \
-        } \
+            }\
+    } \
     }"
 
     map_function4 = "function(doc) { \
-        if ('ping_status' in doc) { \
-            node_id = doc.node_id; \
-            timestamp = doc.timestamp; \
+       if(doc.type== 'node_synthesized'){\
+            node_id = doc.nodeid; \
+            timestamp = doc.server_timestamp; \
             emit([node_id,timestamp], null); \
         } \
+    }"
+
+    map_function5 = "function (doc, meta) {\
+        if(doc.type== 'node_most_recent'){\
+            emit(doc.nodeid, null)\
+        }\
+    }"
+
+    map_function6 = "function (doc, meta) {\
+        if(doc.type== 'node_most_recent_synthesized'){\
+            emit(doc.nodeid, null)\
+        }\
     }"
 
     generate_view_document( 'node-timestamp', map_function1, 'get_node-timestamp')
@@ -71,3 +89,7 @@ def create_view():
     generate_view_document( 'sliver-timestamp', map_function3, 'get_sliver-timestamp')
 
     generate_view_document( 'synthesized-timestamp', map_function4, 'get_synthesized-timestamp')
+
+    generate_view_document( 'node-mostrecent', map_function5, 'get_node-mostrecent')
+
+    generate_view_document( 'node-synthesized-mostrecent', map_function6, 'get_node-synthesized-mostrecent')

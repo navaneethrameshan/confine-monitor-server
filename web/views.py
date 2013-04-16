@@ -98,6 +98,49 @@ def index(request):
 						context_instance=RequestContext(request))
 
 
+def indexgc(request):
+
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    all_values = getview.get_view_all_nodes_most_recent()
+    all_synthesized_values = getview.get_view_all_nodes_synthesized_most_recent()
+
+#    nodes = constants.nodes
+#    for node in nodes:
+#        if(node not in nodes_exist):
+#            count+=1
+#            name = node
+#
+#            disk_size = None
+#            load_avg_1min = None
+#            free_mem = None
+#            uptime_secs = None
+#            last_updated = None
+#            total_memory = None
+#            num_cpu = None
+#            cpu_usage = None
+#            data_sent= None
+#            data_received = None
+#            uptime = None
+#            ping_status = None
+#            port_status = None
+#
+#            ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"ping_status")
+#            port_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"port_status")
+#
+#            all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
+#                           'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,
+#                           'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
+#                           'data_received':data_received, 'uptime':uptime})
+
+
+    return render_to_response('index.html',{'all_values':all_values,'all_synthesized_values':all_synthesized_values,
+                                              'server_ip': server_ip, 'server_port': server_port },
+        context_instance=RequestContext(request))
+
+
+
 def node_info_treemap(request, parameter):
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT

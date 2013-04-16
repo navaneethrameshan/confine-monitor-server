@@ -20,5 +20,5 @@ if __name__ =='__main__':
     if(os.path.exists(path)):
         os.remove(path)
 
-    launch_memory_usage_server()
+  #  launch_memory_usage_server()
     main.main()

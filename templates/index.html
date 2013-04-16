@@ -1,70 +1,219 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load filter %}
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Flot Test</title>
-    <script language="javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}flot/jquery.flot.js"></script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Confine Monitor</title>
+    <center><h1><a href="http://{{ server_ip }}:{{ server_port }}">Confine Research Device Status</a></h1></center>
+
+
+    <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
+
+
+
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1', {packages:['treemap']});
+    </script>
+    {% comment %} <script type="text/javascript">
+        function drawVisualization() {
+            // Create and populate the data table.
+            var data = google.visualization.arrayToDataTable([
+                ['Node', 'Parent',    'Cpu Usage'],
+                ['All Nodes',    null,             0],
+                ['Node-1',   'All Nodes',             0],
+                ['Node-2',    'All Nodes',             0],
+                ['Node-3',     'All Nodes',             0],
+                ['Node-4',    'All Nodes',             0],
+                ['Cpu Usage-1',    'Node-1',             10],
+                ['Memory Usage-1',  'Node-1',            11],
+                ['Disk Usage-1',    'Node-1',            52],
+                ['Cpu Usage-2',    'Node-2',             20],
+                ['Memory Usage-2',  'Node-2',            21],
+                ['Disk Usage-2',    'Node-2',            62],
+                ['Cpu Usage-3',    'Node-3',             30],
+                ['Memory Usage-3',  'Node-3',            31],
+                ['Disk Usage-3',    'Node-3',            2],
+                ['Cpu Usage-4',    'Node-4',             10],
+                ['Memory Usage-4',  'Node-4',            12],
+                ['Disk Usage-4',    'Node-4',            52]
+
+            ]);
+
+            // Create and draw the visualization.
+            var treemap = new google.visualization.TreeMap(document.getElementById('visualization'));
+            treemap.draw(data, {
+                minColor: 'red',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true});
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>{% endcomment %}
+
+    <script type="text/javascript">
+        function drawVisualization() {
+            // Create and populate the data table.
+            var data_cpu = google.visualization.arrayToDataTable({{ values_treemap_cpu|safe }});
+
+            // Create and draw the visualization.
+            var treemap_cpu = new google.visualization.TreeMap(document.getElementById('cpu'));
+            treemap_cpu.draw(data_cpu, {
+
+                showScale: true});
+
+            // Create and populate the data table.
+            var data_mem = google.visualization.arrayToDataTable({{ values_treemap_free_mem|safe }});
+
+            // Create and draw the visualization.
+            var treemap_mem = new google.visualization.TreeMap(document.getElementById('mem'));
+            treemap_mem.draw(data_mem, {
+
+                showScale: true});
+
+        }
+
+
+        google.setOnLoadCallback(drawVisualization);
+    </script>
+
+
 </head>
 
-<h1>Confine Research Device Status</h1>
 <body>
 
-<table border="1">
-    <caption>Last updated {{ last_updated }}</caption>
+<a href="http://{{ server_ip }}:{{ server_port }}/visualize/&limit=100 ">Visualize Node metrics over time</a>
 
+<!-- Row Highlight Javascript -->
+<script type="text/javascript">
+    window.onload=function(){
+        var tfrow = document.getElementById('tfhover').rows.length;
+        var tbRow=[];
+        for (var i=1;i<tfrow;i++) {
+            tbRow[i]=document.getElementById('tfhover').rows[i];
+            tbRow[i].onmouseover = function(){
+                this.style.backgroundColor = '#f3f8aa';
+            };
+            tbRow[i].onmouseout = function() {
+                this.style.backgroundColor = '#ffffff';
+            };
+        }
+    };
+</script>
+
+
+<style type="text/css">
+    table.sortable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
+    table.sortable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
+    table.sortable tr {background-color:#ffffff;}
+    table.sortable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
+</style>
+
+<br>
+
+{#   <table id="tfhover" class="tftable" border="1">#}
+<table id="tfhover" class="sortable" border="1">
+    <thead>
     <tr>
         <th>#</th>
+        <th>Last Seen (GMT)</th>
         <th>Name</th>
         <th>Disk Size</th>
+        <th>Number of CPUs</th>
+        <th>CPU Usage(%)</th>
         <th>Load Avg-1 min</th>
         <th>Total Memory</th>
         <th>Free Memory</th>
+        <th>Network Data Sent/Sec</th>
+        <th>Network Data Received/Sec</th>
         <th>Uptime</th>
-    </tr>
-    <tr>
-        <td>{{ serial }}</td>
-        <td>{{ name }}</td>
-        <td>{{ disk_size }}</td>
-        <td><a href="http://{{ server_ip }}:{{ server_port }}/loadavg/{{ name }} ">{{ load_avg_1min }}</a></td>
-        <td>{{ total_memory }}</td>
-        <td><a href="http://{{ server_ip }}:{{ server_port }}/freemem/{{ name }} ">{{ free_mem }}</a></td>
-        <td><a href="http://{{ server_ip }}:{{ server_port }}/uptime/{{ name }} ">{{ uptime }}</a></td>
-    </tr>
+        <th>Ping Status</th>
+        <th>Port Status</th>
 
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for node, values in all_synthesized_values.items%}
+       <tr>
+
+           <td>{{ values.serial }}</td>
+
+           {% with all_values|hash:node as all_values_node%}
+               <td>{{ all_values_node|hash:"last_updated" }}</td>
+           {% endwith %}
+
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/nodeslivers/{{ node }} ">{{node }}</a></td>
+
+           {% with all_values|hash:node as all_values_node%}
+               <td>{{ all_values_node|hash:"disk_size" }}</td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td>{{ all_values_node| hash:"num_cpu" }}</td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/total_cpu_usage/{{ node }}/ ">{{ all_values_node|hash:"percent_usage" }}</a></td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/load_avg_1min/{{ node }}/ ">{{ all_values_node|hash:"load_avg_1min" }}</a></td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td>{{ all_values_node|hash:"total_memory" }}</td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/free_memory/{{ node }}/ ">{{ all_values_node|hash:"free_mem" }}</a></td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/network_total_bytes_sent_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_sent" }}</a></td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/network_total_bytes_received_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_received" }}</a></td>
+           {% endwith %}
+
+           {% with all_values|hash:node as all_values_node%}
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/uptime/{{ node }}/ ">{{ all_values_node|hash:"uptime" }}</a></td>
+           {% endwith %}
+
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/pingstatus/{{ node }} ">{{ values.ping_status }}</a></td>
+            <td>
+                {% for key, value in values.port_status.items %}
+
+                    {% if value == 'open' %}
+                        <span style="color: #ff0000;">port-{{ key }}:{{ value }}</span>,
+                    {% else %}
+                        port-{{ key }}:{{ value }},
+                    {% endif %}
+
+                {% endfor %}
+            </td>
+
+        </tr>
+    {% endfor %}
+
+
+
+    </tbody>
 </table>
 
 <br>
 <br>
 <br>
 
-<script language="javascript" type="text/javascript">
-    {% autoescape off %}
-        var dataRows = {{values_graph}};
-        alert (dataRows)
-    {% endautoescape %}
-
-
-</script>
-
-<div id="placeholder" style="width:600px;height:300px;"></div>
-
-<script type="text/javascript">
-    $(function () {
-
-        $.plot($("#placeholder"), [
-            {
-                data: dataRows,
-                lines: { show: true },
-              <!--  points: { show: true } -->
-            }
-        ] ,{yaxis: {label:"Load_avg_1min"}},
-                {xaxis:
-                {mode:"time"
-                }
-                });
-    });
-</script>
+<div id="cpu" style="width: 600px; height: 400px; float:left;"></div>
+<div id="mem" style="width: 600px; height: 400px; float:right;"></div>
 
 </body>
 </html>
+​

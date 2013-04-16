@@ -21,6 +21,7 @@ class Collect:
         self.sequence= sequence
         self.value= {}
         self.most_recent_absolute_timestamp = 0.0
+        self.most_recent_doc= {}
 
     def generate_url(self):
     # Need to absolutely ensure that the same sequence number values are never fetched twice. This will most likely result in a collision and resource conflict on updating the database.
@@ -55,6 +56,8 @@ class Collect:
         if(page!={}):
             sequence = util.get_most_recent_sequence_number(page)
             self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
+            self.most_recent_doc = page[str(self.sequence)]
+
 
         # print sequence
         return page
@@ -82,6 +85,7 @@ class Collect:
             #convert the relative timestamp to absolute server timestamp. Relative timestamps and server receiving the requests are always causally ordered.
             server_absolute_timestamp = util.get_timestamp()- float (seq_value['relative_timestamp'])
             seq_value.update({'server_timestamp': server_absolute_timestamp})
+            seq_value.update({'type': 'node'})
 
             self.most_recent_absolute_timestamp = util.find_recent_timestamp(self.most_recent_absolute_timestamp, server_absolute_timestamp)
 
@@ -93,7 +97,9 @@ class Collect:
 
         # After all the documents are stored, find the most recent timestamp and update the reference document to speedup lookups
         reference_doc_id = self.generate_reference_docid(self.name)
-        store.update_document(reference_doc_id, {"most_recent_timestamp": self.most_recent_absolute_timestamp})
+        self.most_recent_doc.update({"most_recent_timestamp": self.most_recent_absolute_timestamp})
+        self.most_recent_doc.update({"type": "node_most_recent"})
+        store.update_document(reference_doc_id, self.most_recent_doc)
 
 
     def collect_store(self):

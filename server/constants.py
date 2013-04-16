@@ -43,7 +43,6 @@ nodeid ="nodeid"
 port_status = "port_status"
 traceroute= "traceroute"
 ping_status= "ping_status"
-timestamp = "timestamp"
 
 nodes=[]
 
