@@ -4,7 +4,7 @@ import calendar
 
 RD_PORT = '8080'
 
-SERVER_IP = '147.83.35.241'
+SERVER_IP = '127.0.0.1'
 SERVER_PORT = '8000'
 
 DB_IP = '147.83.35.241'
@@ -45,12 +45,20 @@ def convert_epoch_to_date_time_dict(epoch):
     date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
     return ({'time': date_time})
 
+def convert_epoch_to_date_time_dict_attributes_lstrip(epoch):
+    date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
+    (date, local_time) = date_time.split()
+    (year, month, date) = date.split('-')
+    (hour, minute, second) = local_time.split(':')
+    return ({'year':year.lstrip('0'),'month': month.lstrip('0'), 'date': date.lstrip('0'), 'hour': hour.lstrip('0'), 'minute':minute.lstrip('0'), 'second': second.lstrip('0')}) #Do not remove lstrip. Needed for stats view to work.
+
 def convert_epoch_to_date_time_dict_attributes(epoch):
     date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
     (date, local_time) = date_time.split()
     (year, month, date) = date.split('-')
     (hour, minute, second) = local_time.split(':')
     return ({'year':year,'month': month, 'date': date, 'hour': hour, 'minute':minute, 'second': second})
+
 
 def convert_epoch_to_date_time_javascript(epoch):
     date_time= convert_epoch_to_date_time_dict_attributes(epoch)
@@ -134,14 +142,13 @@ def compare_and_return_argument(type):
     else:
         return None
 
-def return_year_month_day_from_time(date_time):
-    pattern = '%Y-%m-%d'
+def return_year_month_day_from_time(date_time, pattern ='%Y-%m-%d'):
     return(time.strptime(date_time, pattern))
 
-def convert_time_to_epoch(date_time):
+def convert_time_to_epoch(date_time,pattern = '%Y-%m-%d'):
     #date_time = '2007-02-05'
-    pattern = '%Y-%m-%d'
+
     epoch = int(calendar.timegm(time.strptime(date_time, pattern)))
     return epoch
 
-return_year_month_day_from_time('2013-01-01')
+convert_time_to_epoch('2013, 4, 20, 12, 0','%Y, %m, %d, %H, %M')

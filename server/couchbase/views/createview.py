@@ -3,17 +3,25 @@ from server.logger import logger
 
 log = logger("Create View")
 
-def generate_view_document ( doc_name, map_function, view_name ):
+def generate_view_document ( doc_name, map_function, view_name, reduce_function=None, reduce=False ):
 # check if there are entries for same document_id
     log.debug("Generating view function: %s with Map function as: %s " %(doc_name, map_function))
 
-    map_load_avg =  map_function
-
-    design = { 'views': {
-        view_name: {
-            'map':map_load_avg
+    if(not reduce):
+        design = { 'views': {
+            view_name: {
+                'map':map_function,
+                }
+            }
         }
-    } }
+    else:
+        design = { 'views': {
+            view_name: {
+                'map':map_function,
+                'reduce': reduce_function
+                }
+        }
+        }
 
     document_id = '_design/'+ doc_name
 
@@ -29,7 +37,7 @@ def create_view():
     if ('nodeid' in doc) { \
             node_id = doc.nodeid; \
             timestamp = doc.server_timestamp; \
-            emit([node_id,timestamp], null); \
+    emit([node_id,timestamp], null); \
         }\
     }\
     }"
@@ -82,6 +90,22 @@ def create_view():
         }\
     }"
 
+    map_function7 = "function (doc, meta) {\
+        if(doc.type== 'node'){\
+            if ('nodeid' in doc) {\
+                node_id = doc.nodeid;\
+                timestamp = doc.server_timestamp;\
+                var date = new Date( timestamp*1000);\
+                var dateArray = dateToArray(date);\
+                dateArray.splice(0,0,node_id);\
+                emit(dateArray, doc.cpu.total_percent_usage);\
+            }\
+        }\
+    }"
+
+    reduce_function7 = "_stats"
+
+
     generate_view_document( 'node-timestamp', map_function1, 'get_node-timestamp')
 
     generate_view_document( 'slice-timestamp', map_function2, 'get_slice-timestamp')
@@ -93,3 +117,5 @@ def create_view():
     generate_view_document( 'node-mostrecent', map_function5, 'get_node-mostrecent')
 
     generate_view_document( 'node-synthesized-mostrecent', map_function6, 'get_node-synthesized-mostrecent')
+
+    generate_view_document( 'all_nodes_cpu_stats', map_function7, 'get_all_nodes_cpu_stats', reduce_function7, True)

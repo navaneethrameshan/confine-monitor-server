@@ -1,5 +1,5 @@
 import json
-import numpy
+#import numpy
 import time
 from common import nodelist
 from server import constants
@@ -13,7 +13,7 @@ log = logger("Get View")
 node_treemap = namedtuple("node_treemap", 'cpu_usage memory_usage data_sent data_received')
 
 
-def get_view_node_id_attribute( node_id, value_type):
+def get_view_node_id_attribute_json( node_id, value_type, limit):
     #for given node_id get value_type ordered by time (most recent first)
     log.debug("Get view by node ID for node: %s" %node_id)
     db = store.get_bucket()
@@ -21,18 +21,18 @@ def get_view_node_id_attribute( node_id, value_type):
     str_startkey = "[\"" + node_id + "\",{}]"
     str_endkey = "[\"" + node_id + "\"]"
 
-    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, limit=1000, descending = True, include_docs= True)
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_startkey, endkey = str_endkey, descending = True, include_docs= True, limit=limit)
 
 
-    all_values = [['Time', str(value_type)]]
+    all_values = []
 
 
     for node in view_by_node_id:
         json = node['doc']
         document = json['json']
         value = documentparser.get_value(document, value_type)
-        server_time = documentparser.return_server_time(document)
-        all_values.insert(1,[server_time,value]) # Keep most recent value at the end of the list to show graph as ascending time line
+        server_timestamp = documentparser.return_server_timestamp(document) * 1000
+        all_values.insert(1, [server_timestamp,value]) # Keep most recent value at the end of the list to show graph as ascending time line
 
     return all_values
 
@@ -72,19 +72,6 @@ def get_view_all_nodes_most_recent():
     all_values = {}
 
     view_by_node_most_recent = db.view('_design/node-mostrecent/_view/get_node-mostrecent', include_docs= True)
-
-    disk_size = None
-    load_avg_1min = None
-    free_mem = None
-    uptime_secs = None
-    last_updated = None
-    total_memory = None
-    num_cpu = None
-    cpu_usage = None
-    data_sent= None
-    data_received = None
-    uptime = None
-
 
     for node in view_by_node_most_recent:
 
@@ -127,8 +114,6 @@ def get_view_all_nodes_synthesized_most_recent():
     all_synthesized_values = {}
 
     view_by_node_synthesized_most_recent = db.view('_design/node-synthesized-mostrecent/_view/get_node-synthesized-mostrecent', include_docs= True)
-
-    print view_by_node_synthesized_most_recent
 
     ping_status = None
     port_status = None
@@ -206,6 +191,63 @@ def get_view_all_nodes_average_attribute_treemap(limit =10, start_time="", end_t
     return node_treemap(cpu_usage= values_treemap_cpu, memory_usage= values_treemap_mem_used, data_sent= values_treemap_data_sent,
                         data_received= values_treemap_data_received)
 
+
+
+def get_view_nodes_cpu_stat(node_id=None, start_timestamp="", end_timestamp ="{}", group_level=1):
+    log.debug("Get view by node ID for node: %s" %node_id)
+
+
+    start_time_key = ""
+    end_time_key = ""
+    date_attributes = ['year', 'month', 'date', 'hour', 'minute', 'second']
+    pattern_list = ['%Y', '%m', '%d', '%H', '%M','%S']
+
+    pattern= "\'"+(', '.join(pattern_list[:group_level-1]))+"\'"
+
+
+    print "pattern: "+ pattern
+
+    db = store.get_bucket()
+
+    if(start_timestamp==""):
+        str_startkey = "[\"" + node_id + "\"]"
+    else:
+        start_time = util.convert_epoch_to_date_time_dict_attributes_lstrip(start_timestamp)
+        for i in range(group_level-1):
+            start_time_key += start_time[date_attributes[i]]+","
+        start_time_key=start_time_key.rstrip(",")
+
+        str_startkey = "[\"" + node_id + "\"," + start_time_key+"]"
+
+
+    if(end_timestamp!= "{}"):
+        end_time = util.convert_epoch_to_date_time_dict_attributes_lstrip(end_timestamp)
+        for i in range(group_level-1):
+            end_time_key += end_time[date_attributes[i]]+","
+        end_time_key=end_time_key.rstrip(",")
+        str_endkey = "[\"" + node_id + "\"," + end_time_key+"]"
+
+    else:
+        str_endkey = "[\"" + node_id + "\"," + end_timestamp+"]"
+
+    log.info( "startkey: "+ str_startkey)
+    log.info( "endkey: "+ str_endkey)
+
+    view_stats = db.view('_design/all_nodes_cpu_stats/_view/get_all_nodes_cpu_stats', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+    all_values = []
+
+    for view in view_stats:
+        document = view['value']
+        avg = document['sum']/document['count']
+        key = view['key']
+        log.info( 'key: '+str(key) +'avg: '+str(avg))
+        date_as_string= "\'"+str(key[1:]).strip('[]')+"\'"
+
+        epoch_milli= util.convert_time_to_epoch(date_as_string,pattern) *1000 #multiply by 1000 to convert to milliseconds
+        all_values.insert(1, [epoch_milli,avg])
+
+    return all_values
 
 
 def get_view_slice_id_attribute_timeline( slice_id, value_type):

@@ -98,6 +98,55 @@ def index(request):
 						context_instance=RequestContext(request))
 
 
+def highstock_node_attribute(request):
+    return render_to_response('highstock.html')
+
+
+def json_node_attribute(request, parameter):
+    print "parameter: "+parameter
+    group_level=1
+
+    if(parameter):
+        str_start_timestamp, str_end_timestamp = parameter.split("&")
+        start_timestamp = int(str_start_timestamp.split("=")[-1])/1000  #time is received from javascript in milliseconds
+        end_timestamp = int(str_end_timestamp.split("=")[-1])/1000 #change milliseconds to seconds
+        range = end_timestamp- start_timestamp
+
+        global group_level
+
+        # find the right range
+        # half a day range loads minute data
+        if range <  12 * 3600 :
+            group_level=6
+
+        # one days range loads hourly data
+        elif range < 1 * 24 * 3600 :
+            group_level=5
+
+        # one month range loads daily data
+        elif range < 31 * 24 * 3600 :
+            group_level=4
+
+        # one year range loads monthly data
+        elif range < 15 * 31 * 24 * 3600 :
+            group_level=3
+
+        # greater range loads monthly data
+        else:
+            group_level=3
+
+    #all_values = getview.get_view_node_id_attribute_json('[fdf5:5351:1dfd:42::2]', 'total_cpu_usage')
+        all_values = getview.get_view_nodes_cpu_stat(node_id="[fdf5:5351:1dfd:58::2]",start_timestamp=start_timestamp,end_timestamp=end_timestamp,group_level=group_level)
+
+    else:
+        all_values = getview.get_view_nodes_cpu_stat(node_id="[fdf5:5351:1dfd:58::2]",group_level=5)
+
+    json_value = json.dumps(all_values)
+    print "group level: "+ str(group_level)
+
+    return HttpResponse(json_value, content_type= "application/json")
+
+
 def indexgc(request):
 
     server_ip = util.SERVER_IP

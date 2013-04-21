@@ -19,6 +19,10 @@ urlpatterns = patterns('',
     url(r'^slivercpuusage/(.{2,})$', 'web.views.sliver_cpu_usage'),
     url(r'^slivermemoryusage/(.{2,})$', 'web.views.sliver_memory_usage'),
 
+    url(r'^highstock$', 'web.views.highstock_node_attribute'),
+    url(r'^json/(.{0,})$', 'web.views.json_node_attribute'),
+
+
 
     url(r'^pingstatus/(.{2,})$', 'web.views.node_ping'),
 
