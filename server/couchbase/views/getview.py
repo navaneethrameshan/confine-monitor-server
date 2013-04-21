@@ -212,7 +212,7 @@ def get_view_nodes_cpu_stat(node_id=None, start_timestamp="", end_timestamp ="{}
     if(start_timestamp==""):
         str_startkey = "[\"" + node_id + "\"]"
     else:
-        start_time = util.convert_epoch_to_date_time_dict_attributes_lstrip(start_timestamp)
+        start_time = util.convert_epoch_to_date_time_dict_attributes_strip_zeroes(start_timestamp)
         for i in range(group_level-1):
             start_time_key += start_time[date_attributes[i]]+","
         start_time_key=start_time_key.rstrip(",")
@@ -221,7 +221,7 @@ def get_view_nodes_cpu_stat(node_id=None, start_timestamp="", end_timestamp ="{}
 
 
     if(end_timestamp!= "{}"):
-        end_time = util.convert_epoch_to_date_time_dict_attributes_lstrip(end_timestamp)
+        end_time = util.convert_epoch_to_date_time_dict_attributes_strip_zeroes(end_timestamp)
         for i in range(group_level-1):
             end_time_key += end_time[date_attributes[i]]+","
         end_time_key=end_time_key.rstrip(",")

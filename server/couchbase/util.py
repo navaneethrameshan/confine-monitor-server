@@ -1,6 +1,8 @@
 import time
 import datetime
 import calendar
+import re
+
 
 RD_PORT = '8080'
 
@@ -45,12 +47,16 @@ def convert_epoch_to_date_time_dict(epoch):
     date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
     return ({'time': date_time})
 
-def convert_epoch_to_date_time_dict_attributes_lstrip(epoch):
-    date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
-    (date, local_time) = date_time.split()
-    (year, month, date) = date.split('-')
-    (hour, minute, second) = local_time.split(':')
-    return ({'year':year.lstrip('0'),'month': month.lstrip('0'), 'date': date.lstrip('0'), 'hour': hour.lstrip('0'), 'minute':minute.lstrip('0'), 'second': second.lstrip('0')}) #Do not remove lstrip. Needed for stats view to work.
+def convert_epoch_to_date_time_dict_attributes_strip_zeroes(epoch):
+    '''
+    epoch to date as {year, month, date, hour, minute,second}
+    leading zeroes in dates are stripped. 04 ->4, 00->0
+\   '''
+    date_time= time.strftime("%Y-%m-%d-%H-%M-%S", time.gmtime(epoch))
+    (year, month, date, hour, minute, second) = date_time.split('-')
+    return ({'year':re.sub("^0+(?!$)",'', year),'month':re.sub("^0+(?!$)",'', month),
+             'date': re.sub("^0+(?!$)",'', date), 'hour': re.sub("^0+(?!$)",'', hour),
+             'minute':re.sub("^0+(?!$)",'', minute), 'second': re.sub("^0+(?!$)",'', second)})
 
 def convert_epoch_to_date_time_dict_attributes(epoch):
     date_time= time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(epoch))
