@@ -1,5 +1,5 @@
 import json
-#import numpy
+import numpy
 import time
 from common import nodelist
 from server import constants
@@ -81,7 +81,7 @@ def get_view_all_nodes_most_recent():
         name = documentparser.get_value(document, "nodeid")
         disk_size = documentparser.get_value(document, "disk_size")
         load_avg_1min = documentparser.get_value(document, "load_avg_1min")
-        free_mem = documentparser.get_value(document, "free_memory")
+        memory_percent_used = documentparser.get_value(document, "memory_percent_used")
         uptime_secs = documentparser.get_value(document, "uptime")
         last_updated = documentparser.return_server_time(document)
         total_memory = documentparser.get_value(document,"total_memory")
@@ -92,12 +92,12 @@ def get_view_all_nodes_most_recent():
 
         ## Human readability######
         uptime = util.convert_secs_to_time_elapsed(uptime_secs)
-        disk_size,total_memory,free_mem,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem, data_sent, data_received])
+        disk_size,total_memory,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory, data_sent, data_received])
 
 
         all_values.update({name:{'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
                        'last_updated': last_updated , 'name':name, 'total_memory': total_memory ,
-                       'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
+                       'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'memory_percent_used':memory_percent_used, 'data_sent':data_sent,
                        'data_received':data_received, 'uptime':uptime}})
 
 
@@ -193,7 +193,7 @@ def get_view_all_nodes_average_attribute_treemap(limit =10, start_time="", end_t
 
 
 
-def get_view_nodes_cpu_stat(node_id=None, start_timestamp="", end_timestamp ="{}", group_level=1):
+def get_view_nodes_metric_stat(metric, node_id=None, start_timestamp="", end_timestamp ="{}", group_level=1):
     log.debug("Get view by node ID for node: %s" %node_id)
 
 
@@ -233,7 +233,22 @@ def get_view_nodes_cpu_stat(node_id=None, start_timestamp="", end_timestamp ="{}
     log.info( "startkey: "+ str_startkey)
     log.info( "endkey: "+ str_endkey)
 
-    view_stats = db.view('_design/all_nodes_cpu_stats/_view/get_all_nodes_cpu_stats', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+    view_stats= []
+
+    if(metric == 'total_cpu_usage'):
+        view_stats = db.view('_design/all_nodes_cpu_stats/_view/get_all_nodes_cpu_stats', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+    elif(metric == 'memory_percent_used'):
+        view_stats = db.view('_design/all_nodes_mem_used/_view/get_all_nodes_mem_used', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+
+    elif(metric == 'network_total_bytes_sent_last_sec'):
+        view_stats = db.view('_design/all_nodes_bytes_sent/_view/get_all_nodes_bytes_sent', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+
+    elif(metric == 'network_total_bytes_received_last_sec'):
+        view_stats = db.view('_design/all_nodes_bytes_recv/_view/get_all_nodes_bytes_recv', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
 
     all_values = []
 

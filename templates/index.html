@@ -128,7 +128,7 @@
         <th>CPU Usage(%)</th>
         <th>Load Avg-1 min</th>
         <th>Total Memory</th>
-        <th>Free Memory</th>
+        <th>Memory used(%)</th>
         <th>Network Data Sent/Sec</th>
         <th>Network Data Received/Sec</th>
         <th>Uptime</th>
@@ -159,7 +159,7 @@
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/total_cpu_usage/{{ node }}/ ">{{ all_values_node|hash:"percent_usage" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/total_cpu_usage/{{ node }}/ ">{{ all_values_node|hash:"percent_usage" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
@@ -171,15 +171,15 @@
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/free_memory/{{ node }}/ ">{{ all_values_node|hash:"free_mem" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/memory_percent_used/{{ node }}/ ">{{ all_values_node|hash:"memory_percent_used" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/network_total_bytes_sent_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_sent" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/network_total_bytes_sent_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_sent" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/network_total_bytes_received_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_received" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/network_total_bytes_received_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_received" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}

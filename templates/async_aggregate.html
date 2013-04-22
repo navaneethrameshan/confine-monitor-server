@@ -2,16 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Highstock Example</title>
+<title>Info timeline</title>
+<center><h1><a href="http://{{server_ip }}:{{server_port }}">Confine Research Device Status</a></h1></center>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript">
 
 $(function () {
-    /**
-     * Gray theme for Highcharts JS
-     * @author Torstein Hønsi
-     */
 
     Highcharts.theme = {
         colors: ["#DDDF0D", "#7798BF", "#55BF3B", "#DF5353", "#aaeeee", "#ff0066", "#eeaaee",
@@ -396,7 +393,7 @@ $(function () {
         return a[0] - b[0];
     });{% endcomment %}
 
-    $.get('http://127.0.0.1:8000/json/', function(data) {
+    $.get('http://{{ server_ip }}:{{ server_port }}/json/{{ metric }}/{{ name }}/', function(data) {
         data.sort(function (a, b) {
             return a[0] - b[0];
         });
@@ -458,6 +455,10 @@ $(function () {
                 selected: 3
             },
 
+            title: {
+                text: "Node: " + document.getElementById('node').name
+            },
+
             xAxis : {
                 events : {
                     afterSetExtremes : afterSetExtremes
@@ -465,7 +466,14 @@ $(function () {
                 minRange: 60 * 1000 // one min
             },
 
+            yAxis: {
+                title: {
+                    text: document.getElementById('metric').name
+                }
+            },
+
             series: [{
+                name: 'value',
                 data: data,
                 type: 'area',
                 tooltip: {
@@ -474,6 +482,7 @@ $(function () {
                 dataGrouping: {
                     enabled: false
                 }
+
 
             }]
         });
@@ -493,7 +502,7 @@ function afterSetExtremes(e) {
     // Create a timer
     var start = + new Date();
 
-    $.get('http://127.0.0.1:8000/json/start_time='+ Math.round(e.min) +
+    $.get('http://{{ server_ip }}:{{ server_port }}/json/{{ metric }}/{{name }}/start_time='+ Math.round(e.min) +
             '&end_time='+ Math.round(e.max), function(data) {
         data.sort(function (a, b) {
             return a[0] - b[0];
@@ -511,7 +520,14 @@ function afterSetExtremes(e) {
 </script>
 </head>
 <body>
+<form>
+    <input type="hidden" id="node" name={{ name }}>
+    <input type="hidden" id="metric" name={{ metric }}>
+    <input type="hidden" id="server_ip" name={{ server_ip }}>
+    <input type="hidden" id="server_port" name={{ server_port }}>
+</form>
 
+<h1>Node: {{ name }},  Value: {{ metric }} </h1>
 <script src="http://code.highcharts.com/stock/highstock.js"></script>
 <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
 <div id="container" style="height: 500px; min-width: 500px"></div>

@@ -11,108 +11,34 @@ from server.couchbase.views import getview
 from server import constants
 import web.metricvalue
 
-def index(request):
+
+def async_node_attribute(request, parameter):
+    '''
+       Parameter of form metric/node/
+    '''
+    (metric,node_id,time) =parameter.split('/')
 
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
-    all_values = []
-    count = 0
-
-    # the initial page to display
-    #nodes = nodelist.get_node_list()
-    nodes = constants.nodes
-
-    #Treemap--CPU Usage and Free memory
-    values_treemap_cpu = [['Id', 'parent', 'metricvalue'], ['Most Recent CPU Usage', '', 0]]
-    values_treemap_free_mem = [['Id', 'parent', 'metricvalue'], ['Free Memory', '', 0]]
-
-
-    for node in nodes:
-        count+=1
-
-        document = fetchdocument.fetch_most_recent_document(node)
-        name = node
-
-        disk_size = None
-        load_avg_1min = None
-        free_mem = None
-        uptime_secs = None
-        last_updated = None
-        total_memory = None
-        num_cpu = None
-        cpu_usage = None
-        data_sent= None
-        data_received = None
-        uptime = None
-
-        if document:
-            disk_size = documentparser.get_value(document, "disk_size")
-            load_avg_1min = documentparser.get_value(document, "load_avg_1min")
-            free_mem = documentparser.get_value(document, "free_memory")
-            uptime_secs = documentparser.get_value(document, "uptime")
-            last_updated = documentparser.return_server_time(document)
-            total_memory = documentparser.get_value(document,"total_memory")
-            num_cpu = documentparser.get_value(document, "number_of_cpus")
-            cpu_usage = documentparser.get_value(document, "total_cpu_usage")
-            data_sent= documentparser.get_value(document, "network_total_bytes_sent_last_sec")
-            data_received = documentparser.get_value(document, "network_total_bytes_received_last_sec")
-
-            #Update Treemap--CPU Usage and Free memory
-            values_treemap_cpu.append([name, 'Most Recent CPU Usage', cpu_usage])
-            values_treemap_free_mem.append([name, 'Free Memory', free_mem])
-
-
-
-        ## Human readability######
-            uptime = util.convert_secs_to_time_elapsed(uptime_secs)
-            disk_size,total_memory,free_mem,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory,free_mem, data_sent, data_received])
-
-        ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"ping_status")
-        port_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"port_status")
-
-
-
-
-        all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
-                           'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,
-                           'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
-                           'data_received':data_received, 'uptime':uptime, 'ping_status':ping_status, 'port_status':port_status})
-
-
-
-
-    #Send as JSON objects
-    values_treemap_cpu= json.dumps(values_treemap_cpu)
-    values_treemap_free_mem =json.dumps(values_treemap_free_mem)
-
-
-   # Use to strip double quotes and single quotes to pass data for annotated timeline
-   # str_values = str(values)
-   # modified_string = str_values.replace('\"', ' ').strip().replace("\'", ' ').strip()
-
-
-
-    return render_to_response('indexgc.html',{'all_values':all_values, 'values_treemap_cpu':values_treemap_cpu,
-                                              'values_treemap_free_mem':values_treemap_free_mem, 'server_ip': server_ip, 'server_port': server_port },
-						context_instance=RequestContext(request))
-
-
-def highstock_node_attribute(request):
-    return render_to_response('highstock.html')
+    return render_to_response('async_aggregate.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric})
 
 
 def json_node_attribute(request, parameter):
+    '''
+    Parameter of form metric/node/start_time=..&end_time=..
+    '''
+
     print "parameter: "+parameter
     group_level=1
 
-    if(parameter):
-        str_start_timestamp, str_end_timestamp = parameter.split("&")
+    (metric,node_id,time) =parameter.split('/')
+
+    if(time):
+        str_start_timestamp, str_end_timestamp = time.split("&")
         start_timestamp = int(str_start_timestamp.split("=")[-1])/1000  #time is received from javascript in milliseconds
         end_timestamp = int(str_end_timestamp.split("=")[-1])/1000 #change milliseconds to seconds
         range = end_timestamp- start_timestamp
-
-        global group_level
 
         # find the right range
         # half a day range loads minute data
@@ -135,11 +61,10 @@ def json_node_attribute(request, parameter):
         else:
             group_level=3
 
-    #all_values = getview.get_view_node_id_attribute_json('[fdf5:5351:1dfd:42::2]', 'total_cpu_usage')
-        all_values = getview.get_view_nodes_cpu_stat(node_id="[fdf5:5351:1dfd:58::2]",start_timestamp=start_timestamp,end_timestamp=end_timestamp,group_level=group_level)
+        all_values = getview.get_view_nodes_metric_stat(metric,node_id=node_id,start_timestamp=start_timestamp,end_timestamp=end_timestamp,group_level=group_level)
 
     else:
-        all_values = getview.get_view_nodes_cpu_stat(node_id="[fdf5:5351:1dfd:58::2]",group_level=5)
+        all_values = getview.get_view_nodes_metric_stat(metric,node_id=node_id,group_level=5)
 
     json_value = json.dumps(all_values)
     print "group level: "+ str(group_level)
@@ -147,42 +72,13 @@ def json_node_attribute(request, parameter):
     return HttpResponse(json_value, content_type= "application/json")
 
 
-def indexgc(request):
+def index(request):
 
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
     all_values = getview.get_view_all_nodes_most_recent()
     all_synthesized_values = getview.get_view_all_nodes_synthesized_most_recent()
-
-#    nodes = constants.nodes
-#    for node in nodes:
-#        if(node not in nodes_exist):
-#            count+=1
-#            name = node
-#
-#            disk_size = None
-#            load_avg_1min = None
-#            free_mem = None
-#            uptime_secs = None
-#            last_updated = None
-#            total_memory = None
-#            num_cpu = None
-#            cpu_usage = None
-#            data_sent= None
-#            data_received = None
-#            uptime = None
-#            ping_status = None
-#            port_status = None
-#
-#            ping_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"ping_status")
-#            port_status = getview.get_view_node_id_synthesized_attribute_most_recent(node,"port_status")
-#
-#            all_values.append({'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
-#                           'last_updated': last_updated ,'serial':count, 'name':name, 'total_memory': total_memory ,
-#                           'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'free_mem':free_mem, 'data_sent':data_sent,
-#                           'data_received':data_received, 'uptime':uptime})
-
 
     return render_to_response('index.html',{'all_values':all_values,'all_synthesized_values':all_synthesized_values,
                                               'server_ip': server_ip, 'server_port': server_port },

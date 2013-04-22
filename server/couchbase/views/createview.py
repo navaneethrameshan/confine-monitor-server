@@ -103,6 +103,45 @@ def create_view():
         }\
     }"
 
+    map_function8 = "function (doc, meta) {\
+        if(doc.type== 'node'){\
+            if ('nodeid' in doc) {\
+                node_id = doc.nodeid;\
+                timestamp = doc.server_timestamp;\
+                var date = new Date( timestamp*1000);\
+                var dateArray = dateToArray(date);\
+                dateArray.splice(0,0,node_id);\
+                emit(dateArray, doc.network.total.bytes_sent_last_sec);\
+            }\
+        }\
+    }"
+
+    map_function9 = "function (doc, meta) {\
+        if(doc.type== 'node'){\
+            if ('nodeid' in doc) {\
+                node_id = doc.nodeid;\
+                timestamp = doc.server_timestamp;\
+                var date = new Date( timestamp*1000);\
+                var dateArray = dateToArray(date);\
+                dateArray.splice(0,0,node_id);\
+                emit(dateArray, doc.network.total.bytes_recv_last_sec);\
+            }\
+        }\
+    }"
+
+    map_function10 = "function (doc, meta) {\
+        if(doc.type== 'node'){\
+            if ('nodeid' in doc) {\
+                node_id = doc.nodeid;\
+                timestamp = doc.server_timestamp;\
+                var date = new Date( timestamp*1000);\
+                var dateArray = dateToArray(date);\
+                dateArray.splice(0,0,node_id);\
+                emit(dateArray, doc.memory.virtual.percent_used);\
+            }\
+        }\
+    }"
+
     reduce_function7 = "_stats"
 
 
@@ -119,3 +158,9 @@ def create_view():
     generate_view_document( 'node-synthesized-mostrecent', map_function6, 'get_node-synthesized-mostrecent')
 
     generate_view_document( 'all_nodes_cpu_stats', map_function7, 'get_all_nodes_cpu_stats', reduce_function7, True)
+
+    generate_view_document( 'all_nodes_bytes_sent', map_function8, 'get_all_nodes_bytes_sent', reduce_function7, True)
+
+    generate_view_document( 'all_nodes_bytes_recv', map_function9, 'get_all_nodes_bytes_recv', reduce_function7, True)
+
+    generate_view_document( 'all_nodes_mem_used', map_function10, 'get_all_nodes_mem_used', reduce_function7, True)
