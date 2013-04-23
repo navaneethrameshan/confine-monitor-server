@@ -142,6 +142,64 @@ def create_view():
         }\
     }"
 
+    map_function11 = "function (doc, meta) {\
+        if(doc.type== 'node'){\
+            if ('nodeid' in doc) {\
+                node_id = doc.nodeid;\
+                timestamp = doc.server_timestamp;\
+                var date = new Date( timestamp*1000);\
+                var dateArray = dateToArray(date);\
+                dateArray.splice(0,0,node_id);\
+                emit(dateArray, doc.load_avg.load_avg_1min);\
+            }\
+        }\
+    }"
+
+    map_function12 = "function (doc, meta) { \
+            if(doc.type == 'node'){\
+                if ('nodeid' in doc) {\
+                    node_id = doc.nodeid;\
+                    timestamp = doc.server_timestamp;\
+                    var date = new Date( timestamp*1000);\
+                    var dateArray = dateToArray(date);\
+                    dateArray.splice(0,0,node_id);\
+                    networkInterfaces = doc.network;\
+                    for (interface in networkInterfaces){\
+                        dateArray.splice(1,0,interface);\
+                        dateArray.splice(2,0,'bytes_sent_last_sec');\
+                        emit(dateArray, networkInterfaces[interface].bytes_sent_last_sec);\
+                        dateArray.splice(2,1);\
+                        dateArray.splice(2,0,'bytes_recv_last_sec');\
+                        emit(dateArray, networkInterfaces[interface].bytes_recv_last_sec);\
+                        dateArray.splice(2,1);\
+                        dateArray.splice(1,1);\
+                    }\
+                }\
+            }\
+        }"
+
+    map_function13= "function (doc, meta) {\
+        if(doc.type == 'node'){\
+            if ('nodeid' in doc) {\
+                node_id = doc.nodeid;\
+                timestamp = doc.server_timestamp;\
+                var date = new Date( timestamp*1000);\
+                var dateArray = dateToArray(date);\
+                dateArray.splice(0,0,node_id);\
+                diskInterfaces = doc.disk;\
+                for (interface in diskInterfaces){\
+                    if(interface !=\"size\"){\
+                        dateArray.splice(1,0,interface);\
+                        dateArray.splice(2,0,'percent_usage');\
+                        emit(dateArray, diskInterfaces[interface].percent_usage);\
+                        dateArray.splice(1,2);\
+                    }\
+                }\
+            }\
+        }\
+    }"
+
+
     reduce_function7 = "_stats"
 
 
@@ -164,3 +222,9 @@ def create_view():
     generate_view_document( 'all_nodes_bytes_recv', map_function9, 'get_all_nodes_bytes_recv', reduce_function7, True)
 
     generate_view_document( 'all_nodes_mem_used', map_function10, 'get_all_nodes_mem_used', reduce_function7, True)
+
+    generate_view_document( 'all_nodes_load_avg', map_function11, 'get_all_nodes_load_avg', reduce_function7, True)
+
+    generate_view_document( 'all_nodes_network_stat', map_function12, 'get_all_nodes_network_stat', reduce_function7, True)
+
+    generate_view_document( 'all_nodes_disk_stat', map_function13, 'get_all_nodes_disk_stat', reduce_function7, True)

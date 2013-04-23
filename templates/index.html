@@ -120,7 +120,7 @@
 <table id="tfhover" class="sortable" border="1">
     <thead>
     <tr>
-        <th>#</th>
+
         <th>Last Seen (GMT)</th>
         <th>Name</th>
         <th>Disk Size</th>
@@ -142,7 +142,7 @@
     {% for node, values in all_synthesized_values.items%}
        <tr>
 
-           <td>{{ values.serial }}</td>
+{#           <td>{{ values.serial }}</td>#}
 
            {% with all_values|hash:node as all_values_node%}
                <td>{{ all_values_node|hash:"last_updated" }}</td>
@@ -159,11 +159,11 @@
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/total_cpu_usage/{{ node }}/ ">{{ all_values_node|hash:"percent_usage" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/total_cpu_usage/{{ node }}/ ">{{ all_values_node|hash:"percent_usage" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/load_avg_1min/{{ node }}/ ">{{ all_values_node|hash:"load_avg_1min" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/load_avg_1min/{{ node }}/ ">{{ all_values_node|hash:"load_avg_1min" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
@@ -171,19 +171,19 @@
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/memory_percent_used/{{ node }}/ ">{{ all_values_node|hash:"memory_percent_used" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ node }}/ ">{{ all_values_node|hash:"memory_percent_used" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/network_total_bytes_sent_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_sent" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/network_total_bytes_sent_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_sent" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async/network_total_bytes_received_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_received" }}</a></td>
+               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/network_total_bytes_received_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_received" }}</a></td>
            {% endwith %}
 
            {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/uptime/{{ node }}/ ">{{ all_values_node|hash:"uptime" }}</a></td>
+               <td>{{ all_values_node|hash:"uptime" }}</td>
            {% endwith %}
 
             <td><a href="http://{{ server_ip }}:{{ server_port }}/pingstatus/{{ node }} ">{{ values.ping_status }}</a></td>

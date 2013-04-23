@@ -15,5 +15,5 @@ used_memory = "Used Memory"
 network_total_bytes_sent = "Total bytes sent"
 network_total_bytes_received = "Total bytes received"
 network_total_bytes_sent_last_sec = "Total bytes sent per second"
-network_total_bytes_received_last_sec = "Total bytes received last second"
+network_total_bytes_received_last_sec = "Total bytes received per second"
 

@@ -146,10 +146,14 @@
         {% for key,value in network_values.items %}
             <tr>
                 <td>{{ key }}</td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent/"> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
+               {% comment %} <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent/"> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
                 <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent_last_sec/">{{ value.bytes_sent_last_sec }}</a></td>
                 <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv/"><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv_last_sec/">{{ value.bytes_recv_last_sec }}</a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv_last_sec/">{{ value.bytes_recv_last_sec }}</a></td>{% endcomment %}
+                <td> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/network//{{ name }}//{{ key }}//bytes_sent_last_sec//">{{ value.bytes_sent_last_sec }}</a></td>
+                <td><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/network//{{ name }}//{{ key }}//bytes_recv_last_sec//">{{ value.bytes_recv_last_sec }}</a></td>
             </tr>
         {% endfor %}
 
@@ -166,7 +170,6 @@
         <tr>
             <th>Partition</th>
             <th>Mount</th>
-            <th>Type</th>
             <th>Total Space</th>
             <th>Free</th>
             <th>Used Space</th>
@@ -182,11 +185,12 @@
                 {%  if key != "size" %}
                     <td>{{ key }}</td>
                     <td>{{ value.mount }}</td>
-                    <td>{{ value.type }}</td>
                     <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
-                    <td>{{ value.percent_usage}}</td>
+                    {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
+                    <td><script>document.write(bytesToSize({{ value.free }}))</script></td>
+                    <td><script>document.write(bytesToSize({{ value.used }}))</script></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/disk//{{ name }}//{{ key }}//percent_usage//">{{ value.percent_usage}}</a></td>
                 {% endif %}
             </tr>
         {% endfor %}
@@ -219,9 +223,11 @@
                     <td>{{ key }}</td>
                     <td><script>document.write(bytesToSize({{ value.available }}))</script></td>
                     <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.percent_used/">{{ value.percent_used}}</a></td>
+                    {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
+                   <td><script>document.write(bytesToSize({{ value.free }}))</script></td>
+                   <td><script>document.write(bytesToSize({{ value.used }}))</script></td>
+                   <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ name }}/ ">{{ value.percent_used}}</a></td>
 
             </tr>
         {% endfor %}

@@ -19,9 +19,13 @@ urlpatterns = patterns('',
     url(r'^slivercpuusage/(.{2,})$', 'web.views.sliver_cpu_usage'),
     url(r'^slivermemoryusage/(.{2,})$', 'web.views.sliver_memory_usage'),
 
-    url(r'^async/(.{2,})$', 'web.views.async_node_attribute'),
-    url(r'^json/(.{2,})$', 'web.views.json_node_attribute'),
+    url(r'^async_aggr/(.{2,})$', 'web.views.async_aggr_node_attribute'),
+    url(r'^async_aggr_json/(.{2,})$', 'web.views.async_aggr_node_attribute_json'),
+    url(r'^async_aggr_set/(.{2,})$', 'web.views.async_aggr_set_node_attribute'),
+    url(r'^async_aggr_set_json/(.{2,})$', 'web.views.async_aggr_set_node_attribute_json'),
 
+    url(r'^async/(.{2,})$', 'web.views.async_node_attribute'),
+    url(r'^async_json/(.{2,})$', 'web.views.async_node_attribute_json'),
 
 
     url(r'^pingstatus/(.{2,})$', 'web.views.node_ping'),

@@ -64,6 +64,33 @@ def get_view_node_id_attribute_timeline( node_id, value_type, limit=1000, start_
 
     return all_values
 
+
+def get_view_node_id_attribute_async( node_id, value_type, limit=3000, start_time="", end_time ="{}"):
+    log.debug("Get view by node ID for node: %s" %node_id)
+
+    #for given node_id get value_type ordered by time (most recent first)
+    db = store.get_bucket()
+
+    if(start_time==""):
+        str_startkey = "[\"" + node_id + "\"]"
+    else:
+        str_startkey = "[\"" + node_id + "\"," + str(start_time)+"]"
+    str_endkey = "[\"" + node_id + "\"," + str(end_time)+"]"
+
+    view_by_node_id = db.view('_design/node-timestamp/_view/get_node-timestamp', startkey=str_endkey, endkey = str_startkey,limit=limit, descending = True, include_docs= True)
+
+    all_values = []
+
+    for node in view_by_node_id:
+        json = node['doc']
+        document = json['json']
+        value = float(documentparser.get_value(document, value_type))
+        server_timestamp = documentparser.return_server_timestamp(document) * 1000 #convert to milliseconds for javascript
+        all_values.insert(1, [server_timestamp,value]) # Keep most recent value at the end of the list to show graph as ascending time line
+
+    return all_values
+
+
 def get_view_all_nodes_most_recent():
     log.debug("Get most recent view for all nodes")
 
@@ -191,9 +218,72 @@ def get_view_all_nodes_average_attribute_treemap(limit =10, start_time="", end_t
     return node_treemap(cpu_usage= values_treemap_cpu, memory_usage= values_treemap_mem_used, data_sent= values_treemap_data_sent,
                         data_received= values_treemap_data_received)
 
+def get_view_nodes_set_metric_stat_aggregated(set, interface, metric, node_id=None, start_timestamp="", end_timestamp ="{}", group_level=1):
+    log.debug("Get view by node ID for node: %s" %node_id)
+
+    print "group level: "+ str(group_level)
 
 
-def get_view_nodes_metric_stat(metric, node_id=None, start_timestamp="", end_timestamp ="{}", group_level=1):
+    start_time_key = ""
+    end_time_key = ""
+    date_attributes = ['year', 'month', 'date', 'hour', 'minute', 'second']
+    pattern_list = ['%Y', '%m', '%d', '%H', '%M','%S']
+
+    pattern= "\'"+(', '.join(pattern_list[:group_level-3]))+"\'"
+
+
+    print "pattern: "+ pattern
+
+    db = store.get_bucket()
+
+    if(start_timestamp==""):
+        str_startkey = "[\"" + node_id + "\","+"\"" +interface+"\""+","+"\""+ metric+"\"" + "]"
+    else:
+        start_time = util.convert_epoch_to_date_time_dict_attributes_strip_zeroes(start_timestamp)
+        for i in range(group_level-3):
+            start_time_key += start_time[date_attributes[i]]+","
+        start_time_key=start_time_key.rstrip(",")
+
+        str_startkey = "[\"" + node_id + "\"," +"\""+interface+"\""+ "," + "\""+metric +"\""+"," + start_time_key+"]"
+
+
+    if(end_timestamp!= "{}"):
+        end_time = util.convert_epoch_to_date_time_dict_attributes_strip_zeroes(end_timestamp)
+        for i in range(group_level-3):
+            end_time_key += end_time[date_attributes[i]]+","
+        end_time_key=end_time_key.rstrip(",")
+        str_endkey = "[\"" + node_id + "\"," +"\""+interface+"\""+","+"\""+ metric+"\""+","+ end_time_key+"]"
+
+    else:
+        str_endkey = "[\"" + node_id + "\","+"\""+interface+"\""+","+"\""+ metric+"\"" +","+ end_timestamp+"]"
+
+    log.info( "startkey: "+ str_startkey)
+    log.info( "endkey: "+ str_endkey)
+
+    view_stats= []
+
+    if set =='network':
+        view_stats = db.view('_design/all_nodes_network_stat/_view/get_all_nodes_network_stat', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+    if set == 'disk':
+        view_stats = db.view('_design/all_nodes_disk_stat/_view/get_all_nodes_disk_stat', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+    all_values = []
+
+    for view in view_stats:
+        document = view['value']
+        avg = document['sum']/document['count']
+        key = view['key']
+        log.info( 'key: '+str(key) +'avg: '+str(avg))
+        date_as_string= "\'"+str(key[3:]).strip('[]')+"\'"
+
+        epoch_milli= util.convert_time_to_epoch(date_as_string,pattern) *1000 #multiply by 1000 to convert to milliseconds
+        all_values.insert(1, [epoch_milli,avg])
+
+    return all_values
+
+
+def get_view_nodes_metric_stat_aggregated(metric, node_id=None, start_timestamp="", end_timestamp ="{}", group_level=1):
     log.debug("Get view by node ID for node: %s" %node_id)
 
 
@@ -248,6 +338,10 @@ def get_view_nodes_metric_stat(metric, node_id=None, start_timestamp="", end_tim
 
     elif(metric == 'network_total_bytes_received_last_sec'):
         view_stats = db.view('_design/all_nodes_bytes_recv/_view/get_all_nodes_bytes_recv', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+
+    elif(metric == 'load_avg_1min'):
+        view_stats = db.view('_design/all_nodes_load_avg/_view/get_all_nodes_load_avg', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
 
 
     all_values = []

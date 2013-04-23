@@ -12,19 +12,21 @@ from server import constants
 import web.metricvalue
 
 
-def async_node_attribute(request, parameter):
+def async_aggr_node_attribute(request, parameter):
     '''
        Parameter of form metric/node/
     '''
     (metric,node_id,time) =parameter.split('/')
 
+    value = 'web.metricvalue.' + metric
+
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
-    return render_to_response('async_aggregate.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric})
+    return render_to_response('async_aggregate.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric, 'value': eval(value)})
 
 
-def json_node_attribute(request, parameter):
+def async_aggr_node_attribute_json(request, parameter):
     '''
     Parameter of form metric/node/start_time=..&end_time=..
     '''
@@ -42,29 +44,88 @@ def json_node_attribute(request, parameter):
 
         # find the right range
         # half a day range loads minute data
-        if range <  12 * 3600 :
+        if range <=  12 * 3600 :
             group_level=6
 
         # one days range loads hourly data
-        elif range < 1 * 24 * 3600 :
+        elif range <= 1 * 24 * 3600 :
             group_level=5
 
         # one month range loads daily data
-        elif range < 31 * 24 * 3600 :
+        elif range <= 31 * 24 * 3600 :
             group_level=4
 
         # one year range loads monthly data
-        elif range < 15 * 31 * 24 * 3600 :
+        elif range <= 15 * 31 * 24 * 3600 :
             group_level=3
 
         # greater range loads monthly data
         else:
             group_level=3
 
-        all_values = getview.get_view_nodes_metric_stat(metric,node_id=node_id,start_timestamp=start_timestamp,end_timestamp=end_timestamp,group_level=group_level)
+        all_values = getview.get_view_nodes_metric_stat_aggregated(metric,node_id=node_id,start_timestamp=start_timestamp,end_timestamp=end_timestamp,group_level=group_level)
 
     else:
-        all_values = getview.get_view_nodes_metric_stat(metric,node_id=node_id,group_level=5)
+        all_values = getview.get_view_nodes_metric_stat_aggregated(metric,node_id=node_id,group_level=5)
+
+    json_value = json.dumps(all_values)
+
+    return HttpResponse(json_value, content_type= "application/json")
+
+
+def async_aggr_set_node_attribute(request, parameter):
+    '''
+       Parameter of form set//node//interface//metric//
+    '''
+    (set,node_id,interface,metric,time) =parameter.split('//')
+
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    return render_to_response('async_aggregate_set.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric, 'interface': interface, 'set':set})
+
+
+def async_aggr_set_node_attribute_json(request, parameter):
+    '''
+    Parameter of form set//node//interface//metric//start_time=..&end_time=..
+    '''
+
+    print "parameter: "+parameter
+    group_level=1
+
+    (set,node_id,interface,metric,time) =parameter.split('//')
+
+    if(time):
+        str_start_timestamp, str_end_timestamp = time.split("&")
+        start_timestamp = int(str_start_timestamp.split("=")[-1])/1000  #time is received from javascript in milliseconds
+        end_timestamp = int(str_end_timestamp.split("=")[-1])/1000 #change milliseconds to seconds
+        range = end_timestamp- start_timestamp
+
+        # find the right range
+        # half a day range loads minute data
+        if range <=  12 * 3600 :
+            group_level=8
+
+        # one days range loads hourly data
+        elif range <= 1 * 24 * 3600 :
+            group_level=7
+
+        # one month range loads daily data
+        elif range <= 31 * 24 * 3600 :
+            group_level=6
+
+        # one year range loads monthly data
+        elif range < 15 * 31 * 24 * 3600 :
+            group_level=5
+
+        # greater range loads monthly data
+        else:
+            group_level=5
+
+        all_values = getview.get_view_nodes_set_metric_stat_aggregated(set, interface,metric,node_id=node_id,start_timestamp=start_timestamp,end_timestamp=end_timestamp,group_level=group_level)
+
+    else:
+        all_values = getview.get_view_nodes_set_metric_stat_aggregated(set, interface, metric,node_id=node_id,group_level=7)
 
     json_value = json.dumps(all_values)
     print "group level: "+ str(group_level)
@@ -136,6 +197,40 @@ def node_info_timeline(request, parameter):
                                                           'server_ip': server_ip, 'server_port': server_port, 'values_graph':values_graph, 'arguments':arg_dict}
         ,context_instance=RequestContext(request))
 
+
+
+def async_node_attribute(request, parameter):
+    '''
+       Parameter of form metric/node/
+    '''
+    (metric,node_id,time) =parameter.split('/')
+
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    return render_to_response('async_node_info_timeline.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric})
+
+def async_node_attribute_json(request, parameter):
+
+    print "parameter: "+parameter
+
+    (metric,node_id,time) =parameter.split('/')
+
+    if(time):
+        str_start_timestamp, str_end_timestamp = time.split("&")
+        start_timestamp = int(str_start_timestamp.split("=")[-1])/1000  #time is received from javascript in milliseconds
+        end_timestamp = int(str_end_timestamp.split("=")[-1])/1000 #change milliseconds to seconds
+        range = end_timestamp- start_timestamp
+
+        all_values = getview.get_view_node_id_attribute_async(node_id, metric, start_time =start_timestamp,
+        end_time=end_timestamp)
+
+    else:
+        all_values = getview.get_view_node_id_attribute_async(node_id, metric)
+
+    json_value = json.dumps(all_values)
+
+    return HttpResponse(json_value, content_type= "application/json")
 
 
 def node_info_set_timeline(request, parameter):
