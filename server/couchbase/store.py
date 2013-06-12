@@ -11,12 +11,12 @@ log = logger("store")
 
 class Database(object):
 
-    def __init__(self, name = 'test'):
+    def __init__(self, name = 'new'):
         cb = Couchbase(util.DB_IP+":"+util.DB_PORT, "Administrator", "couchbase")
         self.log = logger ("database")
 
         try:
-            bucket = cb.create(name, ram_quota_mb=100, replica=1)
+            bucket = cb.create(name, ram_quota_mb=200, replica=1)
         except:
             bucket = cb[name]
 

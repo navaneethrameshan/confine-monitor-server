@@ -282,40 +282,41 @@ def node_slivers (request, parameter):
     count = 0
     if(document):
         node_in_db = True
-        for container in slivers:
-            sliver= slivers[container]
-            count +=1
-            sliver_name = documentparser.get_value(sliver, 'sliver_name')
-            sliver_cpu_usage = documentparser.get_value(sliver,'sliver_cpu_usage')
-            sliver_slice_name = documentparser.get_value(sliver, 'sliver_slice_name')
-            sliver_total_memory = documentparser.get_value(sliver, 'sliver_total_memory')
-            sliver_total_memory_free = documentparser.get_value(sliver, 'sliver_total_memory_free')
-            sliver_total_memory_percent_used = documentparser.get_value(sliver, 'sliver_total_memory_percent_used')
+	if slivers:
+            for container in slivers:
+                sliver= slivers[container]
+                count +=1
+                sliver_name = documentparser.get_value(sliver, 'sliver_name')
+                sliver_cpu_usage = documentparser.get_value(sliver,'sliver_cpu_usage')
+                sliver_slice_name = documentparser.get_value(sliver, 'sliver_slice_name')
+                sliver_total_memory = documentparser.get_value(sliver, 'sliver_total_memory')
+                sliver_total_memory_free = documentparser.get_value(sliver, 'sliver_total_memory_free')
+                sliver_total_memory_percent_used = documentparser.get_value(sliver, 'sliver_total_memory_percent_used')
+                sliver_ip = documentparser.get_value(sliver, 'sliver_ip')
+                sliver_state = documentparser.get_value(sliver, 'sliver_state')
 
-            sliver_total_memory, sliver_total_memory_free = util.convert_bytes_to_human_readable([sliver_total_memory, sliver_total_memory_free])
+                sliver_total_memory, sliver_total_memory_free = util.convert_bytes_to_human_readable([sliver_total_memory, sliver_total_memory_free])
 
-            all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
-                           'sliver_total_memory':sliver_total_memory, 'sliver_total_memory_free': sliver_total_memory_free,
-                           'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'serial':count})
-
-
-             # Populate Treemap graph
-            values = getview.get_view_sliver_most_recent_attribute_treemap( node_id, 'sliver_cpu_usage')
-            values_graph = json.dumps(values)
+                all_values.append({'sliver_name': sliver_name, 'sliver_cpu_usage':sliver_cpu_usage, 'sliver_slice_name':sliver_slice_name,
+                               'sliver_total_memory':sliver_total_memory, 'sliver_total_memory_free': sliver_total_memory_free,
+                               'sliver_total_memory_percent_used':sliver_total_memory_percent_used, 'sliver_ip':sliver_ip,
+                               'sliver_state': sliver_state,'serial':count})
 
 
-            #Network Values
-            name = documentparser.get_value(document, "name")
-            network_values= documentparser.get_set(document, "network")
+                 # Populate Treemap graph
+                values = getview.get_view_sliver_most_recent_attribute_treemap( node_id, 'sliver_cpu_usage')
+                values_graph = json.dumps(values)
 
-            #Disk Values
-            name = documentparser.get_value(document, "name")
-            disk_values= documentparser.get_set(document, "disk")
 
-            #Disk Values
-            name = documentparser.get_value(document, "name")
-            memory_values= documentparser.get_set(document, "memory")
+        #Network Values
+        name = documentparser.get_value(document, "name")
+        network_values= documentparser.get_set(document, "network")
 
+        #Disk Values
+        disk_values= documentparser.get_set(document, "disk")
+
+        #Disk Values
+        memory_values= documentparser.get_set(document, "memory")
     return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values,
                                                    'values_graph':values_graph, 'network_values':network_values,
                                                    'name':name, 'server_ip': server_ip, 'server_port': server_port,

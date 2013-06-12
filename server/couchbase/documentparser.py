@@ -29,7 +29,11 @@ def get_value( document, value_type):
         attribute_list = attributes.split('.')
         value = document
         for attribute in attribute_list:
-            value = value[attribute]
+            if attribute in value:
+                value = value[attribute]
+            else:
+                value = None
+		break
         log.debug("Value obtained is: " + str(value))
 
     return value
