@@ -47,17 +47,11 @@ class Collect:
             response = None
 
 
+
         if(response is None):
             return None
 
         page = json.loads(response.read())
-
-        #get and update the last seen sequence number
-        if(page!={}):
-            sequence = util.get_most_recent_sequence_number(page)
-            self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
-            self.most_recent_doc = page[str(self.sequence)]
-
 
         # print sequence
         return page
@@ -94,6 +88,12 @@ class Collect:
             doc_id = self.generate_docid(self.name, server_absolute_timestamp)
 
             store.store_document(doc_id,seq_value)
+            #get and update the last seen sequence number
+
+        if(self.value!={}):
+            sequence = util.get_most_recent_sequence_number(self.value)
+            self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
+            self.most_recent_doc = self.value[str(self.sequence)]
 
         # After all the documents are stored, find the most recent timestamp and update the reference document to speedup lookups
         reference_doc_id = self.generate_reference_docid(self.name)
