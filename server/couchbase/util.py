@@ -6,16 +6,16 @@ import re
 
 RD_PORT = '8080'
 
-SERVER_IP = '147.83.35.241'
-SERVER_PORT = '8000'
+SERVER_IP = 'monitor.confine-project.eu'
+SERVER_PORT = '80'
 
-DB_IP = '147.83.35.241'
+DB_IP = 'monitor.confine-project.eu'
 DB_PORT= '8091'
 
 CONTROLLER_IP = 'controller.confine-project.eu'
 CONTROLLER_PORT= '8080'
 
-TIMEPERIOD = 20
+TIMEPERIOD = 300 
 
 LAST_SEEN_SEQ_NUMBER = 0
 
