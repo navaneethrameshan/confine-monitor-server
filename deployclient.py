@@ -71,7 +71,7 @@ if __name__ =='__main__':
     for node in nodes:
         dest = 'root@'+node
         print dest
-        multiscp.scp(['/home/navaneeth/PycharmProjects/confine_monitor'], dest)
+        multiscp.scp(['/home/navaneeth/PycharmProjects/confine_monitor/'], dest)
 
 
 

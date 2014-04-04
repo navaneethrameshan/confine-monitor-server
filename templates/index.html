@@ -56,7 +56,7 @@
         google.setOnLoadCallback(drawVisualization);
     </script>{% endcomment %}
 
-    <script type="text/javascript">
+  {% comment %}  <script type="text/javascript">
         function drawVisualization() {
             // Create and populate the data table.
             var data_cpu = google.visualization.arrayToDataTable({{ values_treemap_cpu|safe }});
@@ -80,14 +80,14 @@
 
 
         google.setOnLoadCallback(drawVisualization);
-    </script>
+    </script>{% endcomment %}
 
 
 </head>
 
 <body>
 
-<a href="http://{{ server_ip }}:{{ server_port }}/visualize/&limit=100 ">Visualize Node metrics over time</a>
+<a href="http://{{ server_ip }}:{{ server_port }}/visualize/ ">Visualize Node metrics over time</a>
 
 <!-- Row Highlight Javascript -->
 <script type="text/javascript">
@@ -211,8 +211,8 @@
 <br>
 <br>
 
-<div id="cpu" style="width: 600px; height: 400px; float:left;"></div>
-<div id="mem" style="width: 600px; height: 400px; float:right;"></div>
+{% comment %}<div id="cpu" style="width: 600px; height: 400px; float:left;"></div>
+<div id="mem" style="width: 600px; height: 400px; float:right;"></div>{% endcomment %}
 
 </body>
 </html>

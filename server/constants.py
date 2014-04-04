@@ -46,6 +46,9 @@ port_status = "port_status"
 traceroute= "traceroute"
 ping_status= "ping_status"
 
+#trace
+trace= "trace"
+
 nodes=[]
 
 database_list = []

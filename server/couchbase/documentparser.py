@@ -33,7 +33,6 @@ def get_value( document, value_type):
                 value = value[attribute]
             else:
                 value = None
-		break
         log.debug("Value obtained is: " + str(value))
 
     return value

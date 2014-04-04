@@ -21,7 +21,7 @@ def scp(src, dest, child=None):
     try:
         if not child:
         #child = pexpect.spawn( 'scp -r USER@SERVER.COM:%s /HOME/USER/'%(args[0]))
-            child= pexpect.spawn("scp -r %s %s:." %(src, dest), timeout=150)
+            child= pexpect.spawn("scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r %s %s:." %(src, dest), timeout=150)
 
         res = child.expect( expectations )
         print "Child Exit Status :",child.exitstatus

@@ -1,4 +1,3 @@
-import ast
 from django.shortcuts import render_to_response
 from django.template.loader import get_template
 from django.template import Context, RequestContext, Template
@@ -10,7 +9,7 @@ from server.couchbase import fetchdocument, util, documentparser, store
 from server.couchbase.views import getview
 from server import constants
 import web.metricvalue
-
+from server.trace.analyse import getdata
 
 def async_aggr_node_attribute(request, parameter):
     '''
@@ -25,6 +24,18 @@ def async_aggr_node_attribute(request, parameter):
 
     return render_to_response('async_aggregate.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric, 'value': eval(value)})
 
+def network_trace(request, parameter):
+    '''
+       Parameter of form metric/node/
+    '''
+
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    (nodes, representation) = getdata.get_all_trace()
+    return render_to_response('visjsgraph.html',{'values': json.dumps(representation), 'nodes_py': json.dumps(nodes)},context_instance=RequestContext(request))
+
+    #return HttpResponse("Hi!!")
 
 def async_aggr_node_attribute_json(request, parameter):
     '''
@@ -153,10 +164,18 @@ def node_info_treemap(request, parameter):
 
     metric, arguments = parameter.split('/')
 
+    print arguments
+
     arg_dict = util.split_arguments_return_dict(arguments)
 
+    print arg_dict
 
-    all_values = getview.get_view_all_nodes_average_attribute_treemap(arg_dict['limit'])
+    if(arguments):
+        all_values = getview.get_view_all_nodes_average_attribute_treemap(arg_dict['start_time_epoch'], arg_dict['end_time_epoch'], group_level = 4)
+    else:
+        all_values = getview.get_view_all_nodes_average_attribute_treemap()
+
+
 
     values_treemap_cpu = all_values.cpu_usage
     values_treemap_mem_used = all_values.memory_usage
@@ -282,7 +301,7 @@ def node_slivers (request, parameter):
     count = 0
     if(document):
         node_in_db = True
-	if slivers:
+        if slivers:
             for container in slivers:
                 sliver= slivers[container]
                 count +=1
@@ -317,6 +336,7 @@ def node_slivers (request, parameter):
 
         #Disk Values
         memory_values= documentparser.get_set(document, "memory")
+
     return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values,
                                                    'values_graph':values_graph, 'network_values':network_values,
                                                    'name':name, 'server_ip': server_ip, 'server_port': server_port,
@@ -384,8 +404,10 @@ def sliver_memory_usage(request, parameter):
 
 def node_ping(request, parameter):
 
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
     all_values = []
     node_id = parameter
     all_values = getview.get_view_node_id_synthesized_attribute_timeline(node_id, "ping_status")
     #values_graph = json.dumps(values)
-    return render_to_response('synthesized_status.html',{ 'name':node_id, 'metric': 'Ping Status', 'all_values':all_values},context_instance=RequestContext(request))
+    return render_to_response('synthesized_status.html',{ 'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric': 'Ping Status', 'all_values':all_values},context_instance=RequestContext(request))

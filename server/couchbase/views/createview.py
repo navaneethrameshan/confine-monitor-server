@@ -199,6 +199,11 @@ def create_view():
         }\
     }"
 
+    map_function14 = "function (doc, meta) {\
+        if(doc.type== 'trace-route_most_recent'){\
+            emit(doc.nodeid, null)\
+        }\
+    }"
 
     reduce_function7 = "_stats"
 
@@ -228,3 +233,6 @@ def create_view():
     generate_view_document( 'all_nodes_network_stat', map_function12, 'get_all_nodes_network_stat', reduce_function7, True)
 
     generate_view_document( 'all_nodes_disk_stat', map_function13, 'get_all_nodes_disk_stat', reduce_function7, True)
+
+    generate_view_document( 'node-trace-mostrecent', map_function14, 'get_node-trace-mostrecent')
+

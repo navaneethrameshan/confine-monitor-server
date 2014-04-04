@@ -5,7 +5,7 @@ import subprocess
 from optparse import OptionParser
 
 # Gobally cache password/passphrase.
-_password = "confine"
+_password = ""
 _passphrase = ""
 
 def scp(srcList, dest):
@@ -13,7 +13,7 @@ def scp(srcList, dest):
     Copies src to dest. Initializes password/passphrase.
     """
     global _passphrase, _password
-    cmd = "scp -r -o StrictHostKeyChecking=no %s %s:" % (' '.join(srcList) ,dest)
+    cmd = "scp -r %s %s:." % (' '.join(srcList) ,dest)
     print cmd
     tried = False
     handle = pexpect.spawn(cmd)

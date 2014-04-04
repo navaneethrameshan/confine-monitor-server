@@ -152,8 +152,8 @@ EOF			""")
             v = self.collectPING(nodename, cohash)
             values.update(v)
 
-            v = self.collectPorts(nodename)
-            values.update(v)
+          #  v = self.collectPorts(nodename)
+          #  values.update(v)
 
           #  v = self.collectSSH(nodename, cohash)
           #  values.update(v)
@@ -161,8 +161,8 @@ EOF			""")
           #  v = self.collectDNS(nodename, cohash)
           #  values.update(v)
 
-            v = self.collectTRACEROUTE(nodename, cohash)
-            values.update(v)
+          #  v = self.collectTRACEROUTE(nodename, cohash)
+          #  values.update(v)
 
         except:
             print traceback.print_exc()

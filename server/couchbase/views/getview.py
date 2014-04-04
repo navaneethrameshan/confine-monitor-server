@@ -4,6 +4,7 @@ import time
 from common import nodelist
 from server import constants
 from server.couchbase import store, util, fetchdocument
+from server.couchbase.views import util as view_util
 from server.couchbase import documentparser
 from server.logger import logger
 from collections import namedtuple
@@ -161,7 +162,115 @@ def get_view_all_nodes_synthesized_most_recent():
     return all_synthesized_values
 
 
-def get_view_all_nodes_average_attribute_treemap(limit =10, start_time="", end_time ="{}"):
+def get_view_all_nodes_trace():
+    log.debug("Get most recent view of trace for all nodes")
+
+    db = store.get_bucket()
+
+    all_trace_values = {}
+
+    view_by_node_trace_most_recent = db.view('_design/node-trace-mostrecent/_view/get_node-trace-mostrecent', include_docs= True)
+
+    ping_status = None
+    port_status = None
+    count = 0
+    for node in view_by_node_trace_most_recent:
+        count += 1
+        json_value = node['doc']
+        document = json_value['json']
+
+        trace =  documentparser.get_value(document, "trace")
+
+        name = documentparser.get_value(document, "nodeid")
+
+        all_trace_values.update({name: {'trace':trace, 'serial':count}})
+
+
+    return all_trace_values
+
+
+def get_view_all_nodes_average_attribute_treemap( start_timestamp="", end_timestamp ="{}", group_level=1):
+
+
+    start_time_key = ""
+    end_time_key = ""
+    date_attributes = ['year', 'month', 'date', 'hour', 'minute', 'second']
+    pattern_list = ['%Y', '%m', '%d', '%H', '%M','%S']
+
+    pattern= "\'"+(', '.join(pattern_list[:group_level-1]))+"\'"
+
+
+    print "pattern: "+ pattern
+
+    db = store.get_bucket()
+
+    #Treemap--CPU Usage and Free memory
+    values_treemap_cpu = [['Id', 'parent', 'metricvalue'], ['Average CPU Usage', '', 0]]
+    values_treemap_mem_used = [['Id', 'parent', 'metricvalue'], ['Average Memory Usage', '', 0]]
+    values_treemap_data_sent = [['Id', 'parent', 'metricvalue'], ['Average Data Sent', '', 0]]
+    values_treemap_data_received = [['Id', 'parent', 'metricvalue'], ['Average Data Received', '', 0]]
+
+    if(start_timestamp==""):
+        str_startkey = "[\"""\"]"
+    else:
+        start_time = util.convert_epoch_to_date_time_dict_attributes_strip_zeroes(start_timestamp)
+        for i in range(group_level-1):
+            start_time_key += start_time[date_attributes[i]]+","
+        start_time_key=start_time_key.rstrip(",")
+
+        str_startkey = "[\"" "\"," + start_time_key+"]"
+
+
+    if(end_timestamp!= "{}"):
+        end_time = util.convert_epoch_to_date_time_dict_attributes_strip_zeroes(end_timestamp)
+        for i in range(group_level-1):
+            end_time_key += end_time[date_attributes[i]]+","
+        end_time_key=end_time_key.rstrip(",")
+        str_endkey = "[\"{}\"," + end_time_key+"]"
+
+    else:
+        str_endkey = "[\"{}\"," + end_timestamp+"]"
+
+    log.info( "startkey: "+ str_startkey)
+    log.info( "endkey: "+ str_endkey)
+
+
+    view_stats_cpu = db.view('_design/all_nodes_cpu_stats/_view/get_all_nodes_cpu_stats', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+
+    view_stats_mem = db.view('_design/all_nodes_mem_used/_view/get_all_nodes_mem_used', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+
+    view_stats_net_sent = db.view('_design/all_nodes_bytes_sent/_view/get_all_nodes_bytes_sent', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+
+    view_stats_net_received = db.view('_design/all_nodes_bytes_recv/_view/get_all_nodes_bytes_recv', startkey=str_endkey, endkey = str_startkey, descending = True, reduce=True, group=True, group_level=group_level)
+
+
+    node_id_cpu_avg = view_util.get_sum_count(view_stats_cpu)
+    node_id_mem_used_avg = view_util.get_sum_count(view_stats_mem)
+    node_id_net_sent_avg = view_util.get_sum_count(view_stats_net_sent)
+    node_id_net_received_avg = view_util.get_sum_count(view_stats_net_received)
+
+    for key,value in node_id_cpu_avg.items():
+        values_treemap_cpu.append([key, 'Average CPU Usage',value['total_sum']/value['total_count']])
+
+    for key,value in node_id_mem_used_avg.items():
+        values_treemap_mem_used.append([key, 'Average Memory Usage',value['total_sum']/value['total_count']])
+
+    for key,value in node_id_net_sent_avg.items():
+        values_treemap_data_sent.append([key, 'Average Data Sent', value['total_sum']/value['total_count']])
+
+    for key,value in node_id_net_received_avg.items():
+        values_treemap_data_received.append([key, 'Average Data Received', value['total_sum']/value['total_count']])
+
+
+    return node_treemap(cpu_usage= values_treemap_cpu, memory_usage= values_treemap_mem_used, data_sent= values_treemap_data_sent,
+        data_received= values_treemap_data_received)
+
+
+
+def get_view_all_nodes_average_attribute_treemap_bkup(limit =10, start_time="", end_time ="{}"):
     log.debug("Get view for most recent attribute for all nodes")
 
     #for given node_id get value_type ordered by time (most recent first)
@@ -216,7 +325,7 @@ def get_view_all_nodes_average_attribute_treemap(limit =10, start_time="", end_t
 
 
     return node_treemap(cpu_usage= values_treemap_cpu, memory_usage= values_treemap_mem_used, data_sent= values_treemap_data_sent,
-                        data_received= values_treemap_data_received)
+        data_received= values_treemap_data_received)
 
 def get_view_nodes_set_metric_stat_aggregated(set, interface, metric, node_id=None, start_timestamp="", end_timestamp ="{}", group_level=1):
     log.debug("Get view by node ID for node: %s" %node_id)

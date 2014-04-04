@@ -7,7 +7,7 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
 
     url(r'^$', 'web.views.index'),
-    url(r'^(visualize/.{2,})$', 'web.views.node_info_treemap'),
+    url(r'^(visualize/.{0,})$', 'web.views.node_info_treemap'),
     url(r'^(load_avg_1min/.{2,})$', 'web.views.node_info_timeline'),
     url(r'^(memory_percent_used/.{2,})$', 'web.views.node_info_timeline'),
     url(r'^(uptime/.{2,})$', 'web.views.node_info_timeline'),
@@ -34,6 +34,7 @@ urlpatterns = patterns('',
     url(r'^(network/.{2,})$', 'web.views.node_info_set_timeline'),
     url(r'^(disk/.{2,})$', 'web.views.node_info_set_timeline'),
     url(r'^(memory/.{2,})$', 'web.views.node_info_set_timeline'),
+    url(r'^(networktrace/.{0,})$', 'web.views.network_trace'),
 
     # url(r'^web/', include('web.foo.urls')),
     #url(r'^slice/([A-Za-z]*-\d*)$', 'web.views.slice_info'), # currently accept "word - number"

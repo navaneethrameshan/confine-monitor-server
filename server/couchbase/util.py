@@ -6,16 +6,16 @@ import re
 
 RD_PORT = '8080'
 
-SERVER_IP = 'monitor.confine-project.eu'
-SERVER_PORT = '80'
+SERVER_IP = '147.83.35.241'
+SERVER_PORT = '8000'
 
-DB_IP = 'monitor.confine-project.eu'
+DB_IP = '147.83.35.241'
 DB_PORT= '8091'
 
 CONTROLLER_IP = 'controller.confine-project.eu'
 CONTROLLER_PORT= '8080'
 
-TIMEPERIOD = 300 
+TIMEPERIOD = 10
 
 LAST_SEEN_SEQ_NUMBER = 0
 
@@ -126,7 +126,7 @@ def split_arguments_return_dict(arguments):
             if type:
                 if type!='limit':
                     epoch= convert_time_to_epoch(temp[1])
-                    ret_dict[type+'_epoch']=str(epoch)
+                    ret_dict[type+'_epoch']=epoch
                     ret_dict[type+'_year'] = return_year_month_day_from_time(temp[1]).tm_year
                     ret_dict[type+'_month'] = return_year_month_day_from_time(temp[1]).tm_mon
                     ret_dict[type+'_day'] = return_year_month_day_from_time(temp[1]).tm_mday

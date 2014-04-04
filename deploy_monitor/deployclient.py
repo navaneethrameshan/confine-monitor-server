@@ -6,7 +6,7 @@ import shelve
 import os
 import socket, paramiko
 import scprecursive
-
+import fabric.version
 nodes = []
 
 def update_node_list():
@@ -64,6 +64,7 @@ def get_node_list():
 
 if __name__ =='__main__':
     path= os.path.join(os.path.dirname(__file__), 'node_list_shelf.db')
+    success_list = []
     if(os.path.exists(path)):
         os.remove(path)
     update_node_list()
@@ -71,9 +72,13 @@ if __name__ =='__main__':
     for node in nodes:
         dest = 'root@'+node
         print dest
-        scprecursive.scp('/home/navaneeth/PycharmProjects/confine_monitor/', dest)
+        status = scprecursive.scp('/home/navaneeth/PycharmProjects/RD-network/', dest)
+        if status:
+            success_list.append(node)
 
-
+    print "Successfully Completed for Nodes: "
+    for node in success_list:
+        print node
 
 
 # We can then specify host(s) and run the same commands across those systems
@@ -82,14 +87,15 @@ env.password = 'confine'
 env.hosts = get_node_list()
 env.warn_only = True
 
+
 def runserver():
     if _is_host_up(env.host, int(env.port)) is True:
-        with cd("confine_monitor"):
+        with cd("confine_monitor-nogit"):
             run("python runserver.py &", pty=False)
 
 def runmonitor():
     if _is_host_up(env.host, int(env.port)) is True:
-        with cd("confine_monitor"):
+        with cd("confine_monitor-nogit"):
             run("python main.py > /root/monitor.log 2>&1 &", pty=False)
 
 def uptime():
@@ -99,6 +105,27 @@ def uptime():
 def killmonitor():
     if _is_host_up(env.host, int(env.port)) is True:
         run("ps | grep main.py | cut -d \" \" -f1 | xargs kill -9")
+
+def killall():
+    if _is_host_up(env.host, int(env.port)) is True:
+        run("pidof python | xargs kill -9")
+
+def runall():
+    if _is_host_up(env.host, int(env.port)) is True:
+        with cd("confine_monitor-nogit"):
+            run("python runserver.py > /root/server.log 2>&1 &", pty=False)
+            run("python main.py > /root/monitor.log 2>&1 &", pty=False)
+def runall_continue():
+    if _is_host_up(env.host, int(env.port)) is True:
+        with cd("confine_monitor-nogit"):
+            run("python runserver.py > /root/server.log 2>&1 &", pty=False)
+            run("python main.py -c > /root/monitor.log 2>&1 &", pty=False)
+
+def run_trace_all():
+    if _is_host_up(env.host, int(env.port)) is True:
+        with cd("RD-network"):
+            run("python runserver.py > /root/server.log 2>&1 &", pty=False)
+            run("python main.py > /root/monitor.log 2>&1 &", pty=False)
 
 def _is_host_up(host, port):
     # Set the timeout

@@ -87,7 +87,7 @@
             var start_date = new Date(start_year,start_month-1,start_day);
             var end_date = new Date(end_year,end_month-1,end_day);
 
-            var limit = document.getElementById("limit").value;
+{#            var limit = document.getElementById("limit").value;#}
 
             if (start_date.getFullYear() == start_year && start_date.getMonth() + 1 == start_month &&
                     start_date.getDate() == start_day) {
@@ -111,11 +111,10 @@
             var go =document.getElementById("go").value;
 
             var node = document.getElementById("node").name;
-            var metric = document.getElementById("metric").name;
             var server_ip = document.getElementById("server_ip").name;
             var server_port = document.getElementById("server_port").name;
-            var url = 'http://'+server_ip+':'+server_port+'/'+metric+'/start_time='+start_year+'-'+start_month
-                    +'-'+start_day+'&end_time='+end_year+'-'+end_month+'-'+end_day+'&limit='+limit;
+            var url = 'http://'+server_ip+':'+server_port+'/start_time='+start_year+'-'+start_month
+                    +'-'+start_day+'&end_time='+end_year+'-'+end_month+'-'+end_day;
 
             window.location = url;
         }
@@ -276,21 +275,21 @@ End Time::
 
 <br>
 <br>
-No. of values to calculate average:
+{% comment %}No. of values to calculate average:
 <select id= "limit" name="limit" onchange="selectDropdown()">
     <option id="limit.10" value="10">10
     <option id="limit.100" value="100"  selected="selected">100
     <option id="limit.500" value="500">500
 </select>
 &nbsp;
-&nbsp;
+&nbsp;{% endcomment %}
 
 <input id="go" type="button" value="go" onclick="go()" />
 
-<br>
+{% comment %}<br>
 <br>
 
-<input id="most_recent" type="button" value="Most Recent" onclick="mostrecent()" />
+<input id="most_recent" type="button" value="Most Recent" onclick="mostrecent()" />{% endcomment %}
 
 <br>
 <br>
