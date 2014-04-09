@@ -17,21 +17,26 @@
 
 </head>
 
-<body>
+<body onload="draw();">
 <p id="selection"></p>
+ <label for="clustering">Enable Clustering:</label>
+ <input id="clustering" type="checkbox" onChange="draw()" checked="false">
+<br>
+
 <div id="mygraph" ></div>
 
 <script type="text/javascript">
     //var received = {'300': ['100'], '200': ['100'], 'C': ['200', '300'], '100':['200']};
-
+    function draw(){
     var received_values = {{values|safe}};
     var received_nodes = {{nodes_py|safe}};
     var nodes = [];
     var edges = [];
     var xcor = 0;
+
     for (var node in  received_nodes){
         if(node == 'controller.confine-project.eu'){
-            nodes.push({id:node, label:node, x:xcor, y:xcor, color: {
+            nodes.push({id:node, label:node, color: {
                 background: 'yellow',
                 border: 'red',
                 highlight: {
@@ -41,6 +46,17 @@
             }
 
                  });
+        }
+        else if (received_nodes[node] == 1){
+            nodes.push({id:node, label:node, color: {
+                background: 'green',
+                border: 'black',
+                highlight: {
+                    background: 'pink',
+                    border: 'red'
+                }
+            }});
+
         }
         else
             nodes.push({id:node, label:node, shape : 'dot'});
@@ -55,36 +71,21 @@
      }
 
 
-    //alert (JSON.stringify(nodes, null, 4));
+    //alert (JSON.stringify(received_nodes, null, 4));
     // create a graph
     var container = document.getElementById('mygraph');
+    var clusteringOn = document.getElementById('clustering').checked;
     var data = {
         nodes: nodes,
         edges: edges
     };
     var options = {  navigation: false, configurePhysics:false,
-        physics: {barnesHut: {centralGravity: 0, springLength: 21, springConstant: 0.125, damping: 0.20}},
-        clustering: false
-        {% comment %}clustering: {
-            initialMaxNodes: 100,
-            clusterThreshold:500,
-            reduceToNodes:300,
-            chainThreshold: 0.4,
-            clusterEdgeThreshold: 20,
-            sectorThreshold: 100,
-            screenSizeThreshold: 0.2,
-            fontSizeMultiplier:  4.0,
-            maxFontSize: 1000,
-            forceAmplification:  0.1,
-            distanceAmplification: 0.1,
-            edgeGrowth: 20,
-            nodeScaling: {width:  1,
-                height: 1,
-                radius: 1},
-            maxNodeSizeIncrements: 600,
-            activeAreaBoxSize: 100,
-            clusterLevelDifference: 2
-        }{% endcomment %}
+        physics: {barnesHut: {centralGravity: 0.4, springLength: 21, springConstant: 0.125, damping: 0.20}},
+       // clustering: true
+        clustering: {
+            enabled: clusteringOn
+        },
+        stabilize: false
 
         };
     var graph = new vis.Graph(container, data, options);
@@ -93,7 +94,7 @@
     graph.on('select', function(params) {
         document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
     });
-
+    }
 </script>
 
 </body>

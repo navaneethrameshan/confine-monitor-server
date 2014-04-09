@@ -25,15 +25,16 @@ class Analyse(object):
             for path in pathlist:
                 firstrun = True
                 for probe in path:
-                    if firstrun:
-                        parent = probe["Name"]
-                        firstrun = False
-                    else:
-                        #print "Adding to dict- Key: " +str(probe["Name"]) +"  Value: "+str(parent)
-                        self.__add_to_dict(probe["Name"],parent)
-                        parent = probe["Name"]
-
-                    self.nodes[probe["Name"]]= 1
+                    if probe.has_key("Name"):
+                        if firstrun:
+                            parent = probe["Name"]
+                            self.nodes[probe["Name"]]= 1 ## Value 1 indicates that the node is an RD
+                            firstrun = False
+                        else:
+                            #print "Adding to dict- Key: " +str(probe["Name"]) +"  Value: "+str(parent)
+                            self.__add_to_dict(probe["Name"],parent)
+                            parent = probe["Name"]
+                            self.nodes[probe["Name"]]= 0 ## Value 0 indicates not an RD
 
         else:
             print "[ERROR] Not an Instance of Paths."
