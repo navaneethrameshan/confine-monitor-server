@@ -35,12 +35,12 @@ class Schedule:
         self.log.info("Number of Nodes: %d" %len(nodes) )
 	
         for i in range(2):
-#            t1= parallelcollect.Parallel_collect(self.q)
-#            t1.daemon=True
-#            t1.start()
-#            t2= parallelcollect.Parallel_collect_synthesized(self.node_ip6q)
-#            t2.daemon= True
-#            t2.start()
+            t1= parallelcollect.Parallel_collect(self.q)
+            t1.daemon=True
+            t1.start()
+            t2= parallelcollect.Parallel_collect_synthesized(self.node_ip6q)
+            t2.daemon= True
+            t2.start()
             #Add thread to collect network trace info
             t3 = parallelcollect.Parallel_collect_trace(self.trace_node)
             t3.daemon = True
@@ -50,19 +50,19 @@ class Schedule:
         while(1):
 
             try:
-#                for node in self.node_list:
-#                    self.q.put(node)
-#
-#                for nodeip6 in nodes:
-#                    self.node_ip6q.put(nodeip6)
+                for node in self.node_list:
+                    self.q.put(node)
+
+                for nodeip6 in nodes:
+                    self.node_ip6q.put(nodeip6)
 
                 for node in self.trace_node_list:
                     self.trace_node.put(node)
 
-#                print("Waiting for Collect Queue!!!")
-#                self.q.join()
-#                print ("Waiting for synthesized queue!!!")
-#                self.node_ip6q.join()
+                print("Waiting for Collect Queue!!!")
+                self.q.join()
+                print ("Waiting for synthesized queue!!!")
+                self.node_ip6q.join()
                 print ("Waiting for trace queue!!!")
                 self.trace_node.join()
                 print("Done!!")

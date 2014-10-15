@@ -11,7 +11,7 @@ log = logger("store")
 
 class Database(object):
 
-    def __init__(self, name = 'tracetest'):
+    def __init__(self, name = 'test'):
         cb = Couchbase(util.DB_IP+":"+util.DB_PORT, "Administrator", "couchbase")
         self.log = logger ("database")
 
