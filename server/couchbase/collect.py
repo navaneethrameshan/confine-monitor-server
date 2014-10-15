@@ -39,7 +39,7 @@ class Collect:
         # Possibility to optimize here by maintaining tcp connection? urllib3 and httpconnectionpool or httplib. Also important for
         # handling cases of out of order message arrival. Although out of order messages shouldn't ideally affect anything.
         url = self.generate_url()
-     #   log.info(url)
+        log.info(url)
         request = urllib2.Request(url)
         response= None
         try:

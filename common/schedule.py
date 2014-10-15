@@ -30,7 +30,7 @@ class Schedule:
 
         for name in nodes:
            # self.node_list.append(couchbasecollect(name, port = util.RD_PORT, ip= name)) # docid is the same as ip, type = node (default)
-            self.trace_node_list.append(couchbasecollect(str(name+'-trace'), port = '8000', ip=name, type='trace-route' )) # docid wouldbe "ip-trace-timestamp", type = trace-route
+            self.trace_node_list.append(couchbasecollect(str(name+'-trace'), port = util.RD_PORT, ip=name, type='trace-route' )) # docid wouldbe "ip-trace-timestamp", type = trace-route
 
         self.log.info("Number of Nodes: %d" %len(nodes) )
 	
