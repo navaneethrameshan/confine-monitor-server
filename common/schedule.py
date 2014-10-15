@@ -29,7 +29,7 @@ class Schedule:
         #Server hanging after a few days could be a possible shelve problem??
 
         for name in nodes:
-           # self.node_list.append(couchbasecollect(name, port = util.RD_PORT, ip= name)) # docid is the same as ip, type = node (default)
+            self.node_list.append(couchbasecollect(name, port = util.RD_PORT, ip= name)) # docid is the same as ip, type = node (default)
             self.trace_node_list.append(couchbasecollect(str(name+'-trace'), port = util.RD_PORT, ip=name, type='trace-route' )) # docid wouldbe "ip-trace-timestamp", type = trace-route
 
         self.log.info("Number of Nodes: %d" %len(nodes) )
