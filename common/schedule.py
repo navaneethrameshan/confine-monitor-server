@@ -59,13 +59,13 @@ class Schedule:
                 for node in self.trace_node_list:
                     self.trace_node.put(node)
 
-                print("Waiting for Collect Queue!!!")
+                self.log.info("Waiting for Collect Queue!!!")
                 self.q.join()
-                print ("Waiting for synthesized queue!!!")
+                self.log.info("Waiting for synthesized queue!!!")
                 self.node_ip6q.join()
-                print ("Waiting for trace queue!!!")
+                self.log.info("Waiting for trace queue!!!")
                 self.trace_node.join()
-                print("Done!!")
+                self.log.info("Done!! Sleeping until next schedule!!")
 
             except KeyboardInterrupt:
                 sys.exit(1)
