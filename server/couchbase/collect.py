@@ -7,8 +7,12 @@ from server.logger import logger
 
 import urllib2
 import json
+import socket
 
 log = logger("Collect")
+
+socket.setdefaulttimeout(40)
+
 
 class Collect:
 
@@ -42,21 +46,25 @@ class Collect:
         log.info(url)
         request = urllib2.Request(url)
         response= None
+        data = None
+        page = None
         try:
             response = urllib2.urlopen(request)
-        except:
-           # log.error("Error in http request")
-            response = None
+            data = response.read()
 
-
-
-        if(response is None):
+        except urllib2.URLError:
+        #    log.error("Error in http request")
             return None
 
-        page = json.loads(response.read())
+        except socket.timeout:
+             log.error("Socket timeout for node: "+ str(self.name)+" ! Return None")
+             return None
+        if data:
+            page = json.loads(data)
 
         # print sequence
         return page
+
 
 
     def parse_store(self):
