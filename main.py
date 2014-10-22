@@ -11,7 +11,7 @@ def launch_memory_usage_server(port = 8088):
         'server.socket_port': port
     })
 
-    cherrypy.server.socket_host = '147.83.35.241'
+    cherrypy.server.socket_host = '84.88.85.24'
     cherrypy.engine.start()
 
 
@@ -20,5 +20,5 @@ if __name__ =='__main__':
     if(os.path.exists(path)):
         os.remove(path)
 
-  #  launch_memory_usage_server()
+    launch_memory_usage_server()
     main.main()
