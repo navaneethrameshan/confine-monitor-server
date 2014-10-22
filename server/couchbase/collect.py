@@ -3,12 +3,15 @@ from server.couchbase import util
 from server import rename
 from server.couchbase import documentparser
 from server.logger import logger
-
+import errno
 
 import urllib2
 import json
+import socket
 
 log = logger("Collect")
+
+socket.setdefaulttimeout(40)
 
 class Collect:
 
@@ -39,28 +42,37 @@ class Collect:
         # Possibility to optimize here by maintaining tcp connection? urllib3 and httpconnectionpool or httplib. Also important for
         # handling cases of out of order message arrival. Although out of order messages shouldn't ideally affect anything.
         url = self.generate_url()
-        log.info(url)
+        #log.info(url)
         request = urllib2.Request(url)
         response= None
+        data = None
+        page = None
         try:
             response = urllib2.urlopen(request)
-        except:
-           # log.error("Error in http request")
-            response = None
+            data = response.read()
 
-
-
-        if(response is None):
+        except urllib2.URLError:
+        #    log.error("Error in http request")
             return None
 
-        page = json.loads(response.read())
+        except socket.timeout:
+             log.error("Socket timeout for node: "+ str(self.name)+" ! Return None")
+             return None
 
-        # print sequence
+        except:
+            log.error("Exception Caught: "  + str(self.name)+" ! Return None")
+            return None
+
+
+        if data:
+            page = json.loads(data)
+
+            # print sequence
         return page
 
 
     def parse_store(self):
-        #log.info("NODE ID: " + self.name)
+        log.info("NODE ID: " + self.name)
         db = store.get_bucket()
         successful_sequence_keys = []
 
