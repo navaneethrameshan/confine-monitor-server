@@ -3,7 +3,12 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Confine Monitor</title>
-    <center><h1><a href="http://{{ server_ip }}:{{ server_port }}">Confine Research Device Status</a></h1></center>
+    <link rel="icon" href="{{ STATIC_URL }}/images/confine.png" type="image/png" />
+
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}style.css">
 
 
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -138,6 +143,25 @@
 </head>
 
 <body>
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header navbar-right ">
+            <h1><a href="http://{{ server_ip }}:{{ server_port }}"><img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> Confine Research Device Status</a></h1>
+        </div>
+    </div>
+</nav>
+
+
+<ul class="nav nav-pills" role="navigation">
+    <!--<li><a> <img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> </a></li>-->
+    <li class="active"><a href="http://{{ server_ip }}:{{ server_port }}">Home</a></li>
+    <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/visualize/ ">Visualize Node metrics over time</a></li>
+    <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/networktrace/ ">View Network map</a></li>
+</ul>
+
+
+
 
 <form>
     <input type="hidden" id="node" name={{ name }}>
@@ -301,4 +325,11 @@ End Time::
 <div id="data_received" style="width: 600px; height: 400px; float:right;" ></div>
 
 </body>
+
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery-1.11.1.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}bootstrap.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}scripts.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}dataTables.colVis.js"></script>
+
 </html>

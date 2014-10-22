@@ -5,216 +5,203 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Confine Monitor</title>
-    <center><h1><a href="http://{{ server_ip }}:{{ server_port }}">Confine Research Device Status</a></h1></center>
+    <link rel="icon" href="{{ STATIC_URL }}/images/confine.png" type="image/png" />
 
 
-    <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
-
-
-
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-        google.load('visualization', '1', {packages:['treemap']});
-    </script>
-    {% comment %} <script type="text/javascript">
-        function drawVisualization() {
-            // Create and populate the data table.
-            var data = google.visualization.arrayToDataTable([
-                ['Node', 'Parent',    'Cpu Usage'],
-                ['All Nodes',    null,             0],
-                ['Node-1',   'All Nodes',             0],
-                ['Node-2',    'All Nodes',             0],
-                ['Node-3',     'All Nodes',             0],
-                ['Node-4',    'All Nodes',             0],
-                ['Cpu Usage-1',    'Node-1',             10],
-                ['Memory Usage-1',  'Node-1',            11],
-                ['Disk Usage-1',    'Node-1',            52],
-                ['Cpu Usage-2',    'Node-2',             20],
-                ['Memory Usage-2',  'Node-2',            21],
-                ['Disk Usage-2',    'Node-2',            62],
-                ['Cpu Usage-3',    'Node-3',             30],
-                ['Memory Usage-3',  'Node-3',            31],
-                ['Disk Usage-3',    'Node-3',            2],
-                ['Cpu Usage-4',    'Node-4',             10],
-                ['Memory Usage-4',  'Node-4',            12],
-                ['Disk Usage-4',    'Node-4',            52]
-
-            ]);
-
-            // Create and draw the visualization.
-            var treemap = new google.visualization.TreeMap(document.getElementById('visualization'));
-            treemap.draw(data, {
-                minColor: 'red',
-                midColor: '#ddd',
-                maxColor: '#0d0',
-                headerHeight: 15,
-                fontColor: 'black',
-                showScale: true});
-        }
-
-
-        google.setOnLoadCallback(drawVisualization);
-    </script>{% endcomment %}
-
-  {% comment %}  <script type="text/javascript">
-        function drawVisualization() {
-            // Create and populate the data table.
-            var data_cpu = google.visualization.arrayToDataTable({{ values_treemap_cpu|safe }});
-
-            // Create and draw the visualization.
-            var treemap_cpu = new google.visualization.TreeMap(document.getElementById('cpu'));
-            treemap_cpu.draw(data_cpu, {
-
-                showScale: true});
-
-            // Create and populate the data table.
-            var data_mem = google.visualization.arrayToDataTable({{ values_treemap_free_mem|safe }});
-
-            // Create and draw the visualization.
-            var treemap_mem = new google.visualization.TreeMap(document.getElementById('mem'));
-            treemap_mem.draw(data_mem, {
-
-                showScale: true});
-
-        }
-
-
-        google.setOnLoadCallback(drawVisualization);
-    </script>{% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}style.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dataTables.fixedHeader.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dataTables.colVis.css">
 
 
 </head>
 
 <body>
 
-<a href="http://{{ server_ip }}:{{ server_port }}/visualize/ ">Visualize Node metrics over time</a>
-<a href="http://{{ server_ip }}:{{ server_port }}/networktrace/ ">View Network Map</a>
-
-<!-- Row Highlight Javascript -->
-<script type="text/javascript">
-    window.onload=function(){
-        var tfrow = document.getElementById('tfhover').rows.length;
-        var tbRow=[];
-        for (var i=1;i<tfrow;i++) {
-            tbRow[i]=document.getElementById('tfhover').rows[i];
-            tbRow[i].onmouseover = function(){
-                this.style.backgroundColor = '#f3f8aa';
-            };
-            tbRow[i].onmouseout = function() {
-                this.style.backgroundColor = '#ffffff';
-            };
-        }
-    };
-</script>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header navbar-right ">
+            <h1><a href="http://{{ server_ip }}:{{ server_port }}"><img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> Confine Research Device Status</a></h1>
+        </div>
+    </div>
+</nav>
 
 
-<style type="text/css">
-    table.sortable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
-    table.sortable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
-    table.sortable tr {background-color:#ffffff;}
-    table.sortable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
-</style>
+<ul class="nav nav-pills" role="navigation">
+    <!--<li><a> <img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> </a></li>-->
+    <li class="active"><a href="http://{{ server_ip }}:{{ server_port }}">Home</a></li>
+    <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/visualize/ ">Visualize Node metrics over time</a></li>
+    <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/networktrace/ ">View Network map</a></li>
+    <!--<li><noscript><div style="display: inline-block; padding: 2px 4px; margin: 0px 0px 5px; border: 1px solid rgb(204, 204, 204); text-align: center; background-color: rgb(255, 255, 255);"><a style="text-decoration: none; font-size: 13px; color: rgb(0, 0, 0);"><img src="http://localtimes.info/images/countries/is.png"="" border=0="" style="border:0;margin:0;padding:0"=""> Reykjavik</a></div></noscript><script type="text/javascript" src="http://localtimes.info/clock.php?continent=Europe&country=Iceland&city=Reykjavik&cp1_Hex=000000&cp2_Hex=FFFFFF&cp3_Hex=000000&fwdt=128&ham=0&hbg=0&hfg=0&sid=0&mon=0&wek=0&wkf=0&sep=0&widget_number=1000"></script></li>-->
+</ul>
 
-<br>
 
-{#   <table id="tfhover" class="tftable" border="1">#}
-<table id="tfhover" class="sortable" border="1">
-    <thead>
-    <tr>
+<div id="container">
+    <div class="loading">
+        <img src="{{ STATIC_URL }}/images/loading.gif">
+    </div>
+    <div class="table" style="display: none;">
+        <table id="indextable" class="display compact" border="0" cellspacing="0" width="100%">
+        <thead>
+        <tr>
 
-        <th>Last Seen (GMT)</th>
-        <th>Name</th>
-        <th>Disk Size</th>
-        <th>Number of CPUs</th>
-        <th>CPU Usage(%)</th>
-        <th>Load Avg-1 min</th>
-        <th>Total Memory</th>
-        <th>Memory used(%)</th>
-        <th>Network Data Sent/Sec</th>
-        <th>Network Data Received/Sec</th>
-        <th>Uptime</th>
-        <th>Ping Status</th>
-        <th>Port Status</th>
+            <th>Last Seen (GMT)</th>
+            <th>Name</th>
+            <th>Disk Size</th>
+            <th>Total CPUs</th>
+            <th>CPU Usage(%)</th>
+            <th>Load Avg</th>
+            <th>Total Memory</th>
+            <th>Memory used(%)</th>
+            <th>Data Sent/Sec</th>
+            <th>Data Recvd/Sec</th>
+            <th>Uptime</th>
+            <th>Ping Status</th>
+            <th>Port Status</th>
 
-    </tr>
-    </thead>
+        </tr>
+        </thead>
 
-    <tbody>
-    {% for node, values in all_synthesized_values.items%}
-       <tr>
+        <tbody>
+        {% for node, values in all_synthesized_values.items%}
+        <tr>
 
-{#           <td>{{ values.serial }}</td>#}
+            {#           <td>{{ values.serial }}</td>#}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td>{{ all_values_node|hash:"last_updated" }}</td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td>{{ all_values_node|hash:"last_updated" }}</td>
+            {% endwith %}
 
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/nodeslivers/{{ node }} ">{{node }}</a></td>
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/nodeslivers/{{ node }} ">{{node }}</a></td>
 
-           {% with all_values|hash:node as all_values_node%}
-               <td>{{ all_values_node|hash:"disk_size" }}</td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td>{{ all_values_node|hash:"disk_size" }}</td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td>{{ all_values_node| hash:"num_cpu" }}</td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td>{{ all_values_node| hash:"num_cpu" }}</td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/total_cpu_usage/{{ node }}/ ">{{ all_values_node|hash:"percent_usage" }}</a></td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/total_cpu_usage/{{ node }}/ ">{{ all_values_node|hash:"percent_usage" }}</a></td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/load_avg_1min/{{ node }}/ ">{{ all_values_node|hash:"load_avg_1min" }}</a></td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/load_avg_1min/{{ node }}/ ">{{ all_values_node|hash:"load_avg_1min" }}</a></td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td>{{ all_values_node|hash:"total_memory" }}</td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td>{{ all_values_node|hash:"total_memory" }}</td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ node }}/ ">{{ all_values_node|hash:"memory_percent_used" }}</a></td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ node }}/ ">{{ all_values_node|hash:"memory_percent_used" }}</a></td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/network_total_bytes_sent_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_sent" }}</a></td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/network_total_bytes_sent_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_sent" }}</a></td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/network_total_bytes_received_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_received" }}</a></td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/network_total_bytes_received_last_sec/{{ node }}/ ">{{ all_values_node|hash:"data_received" }}</a></td>
+            {% endwith %}
 
-           {% with all_values|hash:node as all_values_node%}
-               <td>{{ all_values_node|hash:"uptime" }}</td>
-           {% endwith %}
+            {% with all_values|hash:node as all_values_node%}
+            <td>{{ all_values_node|hash:"uptime" }}</td>
+            {% endwith %}
 
-            <td><a href="http://{{ server_ip }}:{{ server_port }}/pingstatus/{{ node }} ">{{ values.ping_status }}</a></td>
+            <td>
+                {% if values.ping_status == 'Fail' %}
+                <a href="http://{{ server_ip }}:{{ server_port }}/pingstatus/{{ node }} " style="color: #CC0000">{{ values.ping_status }}</a>
+                {% else %}
+                <a href="http://{{ server_ip }}:{{ server_port }}/pingstatus/{{ node }} ">{{ values.ping_status }}</a>
+                {% endif %}
+
+            </td>
             <td>
                 {% for key, value in values.port_status.items %}
 
-                    {% if value == 'open' %}
-                        <span style="color: #ff0000;">port-{{ key }}:{{ value }}</span>,
-                    {% else %}
-                        port-{{ key }}:{{ value }},
-                    {% endif %}
+                {% if value == 'open' %}
+                <span style="color: #ff0000;">port-{{ key }}:{{ value }}</span>,
+                {% else %}
+                port-{{ key }}:{{ value }},
+                {% endif %}
 
                 {% endfor %}
             </td>
 
         </tr>
-    {% endfor %}
+        {% endfor %}
 
 
 
-    </tbody>
-</table>
-
-<br>
-<br>
-<br>
-
-{% comment %}<div id="cpu" style="width: 600px; height: 400px; float:left;"></div>
-<div id="mem" style="width: 600px; height: 400px; float:right;"></div>{% endcomment %}
-
+        </tbody>
+    </table></div>
+    </div>
 </body>
+
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery-1.11.1.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}bootstrap.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery.dataTables.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}scripts.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}dataTables.colVis.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}dataTables.fixedHeader.js"></script>
+
+
+<!--<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}DT_bootstrap.js"></script>-->
+
+<script type="text/javascript">
+
+    $(window).resize(function() {
+        console.log($(window).height());
+        $('.dataTables_scrollBody').css('height', ($(window).height() - 280));
+    });
+
+
+    $(document).ready(function() {
+
+        $('#container .loading').hide();
+        $('#container .table').show();
+
+        var dataTable=$('#indextable').DataTable(
+                {
+                    paging: false,
+                    "scrollCollapse": true,
+                    "jQueryUI":       false,
+//                    "sScrollY": ($(window).height() - 280),
+                    columnDefs: [
+                        { type: 'file-size', targets: [2] },
+                        { type: 'file-size', targets: [6] },
+                        { type: 'file-size', targets: [8] },
+                        { type: 'file-size', targets: [9] },
+                        { "visible": false, "targets": [12] }
+                    ],
+                    dom: 'C<"clear">lfrtip',
+                    colVis: {
+                        activate: "mouseover"
+                    }
+                }
+
+        );
+        new $.fn.dataTable.FixedHeader( dataTable );
+
+    } );
+
+//    window.onload=function(){
+//        var tfrow = document.getElementById('indextable').rows.length;
+//        var tbRow=[];
+//        for (var i=1;i<tfrow;i++) {
+//            tbRow[i]=document.getElementById('indextable').rows[i];
+//            tbRow[i].onmouseover = function(){
+//                this.style.backgroundColor = '#f3f8aa';
+//            };
+//            tbRow[i].onmouseout = function() {
+//                this.style.backgroundColor = '#ffffff';
+//            };
+//        }
+//    };
+</script>
+
 </html>
 ​

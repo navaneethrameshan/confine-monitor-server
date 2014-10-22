@@ -1,7 +1,14 @@
 <!doctype html>
 <html style="height: 100%; overflow:hidden">
 <head>
-    <title>Traceroute RD</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Confine Monitor</title>
+    <link rel="icon" href="{{ STATIC_URL }}/images/confine.png" type="image/png" />
+
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}style.css">
 
     <script src="http://visjs.org/dist/vis.js"></script>
     <link href="http://visjs.org/dist/vis.css" rel="stylesheet" type="text/css" />
@@ -18,17 +25,34 @@
 </head>
 
 <body style="height: 100%; overflow:hidden" onload="draw();">
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header navbar-right ">
+            <h1><a href="http://{{ server_ip }}:{{ server_port }}"><img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> Confine Research Device Status</a></h1>
+        </div>
+    </div>
+</nav>
 <div style="width:700px; font-size:14px;">
-    - Click and drag anywhere to move canvas.
-    <br />
-    - Click and drag on nodes to move graph.
-    <br />
-    - Zoom in/out.
-    <br />
-    - By clicking the checkbox you can turn clustering on and off.
-    <br />
-    - Click on a cluster to reveal nodes.
-    <br />
+
+
+    <ul class="nav nav-pills" role="navigation">
+        <!--<li><a> <img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> </a></li>-->
+        <li class="active"><a href="http://{{ server_ip }}:{{ server_port }}">Home</a></li>
+        <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/visualize/ ">Visualize Node metrics over time</a></li>
+        <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/networktrace/ ">View Network map</a></li>
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                Help <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#"> - Click and drag anywhere to move canvas </a></li>
+                <li><a href="#"> - Click and drag on nodes to move graph  </a></li>
+                <li><a href="#"> - Scroll to zoom in/out </a></li>
+                <li><a href="#"> - By clicking the checkbox you can turn clustering on and off </a></li>
+                <li><a href="#"> - Click on a cluster to reveal nodes  </a></li>
+
+            </ul>
+    </ul>
 </div>
 <br />
 
@@ -93,7 +117,9 @@
         nodes: nodes,
         edges: edges
     };
-    var options = {  navigation: false, configurePhysics:false,
+    var options = { 
+ smoothCurves: {dynamic:false, type: "continuous"},
+ navigation: false, configurePhysics:false,
         physics: {barnesHut: {centralGravity: 0.4, springLength: 21, springConstant: 0.125, damping: 0.20}},
        // clustering: true
         clustering: {
@@ -112,4 +138,10 @@
 </script>
 
 </body>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery-1.11.1.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}bootstrap.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}scripts.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}dataTables.colVis.js"></script>
+
 </html>
