@@ -33,7 +33,7 @@ def network_trace(request, parameter):
     server_port = util.SERVER_PORT
 
     (nodes, representation) = getdata.get_all_trace()
-    return render_to_response('visjsgraph.html',{'values': json.dumps(representation), 'nodes_py': json.dumps(nodes)},context_instance=RequestContext(request))
+    return render_to_response('visjsgraph.html',{'server_ip': server_ip, 'server_port': server_port,'values': json.dumps(representation), 'nodes_py': json.dumps(nodes)},context_instance=RequestContext(request))
 
     #return HttpResponse("Hi!!")
 
@@ -159,9 +159,6 @@ def index(request):
 
 
 def node_info_treemap(request, parameter):
-
-    start = util.get_timestamp()
-
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
@@ -190,13 +187,6 @@ def node_info_treemap(request, parameter):
     values_treemap_mem_used =json.dumps(values_treemap_mem_used)
     values_treemap_data_sent = json.dumps(values_treemap_data_sent)
     values_treemap_data_received = json.dumps(values_treemap_data_received)
-
-    end = util.get_timestamp()
-
-    elapsed_time = end-start
-    time_delta = util.convert_secs_to_time_elapsed(elapsed_time)
-
-    print elapsed_time
 
     return render_to_response('node_treemap.html', {'values_treemap_cpu':values_treemap_cpu,
                                                     'values_treemap_mem_used':values_treemap_mem_used,
