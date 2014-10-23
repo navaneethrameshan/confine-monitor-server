@@ -52,6 +52,3 @@ def fetch_synthesized_data_document(node_id):
     log.debug("Document fetched is: " + str(document))
     return document
 
-str_value='{"external_dns_status": "false", "ping_status": "rtt min/avg/max/mdev = 0.635/0.635/0.635/0.000 ms"}'
-value = ast.literal_eval(str_value)
-print value

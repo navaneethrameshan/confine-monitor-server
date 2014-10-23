@@ -393,7 +393,7 @@ $(function () {
         return a[0] - b[0];
     });{% endcomment %}
 
-    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_json/{{ metric }}/{{ name }}/', function(data) {
+    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_json/{{ metric }}/{{ nodeid }}/', function(data) {
         data.sort(function (a, b) {
             return a[0] - b[0];
         });
@@ -511,7 +511,7 @@ function afterSetExtremes(e) {
     // Create a timer
     var start = + new Date();
 
-    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_json/{{ metric }}/{{name }}/start_time='+ Math.round(e.min) +
+    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_json/{{ metric }}/{{nodeid }}/start_time='+ Math.round(e.min) +
             '&end_time='+ Math.round(e.max), function(data) {
         data.sort(function (a, b) {
             return a[0] - b[0];

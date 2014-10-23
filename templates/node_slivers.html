@@ -150,14 +150,14 @@
         {% for key,value in network_values.items %}
             <tr>
                 <td>{{ key }}</td>
-               {% comment %} <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent/"> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_sent_last_sec/">{{ value.bytes_sent_last_sec }}</a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv/"><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></a></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ name }}.network.{{ key }}.bytes_recv_last_sec/">{{ value.bytes_recv_last_sec }}</a></td>{% endcomment %}
+               {% comment %} <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ nodeid }}.network.{{ key }}.bytes_sent/"> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ nodeid }}.network.{{ key }}.bytes_sent_last_sec/">{{ value.bytes_sent_last_sec }}</a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ nodeid }}.network.{{ key }}.bytes_recv/"><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/network/{{ nodeid }}.network.{{ key }}.bytes_recv_last_sec/">{{ value.bytes_recv_last_sec }}</a></td>{% endcomment %}
                 <td> <script>document.write(bytesToSize({{ value.bytes_sent }}))</script> </td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/network//{{ name }}//{{ key }}//bytes_sent_last_sec//">{{ value.bytes_sent_last_sec }}</a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/network//{{ nodeid }}//{{ key }}//bytes_sent_last_sec//">{{ value.bytes_sent_last_sec }}</a></td>
                 <td><script>document.write(bytesToSize({{ value.bytes_recv }}))</script></td>
-                <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/network//{{ name }}//{{ key }}//bytes_recv_last_sec//">{{ value.bytes_recv_last_sec }}</a></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/network//{{ nodeid }}//{{ key }}//bytes_recv_last_sec//">{{ value.bytes_recv_last_sec }}</a></td>
             </tr>
         {% endfor %}
 
@@ -190,11 +190,11 @@
                     <td>{{ key }}</td>
                     <td>{{ value.mount }}</td>
                     <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
-                    {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ name }}.disk.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
+                    {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ nodeid }}.disk.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/disk/{{ nodeid }}.disk.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
                     <td><script>document.write(bytesToSize({{ value.free }}))</script></td>
                     <td><script>document.write(bytesToSize({{ value.used }}))</script></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/disk//{{ name }}//{{ key }}//percent_usage//">{{ value.percent_usage}}</a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/disk//{{ nodeid }}//{{ key }}//percent_usage//">{{ value.percent_usage}}</a></td>
                 {% endif %}
             </tr>
         {% endfor %}
@@ -227,11 +227,11 @@
                     <td>{{ key }}</td>
                     <td><script>document.write(bytesToSize({{ value.available }}))</script></td>
                     <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
-                    {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ name }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
+                    {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ nodeid }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ nodeid }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
                    <td><script>document.write(bytesToSize({{ value.free }}))</script></td>
                    <td><script>document.write(bytesToSize({{ value.used }}))</script></td>
-                   <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ name }}/ ">{{ value.percent_used}}</a></td>
+                   <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ nodeid }}/ ">{{ value.percent_used}}</a></td>
 
             </tr>
         {% endfor %}
@@ -244,7 +244,7 @@
     <br>
 
     <form>
-        <input type="hidden" id="node" name={{ name }}>
+        <input type="hidden" id="node" name={{ nodeid }}>
         <input type="hidden" id="metric" name={{ metric }}>
         <input type="hidden" id="server_ip" name={{ server_ip }}>
         <input type="hidden" id="server_port" name={{ server_port }}>

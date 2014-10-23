@@ -19,10 +19,13 @@ def async_aggr_node_attribute(request, parameter):
 
     value = 'web.metricvalue.' + metric
 
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    name = documentparser.get_value(document, "name")
+
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
-    return render_to_response('async_aggregate.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric, 'value': eval(value)})
+    return render_to_response('async_aggregate.html',{'server_ip': server_ip, 'server_port': server_port,'nodeid':node_id, 'name':name, 'metric':metric, 'value': eval(value)})
 
 def network_trace(request, parameter):
     '''
@@ -90,10 +93,14 @@ def async_aggr_set_node_attribute(request, parameter):
     '''
     (set,node_id,interface,metric,time) =parameter.split('//')
 
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    name = documentparser.get_value(document, "name")
+
+
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
-    return render_to_response('async_aggregate_set.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric, 'interface': interface, 'set':set})
+    return render_to_response('async_aggregate_set.html',{'server_ip': server_ip, 'server_port': server_port,'name':name, 'nodeid':node_id, 'metric':metric, 'interface': interface, 'set':set})
 
 
 def async_aggr_set_node_attribute_json(request, parameter):
@@ -223,11 +230,14 @@ def async_node_attribute(request, parameter):
        Parameter of form metric/node/
     '''
     (metric,node_id,time) =parameter.split('/')
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    name = documentparser.get_value(document, "name")
+
 
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
 
-    return render_to_response('async_node_info_timeline.html',{'server_ip': server_ip, 'server_port': server_port,'name':node_id, 'metric':metric})
+    return render_to_response('async_node_info_timeline.html',{'server_ip': server_ip, 'server_port': server_port,'name':name, 'nodeid':node_id, 'metric':metric})
 
 def async_node_attribute_json(request, parameter):
 
@@ -268,6 +278,9 @@ def node_info_set_timeline(request, parameter):
 
     value_type= resource+"."+resource_spec1+"."+attribute
 
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    name = documentparser.get_value(document, "name")
+
 
     arg_dict = util.split_arguments_return_dict(arguments)
 
@@ -276,7 +289,7 @@ def node_info_set_timeline(request, parameter):
 
 
     #values_graph = json.dumps(values)
-    return render_to_response('node_info_set_timeline.html',{ 'name':node_id, 'value': resource_spec1+" "+attribute,
+    return render_to_response('node_info_set_timeline.html',{ 'name':name,'nodeid':node_id, 'value': resource_spec1+" "+attribute,
                                                           'server_ip': server_ip, 'server_port': server_port,
                                                           'parameter':parameter,  'arguments':arg_dict, 'values_graph':values_graph},context_instance=RequestContext(request))
 
@@ -329,6 +342,7 @@ def node_slivers (request, parameter):
 
         #Network Values
         name = documentparser.get_value(document, "name")
+        nodeid = documentparser.get_value(document, "nodeid")
         network_values= documentparser.get_set(document, "network")
 
         #Disk Values
@@ -338,7 +352,7 @@ def node_slivers (request, parameter):
         memory_values= documentparser.get_set(document, "memory")
 
     return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values,
-                                                   'values_graph':values_graph, 'network_values':network_values,
+                                                   'values_graph':values_graph, 'network_values':network_values,'nodeid':nodeid,
                                                    'name':name, 'server_ip': server_ip, 'server_port': server_port,
                                                    'numberslivers': count, 'node_in_db':node_in_db, 'memory_values': memory_values},
                                                     context_instance=RequestContext(request))

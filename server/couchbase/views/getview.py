@@ -105,8 +105,8 @@ def get_view_all_nodes_most_recent():
 
         json_value = node['doc']
         document = json_value['json']
-
-        name = documentparser.get_value(document, "nodeid")
+        name = documentparser.get_value(document, "name")
+        nodeid = documentparser.get_value(document, "nodeid")
         disk_size = documentparser.get_value(document, "disk_size")
         load_avg_1min = documentparser.get_value(document, "load_avg_1min")
         memory_percent_used = documentparser.get_value(document, "memory_percent_used")
@@ -123,7 +123,7 @@ def get_view_all_nodes_most_recent():
         disk_size,total_memory,data_sent, data_received = util.convert_bytes_to_human_readable([disk_size,total_memory, data_sent, data_received])
 
 
-        all_values.update({name:{'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
+        all_values.update({nodeid:{'num_cpu': num_cpu, 'percent_usage': cpu_usage ,
                        'last_updated': last_updated , 'name':name, 'total_memory': total_memory ,
                        'disk_size':disk_size, 'load_avg_1min':load_avg_1min, 'memory_percent_used':memory_percent_used, 'data_sent':data_sent,
                        'data_received':data_received, 'uptime':uptime}})
@@ -154,9 +154,9 @@ def get_view_all_nodes_synthesized_most_recent():
         ping_status =  documentparser.get_value(document, "ping_status")
         port_status = documentparser.get_value(document, "port_status")
 
-        name = documentparser.get_value(document, "nodeid")
+        nodeid = documentparser.get_value(document, "nodeid")
 
-        all_synthesized_values.update({name: {'ping_status':ping_status, 'port_status':port_status, 'serial':count}})
+        all_synthesized_values.update({nodeid: {'ping_status':ping_status, 'port_status':port_status, 'serial':count}})
 
 
     return all_synthesized_values

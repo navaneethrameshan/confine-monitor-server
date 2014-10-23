@@ -264,7 +264,7 @@ $(function () {
     var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
 
 
-    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_set_json/{{ set }}//{{ name }}//{{ interface }}//{{ metric }}//', function(data) {
+    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_set_json/{{ set }}//{{ nodeid }}//{{ interface }}//{{ metric }}//', function(data) {
         data.sort(function (a, b) {
             return a[0] - b[0];
         });
@@ -382,7 +382,7 @@ function afterSetExtremes(e) {
     // Create a timer
     var start = + new Date();
 
-    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_set_json/{{ set }}//{{ name }}//{{ interface }}//{{ metric }}//start_time='+ Math.round(e.min) +
+    $.get('http://{{ server_ip }}:{{ server_port }}/async_aggr_set_json/{{ set }}//{{ nodeid }}//{{ interface }}//{{ metric }}//start_time='+ Math.round(e.min) +
             '&end_time='+ Math.round(e.max), function(data) {
         data.sort(function (a, b) {
             return a[0] - b[0];

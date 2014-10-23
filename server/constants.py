@@ -1,5 +1,5 @@
 server_timestamp = "server_timestamp"
-name = "nodeid"
+name = "name"
 uptime = "uptime"
 
 number_of_cpus = "cpu.num_cpus"

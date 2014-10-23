@@ -58,6 +58,7 @@
             <th>Data Recvd/Sec</th>
             <th>Uptime</th>
             <th>Ping Status</th>
+            <th>IPv6</th>
             <th>Port Status</th>
 
         </tr>
@@ -73,7 +74,10 @@
             <td>{{ all_values_node|hash:"last_updated" }}</td>
             {% endwith %}
 
-            <td><a href="http://{{ server_ip }}:{{ server_port }}/nodeslivers/{{ node }} ">{{node }}</a></td>
+            {% with all_values|hash:node as all_values_node%}
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/nodeslivers/{{ node }} ">{{ all_values_node|hash:"name" }}</a></td>
+            {% endwith %}
+
 
             {% with all_values|hash:node as all_values_node%}
             <td>{{ all_values_node|hash:"disk_size" }}</td>
@@ -119,6 +123,11 @@
                 {% endif %}
 
             </td>
+
+            {% with all_values|hash:node as all_values_node%}
+            <td><a href="http://{{ server_ip }}:{{ server_port }}/nodeslivers/{{ node }} ">{{node}}</a></td>
+            {% endwith %}
+
             <td>
                 {% for key, value in values.port_status.items %}
 
@@ -175,7 +184,7 @@
                         { type: 'file-size', targets: [6] },
                         { type: 'file-size', targets: [8] },
                         { type: 'file-size', targets: [9] },
-                        { "visible": false, "targets": [12] }
+                        { "visible": false, "targets": [13,3,12] }
                     ],
                     dom: 'C<"clear">lfrtip',
                     colVis: {

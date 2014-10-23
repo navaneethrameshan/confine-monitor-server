@@ -33,8 +33,10 @@ def get_value( document, value_type):
                 value = value[attribute]
             else:
                 value = None
-                break
-        log.debug("Value obtained is: " + str(value))
+		break
+        if isinstance( value, basestring ): # True for both Unicode and byte strings
+            log.debug("Value obtained is: " + value.encode('utf8'))
+            value = value.encode('utf8')
 
     return value
 
