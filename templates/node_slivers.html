@@ -3,9 +3,15 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Confine Monitor</title>
-    <center><h1><a href="http://{{server_ip }}:{{server_port }}">Confine Research Device Status</a></h1></center>
+    <link rel="icon" href="{{ STATIC_URL }}/images/confine.png" type="image/png" />
 
-    <center><h2>Node: {{ name }}</h2></center>
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}style.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dataTables.fixedHeader.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dataTables.colVis.css">
+
 
     <script type="text/javascript" src="{{ STATIC_URL }}sorttable.js"></script>
 
@@ -32,43 +38,41 @@
     </script>
 
 
+    <script>
+        function bytesToSize(bytes) {
+            var sizes = ['B', 'K', 'M', 'G', 'T'];
+            if (bytes == 0) return 0;
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            if (i == 0) return bytes + ' ' + sizes[i];
+            return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+        };
+    </script>
 </head>
 
 <body>
 
-<!-- Row Highlight Javascript -->
-<script type="text/javascript">
-    window.onload=function(){
-        var tfrow = document.getElementById('tfhover').rows.length;
-        var tbRow=[];
-        for (var i=1;i<tfrow;i++) {
-            tbRow[i]=document.getElementById('tfhover').rows[i];
-            tbRow[i].onmouseover = function(){
-                this.style.backgroundColor = '#f3f8aa';
-            };
-            tbRow[i].onmouseout = function() {
-                this.style.backgroundColor = '#ffffff';
-            };
-        }
-    };
-</script>
 
-<script>
-    function bytesToSize(bytes) {
-        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        if (bytes == 0) return 0;
-        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        if (i == 0) return bytes + ' ' + sizes[i];
-        return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-    };
-</script>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header navbar-right ">
+            <h1><a href="http://{{ server_ip }}:{{ server_port }}"><img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> Confine Research Device Status</a></h1>
+        </div>
+    </div>
+</nav>
 
-<style type="text/css">
-    table.sortable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
-    table.sortable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
-    table.sortable tr {background-color:#ffffff;}
-    table.sortable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
-</style>
+
+<ul class="nav nav-pills" role="navigation">
+    <!--<li><a> <img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> </a></li>-->
+    <li class="active"><a href="http://{{ server_ip }}:{{ server_port }}">Home</a></li>
+    <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/visualize/ ">Visualize Node metrics over time</a></li>
+    <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/networktrace/ ">View Network map</a></li>
+    <!--<li><noscript><div style="display: inline-block; padding: 2px 4px; margin: 0px 0px 5px; border: 1px solid rgb(204, 204, 204); text-align: center; background-color: rgb(255, 255, 255);"><a style="text-decoration: none; font-size: 13px; color: rgb(0, 0, 0);"><img src="http://localtimes.info/images/countries/is.png"="" border=0="" style="border:0;margin:0;padding:0"=""> Reykjavik</a></div></noscript><script type="text/javascript" src="http://localtimes.info/clock.php?continent=Europe&country=Iceland&city=Reykjavik&cp1_Hex=000000&cp2_Hex=FFFFFF&cp3_Hex=000000&fwdt=128&ham=0&hbg=0&hfg=0&sid=0&mon=0&wek=0&wkf=0&sep=0&widget_number=1000"></script></li>-->
+</ul>
+
+<center><h2>Node: {{ name }}</h2></center>
+
+
+
 
 <br>
 
@@ -76,8 +80,7 @@
 {% if node_in_db %}
     {% if numberslivers > 0 %}
 
-        {#   <table id="tfhover" class="tftable" border="1">#}
-        <table id="tfhover" class="sortable" border="1">
+        <table id="tfhover1" class="display compact" border="0" cellspacing="0" width="100%">
             <caption><h2>Sliver Status</h2></caption>
             <thead>
             <tr>
@@ -130,7 +133,48 @@
 
     {% endif %}
 
-    <table id="tfhover" class="sortable" border="1">
+
+
+    <table id="tfhover4" class="display compact" border="0" cellspacing="0" width="100%">
+        <caption><h2>Memory</h2></caption>
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Available Memory</th>
+            <th>Total Memory</th>
+            <th>Free Memory</th>
+            <th>Used Memory</th>
+            <th>Percent Used</th>
+
+        </tr>
+        </thead>
+
+        <tbody>
+
+        {% for key,value in memory_values.items %}
+            <tr>
+
+                <td>{{ key }}</td>
+                <td><script>document.write(bytesToSize({{ value.available }}))</script></td>
+                <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
+                {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ nodeid }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
+                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ nodeid }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
+                <td><script>document.write(bytesToSize({{ value.free }}))</script></td>
+                <td><script>document.write(bytesToSize({{ value.used }}))</script></td>
+                <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ nodeid }}/ ">{{ value.percent_used}}</a></td>
+
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    <br>
+    <br>
+    <br>
+
+
+    <table id="tfhover2" class="display compact" border="0" cellspacing="0" width="100%">
         <caption><h2>Network</h2></caption>
         <thead>
         <tr>
@@ -168,7 +212,7 @@
     <br>
     <br>
 
-    <table id="tfhover" class="sortable" border="1">
+    <table id="tfhover3" class="display compact" border="0" cellspacing="0" width="100%">
         <caption><h2>Disk</h2></caption>
         <thead>
         <tr>
@@ -185,8 +229,9 @@
         <tbody>
 
         {% for key,value in disk_values.items %}
+            {%  if key != "size" %}
             <tr>
-                {%  if key != "size" %}
+
                     <td>{{ key }}</td>
                     <td>{{ value.mount }}</td>
                     <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
@@ -195,49 +240,17 @@
                     <td><script>document.write(bytesToSize({{ value.free }}))</script></td>
                     <td><script>document.write(bytesToSize({{ value.used }}))</script></td>
                     <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr_set/disk//{{ nodeid }}//{{ key }}//percent_usage//">{{ value.percent_usage}}</a></td>
-                {% endif %}
+
             </tr>
+            {% endif %}
+
         {% endfor %}
 
         </tbody>
     </table>
+
     <br>
     <br>
-    <br>
-
-    <table id="tfhover" class="sortable" border="1">
-        <caption><h2>Memory</h2></caption>
-        <thead>
-        <tr>
-            <th>Type</th>
-            <th>Available Memory</th>
-            <th>Total Memory</th>
-            <th>Free Memory</th>
-            <th>Used Memory</th>
-            <th>Percent Used</th>
-
-        </tr>
-        </thead>
-
-        <tbody>
-
-        {% for key,value in memory_values.items %}
-            <tr>
-
-                    <td>{{ key }}</td>
-                    <td><script>document.write(bytesToSize({{ value.available }}))</script></td>
-                    <td><script>document.write(bytesToSize({{ value.total }}))</script></td>
-                    {% comment %}<td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ nodeid }}.memory.{{ key }}.free/"><script>document.write(bytesToSize({{ value.free }}))</script></a></td>
-                    <td><a href="http://{{ server_ip }}:{{ server_port }}/memory/{{ nodeid }}.memory.{{ key }}.used/"><script>document.write(bytesToSize({{ value.used }}))</script></a></td>{% endcomment %}
-                   <td><script>document.write(bytesToSize({{ value.free }}))</script></td>
-                   <td><script>document.write(bytesToSize({{ value.used }}))</script></td>
-                   <td><a href="http://{{ server_ip }}:{{ server_port }}/async_aggr/memory_percent_used/{{ nodeid }}/ ">{{ value.percent_used}}</a></td>
-
-            </tr>
-        {% endfor %}
-
-        </tbody>
-    </table>
 
 {% else %}
     <br>
@@ -274,6 +287,88 @@
 
 {% endif %}
 </body>
+
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery-1.11.1.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}bootstrap.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery.dataTables.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}scripts.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}dataTables.colVis.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}dataTables.fixedHeader.js"></script>
+
+
+<script type="text/javascript">
+
+    $(window).resize(function() {
+        console.log($(window).height());
+        $('.dataTables_scrollBody').css('height', ($(window).height() - 280));
+    });
+
+
+    $(document).ready(function() {
+
+     //   $('#container .loading').hide();
+      //  $('#container .table').show();
+
+        var dataTable1=$('#tfhover1').DataTable(
+                {
+                    paging: false,
+                    "scrollCollapse": true,
+                    "jQueryUI":       false,
+//                    "sScrollY": ($(window).height() - 280),
+                    dom: 'C<"clear">lfrtip',
+                    colVis: {
+                        activate: "mouseover"
+                    }
+                }
+
+        );
+
+        var dataTable4=$('#tfhover4').DataTable(
+                {
+                    paging: false,
+                    "scrollCollapse": true,
+                    "jQueryUI":       false,
+//                    "sScrollY": ($(window).height() - 280),
+                    dom: 'C<"clear">lfrtip',
+                    colVis: {
+                        activate: "mouseover"
+                    }
+                }
+
+        );
+
+        var dataTable2=$('#tfhover2').DataTable(
+                {
+                    paging: false,
+                    "scrollCollapse": true,
+                    "jQueryUI":       false,
+                    dom: 'C<"clear">lfrtip',
+                    colVis: {
+                        activate: "mouseover"
+                    }
+                }
+
+        );
+        var dataTable3=$('#tfhover3').DataTable(
+                {
+                    paging: false,
+                    "scrollCollapse": true,
+                    "jQueryUI":       false,
+                    dom: 'C<"clear">lfrtip',
+                    colVis: {
+                        activate: "mouseover"
+                    }
+                }
+
+        );
+
+        //new $.fn.dataTable.FixedHeader( dataTable );
+
+    } );
+
+</script>
+
+
 </html>
 {% comment %} ['Node', 'Parent',    'Cpu Usage'],
     ['CPU Usage',    '',             0],
