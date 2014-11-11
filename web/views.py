@@ -28,9 +28,6 @@ def async_aggr_node_attribute(request, parameter):
     return render_to_response('async_aggregate.html',{'server_ip': server_ip, 'server_port': server_port,'nodeid':node_id, 'name':name, 'metric':metric, 'value': eval(value)})
 
 def network_trace(request, parameter):
-    '''
-       Parameter of form metric/node/
-    '''
 
     server_ip = util.SERVER_IP
     server_port = util.SERVER_PORT
@@ -39,6 +36,34 @@ def network_trace(request, parameter):
     return render_to_response('visjsgraph.html',{'server_ip': server_ip, 'server_port': server_port,'values': json.dumps(representation), 'nodes_py': json.dumps(nodes)},context_instance=RequestContext(request))
 
     #return HttpResponse("Hi!!")
+
+def all_inter_node_trace(request, parameter):
+
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    (nodes, representation) = getdata.get_all_inter_trace()
+    return render_to_response('all_inter_trace.html',{'server_ip': server_ip, 'server_port': server_port,'values': json.dumps(representation), 'nodes_py': json.dumps(nodes), 'nodes':nodes},context_instance=RequestContext(request))
+
+    #return HttpResponse("Hi!!")
+
+def inter_node_trace(request, parameter):
+    '''
+       Parameter of form metric/node/
+    '''
+
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    (metric,node) = parameter.split('/')
+
+    (nodes, representation) = getdata.get_inter_node_trace(node)
+
+    if nodes and representation:
+        return render_to_response('inter_trace.html',{'server_ip': server_ip, 'server_port': server_port,'values': json.dumps(representation), 'nodes_py': json.dumps(nodes)},context_instance=RequestContext(request))
+    else:
+        return HttpResponse("No Inter Node Connectivity Information yet!!")
+
 
 def async_aggr_node_attribute_json(request, parameter):
     '''
@@ -310,6 +335,8 @@ def node_slivers (request, parameter):
     node_id = parameter
     document = fetchdocument.fetch_most_recent_document(node_id)
     slivers = documentparser.get_value(document, 'slivers')
+    print " NODE ID: ", node_id
+
 
     count = 0
     if(document):
@@ -352,7 +379,7 @@ def node_slivers (request, parameter):
         memory_values= documentparser.get_set(document, "memory")
 
     return render_to_response('node_slivers.html',{'disk_values':disk_values, 'all_values':all_values,
-                                                   'values_graph':values_graph, 'network_values':network_values,'nodeid':nodeid,
+                                                   'values_graph':values_graph, 'network_values':network_values,'nodeid':node_id,
                                                    'name':name, 'server_ip': server_ip, 'server_port': server_port,
                                                    'numberslivers': count, 'node_in_db':node_in_db, 'memory_values': memory_values},
                                                     context_instance=RequestContext(request))

@@ -35,6 +35,9 @@ urlpatterns = patterns('',
     url(r'^(disk/.{2,})$', 'web.views.node_info_set_timeline'),
     url(r'^(memory/.{2,})$', 'web.views.node_info_set_timeline'),
     url(r'^(networktrace/.{0,})$', 'web.views.network_trace'),
+    url(r'^(internodetrace/.{2,})$', 'web.views.inter_node_trace'),
+    url(r'^(allinternodetrace/.{0,})$', 'web.views.all_inter_node_trace'),
+
 
     # url(r'^web/', include('web.foo.urls')),
     #url(r'^slice/([A-Za-z]*-\d*)$', 'web.views.slice_info'), # currently accept "word - number"

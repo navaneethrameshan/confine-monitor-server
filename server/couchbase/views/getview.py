@@ -162,6 +162,11 @@ def get_view_all_nodes_synthesized_most_recent():
     return all_synthesized_values
 
 
+def get_view_inter_node_trace(node_id):
+    document = fetchdocument.fetch_most_recent_document(node_id)
+    if(document):
+        return document
+
 def get_view_all_nodes_trace():
     log.debug("Get most recent view of trace for all nodes")
 
@@ -184,6 +189,32 @@ def get_view_all_nodes_trace():
         name = documentparser.get_value(document, "nodeid")
 
         all_trace_values.update({name: {'trace':trace, 'serial':count}})
+
+
+    return all_trace_values
+
+def get_view_all_nodes_inter_trace():
+    log.debug("Get most recent view of inter-trace for all nodes")
+
+    db = store.get_bucket()
+
+    all_trace_values = {}
+
+    view_by_node_trace_most_recent = db.view('_design/node-trace-mostrecent/_view/get_node-trace-mostrecent', include_docs= True)
+
+    ping_status = None
+    port_status = None
+    count = 0
+    for node in view_by_node_trace_most_recent:
+        count += 1
+        json_value = node['doc']
+        document = json_value['json']
+
+        inter_trace =  documentparser.get_value(document, "inter-trace")
+
+        name = documentparser.get_value(document, "nodeid")
+
+        all_trace_values.update({name: {'inter-trace':inter_trace, 'serial':count}})
 
 
     return all_trace_values

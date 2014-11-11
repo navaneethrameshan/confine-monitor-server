@@ -1,4 +1,5 @@
 import ast
+import json
 from couchbase.client import Couchbase
 from server.couchbase import store
 from server.couchbase import util
@@ -17,7 +18,7 @@ def fetch_most_recent_document(node_id):
     except:
         return {}
 
-    document =  ast.literal_eval(str_doc)
+    document =  json.loads(str_doc)
     log.debug("Document fetched is: " + str(document))
     return document
 
@@ -32,7 +33,7 @@ def fetch_most_recent_timestamp(node_id, db):
     except:
         return {}
 
-    document = ast.literal_eval(str_doc)
+    document = json.loads(str_doc)
     most_recent_timestamp = document ["most_recent_timestamp"]
     log.debug("Most recent timestamp fetched is: " + str(most_recent_timestamp))
     return most_recent_timestamp

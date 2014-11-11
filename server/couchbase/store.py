@@ -16,7 +16,7 @@ class Database(object):
         self.log = logger ("database")
 
         try:
-            bucket = cb.create(name, ram_quota_mb=200, replica=1)
+            bucket = cb.create(name, ram_quota_mb=300, replica=1)
         except:
             bucket = cb[name]
 

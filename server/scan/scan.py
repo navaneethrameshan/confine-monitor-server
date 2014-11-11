@@ -193,11 +193,17 @@ def probe_and_store(hostname):
     values.update({'type': 'node_synthesized'})
 
     doc_id = nodeip6+'-synthesized'+str(timestamp)
-    store.store_document(doc_id, values)
 
-    reference_doc_id = nodeip6+ '-synthesized-most_recent'
-    values.update({'type' : 'node_most_recent_synthesized'})
-    store.update_document(reference_doc_id, values)
+    try:
+        store.store_document(doc_id, values)
+
+        reference_doc_id = nodeip6+ '-synthesized-most_recent'
+        values.update({'type' : 'node_most_recent_synthesized'})
+        store.update_document(reference_doc_id, values)
+    except Exception as e:
+	    print "Caught Exception: "+ str(e)
+	    pass
+
 
 def main():
     probe('fd65:fc41:c50f:5::2')

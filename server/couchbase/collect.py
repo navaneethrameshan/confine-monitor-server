@@ -79,51 +79,56 @@ class Collect:
         if (self.value is None):
             return
 
-         #parse the dictionary. Strip values of every sequence number and add nodeid, absolute server timestamp
-        for key in self.value.keys():
-            seq_value = self.value[key]
-            seq_value.update({'nodeid': self.ip})
-            seq_value.update({'seq': key})
+        try:
+             #parse the dictionary. Strip values of every sequence number and add nodeid, absolute server timestamp
+            for key in self.value.keys():
+                seq_value = self.value[key]
+                seq_value.update({'nodeid': self.ip})
+                seq_value.update({'seq': key})
 
-            ########################### Testing for generated Sliver and Slice ID. Remove later####################
+                ########################### Testing for generated Sliver and Slice ID. Remove later####################
 
-            #rename.rename_sliver(seq_value, self.name)
+                #rename.rename_sliver(seq_value, self.name)
 
-            ############################################################################################################
+                ############################################################################################################
 
-            #convert the relative timestamp to absolute server timestamp. Relative timestamps and server receiving the requests are always causally ordered.
-            server_absolute_timestamp = util.get_timestamp()- float (seq_value['relative_timestamp'])
-            seq_value.update({'server_timestamp': server_absolute_timestamp})
+                #convert the relative timestamp to absolute server timestamp. Relative timestamps and server receiving the requests are always causally ordered.
+                server_absolute_timestamp = util.get_timestamp()- float (seq_value['relative_timestamp'])
+                seq_value.update({'server_timestamp': server_absolute_timestamp})
+                if not self.type:
+                    seq_value.update({'type': 'node'})
+                else:
+                    seq_value.update({'type': self.type})
+
+                self.most_recent_absolute_timestamp = util.find_recent_timestamp(self.most_recent_absolute_timestamp, server_absolute_timestamp)
+
+                # should only fetch the document timestamp and not generate a new one
+                # print str(server_absolute_timestamp) + "--" + str(key) + "-- time" + str(config.get_timestamp())
+                doc_id = self.generate_docid(self.name, server_absolute_timestamp)
+
+
+                store.store_document(doc_id,seq_value)
+
+
+            #get and update the last seen sequence number
+            if(self.value!={}):
+                sequence = util.get_most_recent_sequence_number(self.value)
+                self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
+                self.most_recent_doc = self.value[str(self.sequence)]
+
+            # After all the documents are stored, find the most recent timestamp and update the reference document to speedup lookups
+            reference_doc_id = self.generate_reference_docid(self.name)
+            self.most_recent_doc.update({"most_recent_timestamp": self.most_recent_absolute_timestamp})
+
             if not self.type:
-                seq_value.update({'type': 'node'})
+                self.most_recent_doc.update({"type": "node_most_recent"})
             else:
-                seq_value.update({'type': self.type})
+                self.most_recent_doc.update({"type": self.type+'_most_recent'})
 
-            self.most_recent_absolute_timestamp = util.find_recent_timestamp(self.most_recent_absolute_timestamp, server_absolute_timestamp)
-
-            # should only fetch the document timestamp and not generate a new one
-            # print str(server_absolute_timestamp) + "--" + str(key) + "-- time" + str(config.get_timestamp())
-            doc_id = self.generate_docid(self.name, server_absolute_timestamp)
-
-            store.store_document(doc_id,seq_value)
-
-        #get and update the last seen sequence number
-        if(self.value!={}):
-            sequence = util.get_most_recent_sequence_number(self.value)
-            self.sequence = sequence #Wouldn't work if the server crashes. Need to persist??
-            self.most_recent_doc = self.value[str(self.sequence)]
-
-        # After all the documents are stored, find the most recent timestamp and update the reference document to speedup lookups
-        reference_doc_id = self.generate_reference_docid(self.name)
-        self.most_recent_doc.update({"most_recent_timestamp": self.most_recent_absolute_timestamp})
-
-        if not self.type:
-            self.most_recent_doc.update({"type": "node_most_recent"})
-        else:
-            self.most_recent_doc.update({"type": self.type+'_most_recent'})
-
-        store.update_document(reference_doc_id, self.most_recent_doc)
-
+            store.update_document(reference_doc_id, self.most_recent_doc)
+        except Exception as e:
+	        log.info("Caught Exception: "+str(e))
+	        pass
 
     def collect_store(self):
         self.value = self.collect()
