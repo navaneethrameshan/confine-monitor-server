@@ -33,7 +33,7 @@ class Analyse(object):
                             firstrun = False
                         else:
                             #print "Adding to dict- Key: " +str(probe["Name"]) +"  Value: "+str(parent)
-                            self.__add_to_dict(probe["Name"],parent)
+                            self.__add_to_dict(probe,parent)
                             parent = probe["Name"]
                             self.nodes[probe["Name"]]= 0 ## Value 0 indicates not an RD
 
@@ -78,9 +78,9 @@ class Analyse(object):
 
         if self.representation.has_key(v):
             value_list = self.representation[v]
-            value_list.append(k)
+            value_list.update({k['Name']:k})
         else:
-            self.representation[v]=[k]
+            self.representation[v]={k['Name']:k}
 
        # print str(self.representation)
 

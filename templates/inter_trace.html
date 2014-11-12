@@ -53,7 +53,7 @@
                 <li><a href="#"> - Green nodes are connected  </a></li>
                 <li><a href="#"> - Gray nodes are disconnected </a></li>
                 <li><a href="#"> - Length of the links indicate the Average Response time </a></li>
-                <li><a href="#"> - Hover on the Edge to get information about connectivity </a></li>
+                <li><a href="#"> - Click on a node to get information about connectivity </a></li>
 
 
             </ul>
@@ -120,8 +120,8 @@
     }
 
     for (var key in received_values){
-        for (var i=0; i< received_values[key].length; i++){
-            edges.push({from: key, to: received_values[key][i]["Name"],title:"Name: "+received_values[key][i]["Name"]+ '<br>' +"Avg. Response time:"+received_values[key][i]["Avg"]+ '<br>' +"Min:"+received_values[key][i]["Min"]+ '<br>' +"Max:"+received_values[key][i]["Max"]+ '<br>' +"Packet loss(%):"+received_values[key][i]["Loss"], length:parseFloat(received_values[key][i]["Avg"])});
+        for (var dest in received_values[key]){
+            edges.push({from: key, to: dest, length:parseFloat(received_values[key][dest]["Avg"])});
         }
     }
 
@@ -153,7 +153,9 @@
 
     // add event listeners
     graph.on('select', function(params) {
-        document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
+        document.getElementById('selection').innerHTML = 'Selection: ' +parent_node+'-->' + params.nodes +  '<br>' +"Name: "+received_values[parent_node][params.nodes]["Name"]+ '<br>'
+                +"Avg Response time: "+received_values[parent_node][params.nodes]["Avg"]+ "ms"+'<br>' +"Min:"+received_values[parent_node][params.nodes]["Min"]
+                + '<br>' +"Max: "+received_values[parent_node][params.nodes]["Max"]+ '<br>' +"Packet loss(%): "+received_values[parent_node][params.nodes]["Loss"];
     });
     }
 </script>

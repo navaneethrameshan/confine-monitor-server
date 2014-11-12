@@ -135,7 +135,7 @@
 
                 if (nodeselected[selected_node] == true ){
 
-                    for (var i=0; i< received_values[selected_node].length; i++){
+                    for (var i in received_values[selected_node]){
                         edges.remove( selected_node+received_values[selected_node][i]["Name"]);
                         nodes.update({id:received_values[selected_node][i]["Name"], label:received_values[selected_node][i]["Name"], color: {
                             background: 'green',
@@ -147,13 +147,15 @@
                         }});
                     }
                     delete nodeselected[selected_node];
-                    $("#showselected option[value=\""+selected_node+"\"]").remove();
+                    if(received_values[selected_node]){
+                        $("#showselected option[value=\""+selected_node+"\"]").remove();
+                    }
 
                 }
                 else{
                     nodeselected[selected_node]=true;
 
-                    for (var i=0; i< received_values[selected_node].length; i++){
+                    for (var i in received_values[selected_node]){
                         edges.update({id:selected_node+received_values[selected_node][i]["Name"], from: selected_node, to: received_values[selected_node][i]["Name"]});
                         nodes.update({id:received_values[selected_node][i]["Name"], label:received_values[selected_node][i]["Name"], color: {
                             background: 'gray',
@@ -165,13 +167,15 @@
                         }});
 
                     }
-                    $("#showselected").append("<option disabled value=\"" +selected_node+"\">"+selected_node+"</option>");
+                    if(received_values[selected_node]){
+                        $("#showselected").append("<option disabled value=\"" +selected_node+"\">"+selected_node+"</option>");
+                    }
 
                 }
 
             }
             catch (err) {
-//                alert(err);
+             //   alert(err);
             }
         });
 
@@ -250,7 +254,7 @@
             try {
                 if (nodeselected[params.nodes] == true ){
 
-                    for (var i=0; i< received_values[params.nodes].length; i++){
+                    for (var i in received_values[params.nodes]){
                         edges.remove( params.nodes+received_values[params.nodes][i]["Name"]);
                         nodes.update({id:received_values[params.nodes][i]["Name"], label:received_values[params.nodes][i]["Name"], color: {
                             background: 'green',
@@ -262,13 +266,15 @@
                         }});
                     }
                    delete nodeselected[params.nodes];
-                    $("#showselected option[value=\""+params.nodes+"\"]").remove();
+                    if(received_values[params.nodes]){
+                        $("#showselected option[value=\""+params.nodes+"\"]").remove();
+                    }
 
                 }
                 else{
                     nodeselected[params.nodes]=true;
 
-                    for (var i=0; i< received_values[params.nodes].length; i++){
+                    for (var i in received_values[params.nodes]){
                         edges.update({id:params.nodes+received_values[params.nodes][i]["Name"], from: params.nodes, to: received_values[params.nodes][i]["Name"]});
                         nodes.update({id:received_values[params.nodes][i]["Name"], label:received_values[params.nodes][i]["Name"], color: {
                             background: 'gray',
@@ -280,7 +286,9 @@
                         }});
 
                     }
-                    $("#showselected").append("<option disabled value=\"" +params.nodes+"\">"+params.nodes+"</option>");
+                    if(received_values[params.nodes]){
+                        $("#showselected").append("<option disabled value=\"" +params.nodes+"\">"+params.nodes+"</option>");
+                    }
 
                 }
             }

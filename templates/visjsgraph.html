@@ -105,8 +105,8 @@
     }
 
     for (var key in received_values){
-        for (var i=0; i< received_values[key].length; i++){
-            edges.push({from: key, to: received_values[key][i]});
+        for (var dest in received_values[key]){
+            edges.push({from: key, to: dest});
         }
      }
 
