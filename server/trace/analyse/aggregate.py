@@ -57,7 +57,7 @@ class Analyse(object):
 
                             else:
                                 if probe["Name"] != parent: #Dont have parent and child as the same node from interconnectivity is measured. Avoid Loop.
-                                    self.__add_to_dict(probe["Name"],parent)
+                                    self.__add_to_dict(probe,parent)
                                     self.nodes[probe["Name"]]= "1" ## Value 1 indicates that the node is connected
         else:
             print "[ERROR] Not an Instance of Paths."

@@ -1,0 +1,307 @@
+<!doctype html>
+<html style="height: 100%; overflow:hidden">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Confine Monitor</title>
+    <link rel="icon" href="{{ STATIC_URL }}/images/confine.png" type="image/png" />
+
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}style.css">
+
+    <script src="http://visjs.org/dist/vis.js"></script>
+    <link href="http://visjs.org/dist/vis.css" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+        #mygraph {
+            width: 100%;
+            height: 100%;
+            border: 1px solid lightgray;
+        }
+    </style>
+
+
+</head>
+
+<body style="height: 100%; overflow:hidden" >
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header navbar-right ">
+            <h1><a href="http://{{ server_ip }}:{{ server_port }}"><img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> Confine Research Device Status</a></h1>
+        </div>
+    </div>
+</nav>
+<div style="width:700px; font-size:14px;">
+
+
+    <ul class="nav nav-pills" role="navigation">
+        <!--<li><a> <img alt="Brand" src="{{ STATIC_URL }}/images/confine.png"> </a></li>-->
+        <li class="active"><a href="http://{{ server_ip }}:{{ server_port }}">Home</a></li>
+        <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/visualize/ "> Resource Usage</a></li>
+        <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/networktrace/ "> Network map</a></li>
+        <li class= "active"><a href="http://{{ server_ip }}:{{ server_port }}/allinternodetrace/ "> Connectivity</a></li>
+
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                Help <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#"> - Click on a node to see its connectivity </a></li>
+                <li><a href="#"> - Click again to remove connectivity  </a></li>
+                <li><a href="#"> - Select a node and click update to see/remove connectivity  </a></li>
+                <li><a href="#"> - Scroll to zoom in/out </a></li>
+
+            </ul>
+    </ul>
+</div>
+<br />
+
+<p id="selection"></p>
+<!--<label for="clustering">Enable Clustering:</label>-->
+<!--<input id="clustering" type="checkbox" onChange="draw()" checked="false">-->
+
+
+<select id="selected">
+    <option value="" disabled="disabled" selected="selected">Please select a Node</option>
+    {% autoescape on %}
+
+    {% for node, value in nodes.items %}
+    <option>{{node}}</option>
+    {% endfor %}
+
+    {% endautoescape %}
+
+</select>
+
+<select id="showselected">
+    <option value="" disabled="disabled" selected="selected"> Selected Nodes</option>
+
+</select>
+
+<td>
+    <button id="edge-update">Update</button>
+</td>
+
+<br>
+
+<!--<td width="100">-->
+<!--<textarea class="scrollabletextbox" name="note" readonly="readonly" id="textbox"> LOLMAX</textarea>-->
+<!--</td>-->
+
+<br>
+
+<div id="network" ></div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}dist/vis.js"></script>
+<link href="{{ STATIC_URL }}dist/vis.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+
+    function sortDropDownListByText(selectId) {
+        var foption = $('#'+ selectId + ' option:first');
+        var soptions = $('#'+ selectId + ' option:not(:first)').sort(function(a, b) {
+            return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+        });
+        $('#' + selectId).html(soptions).prepend(foption);
+
+    };
+
+
+    var nodes, edges, network;
+
+    var received_values = {{values|safe}};
+    var received_nodes = {{nodes_py|safe}};
+
+    sortDropDownListByText('selected');
+
+
+    // convenience method to stringify a JSON object
+    function toJSON (obj) {
+        return JSON.stringify(obj, null, 4);
+    }
+
+    $(window).load(function () {
+
+
+
+        $('#edge-update').click(function () {
+            try {
+
+//                alert($('#selected').val());
+                var selected_node = $('#selected').val();
+
+                if (nodeselected[selected_node] == true ){
+
+                    for (var i=0; i< received_values[selected_node].length; i++){
+                        edges.remove( selected_node+received_values[selected_node][i]["Name"]);
+                        nodes.update({id:received_values[selected_node][i]["Name"], label:received_values[selected_node][i]["Name"], color: {
+                            background: 'green',
+                            border: 'black',
+                            highlight: {
+                                background: 'pink',
+                                border: 'red'
+                            }
+                        }});
+                    }
+                    delete nodeselected[selected_node];
+                    $("#showselected option[value=\""+selected_node+"\"]").remove();
+
+                }
+                else{
+                    nodeselected[selected_node]=true;
+
+                    for (var i=0; i< received_values[selected_node].length; i++){
+                        edges.update({id:selected_node+received_values[selected_node][i]["Name"], from: selected_node, to: received_values[selected_node][i]["Name"]});
+                        nodes.update({id:received_values[selected_node][i]["Name"], label:received_values[selected_node][i]["Name"], color: {
+                            background: 'gray',
+                            border: 'red',
+                            highlight: {
+                                background: 'pink',
+                                border: 'red'
+                            }
+                        }});
+
+                    }
+                    $("#showselected").append("<option disabled value=\"" +selected_node+"\">"+selected_node+"</option>");
+
+                }
+
+            }
+            catch (err) {
+//                alert(err);
+            }
+        });
+
+
+        // create an array with nodes
+        nodes = new vis.DataSet();
+        nodes.subscribe('*', function () {
+            $('#nodes').html(toJSON(nodes.get()));
+        });
+        for (var node in  received_nodes){
+            if(received_nodes[node] == 3){
+                nodes.add({id:node, label:node, color: {
+                    background: 'yellow',
+                    border: 'red',
+                    highlight: {
+                        background: 'pink',
+                        border: 'red'
+                    }
+                }
+
+                });
+            }
+            else if (received_nodes[node] == 1){
+                nodes.add({id:node, label:node, color: {
+                    background: 'green',
+                    border: 'black',
+                    highlight: {
+                        background: 'pink',
+                        border: 'red'
+                    }
+                }});
+
+            }
+            else
+                nodes.add({id:node, label:node, color: {
+                    background: 'green',
+                    border: 'black',
+                    highlight: {
+                        background: 'pink',
+                        border: 'red'
+                    }
+                }});
+
+
+        }
+
+        // create an array with edges
+        edges = new vis.DataSet();
+        edges.subscribe('*', function () {
+            $('#edges').html(toJSON(edges.get()));
+        });
+
+
+        // create a network
+        var container = $('#network').get(0);
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        var options = {smoothCurves: {dynamic:false, type: "continuous"},
+            edges: {
+                color: 'black',
+                width: 1.5
+            },
+            navigation: false, configurePhysics:false,
+            physics: {barnesHut: {gravitationalConstant: -17650, centralGravity: 2.7, springLength: 332, springConstant: 0.01, damping: 0.225}},
+            // clustering: true
+            clustering: {
+                enabled: false
+            },
+            stabilize: false};
+        network = new vis.Network(container, data, options);
+
+        var nodeselected = {};
+        network.on('select', function(params) {
+            try {
+                if (nodeselected[params.nodes] == true ){
+
+                    for (var i=0; i< received_values[params.nodes].length; i++){
+                        edges.remove( params.nodes+received_values[params.nodes][i]["Name"]);
+                        nodes.update({id:received_values[params.nodes][i]["Name"], label:received_values[params.nodes][i]["Name"], color: {
+                            background: 'green',
+                            border: 'black',
+                            highlight: {
+                                background: 'pink',
+                                border: 'red'
+                            }
+                        }});
+                    }
+                   delete nodeselected[params.nodes];
+                    $("#showselected option[value=\""+params.nodes+"\"]").remove();
+
+                }
+                else{
+                    nodeselected[params.nodes]=true;
+
+                    for (var i=0; i< received_values[params.nodes].length; i++){
+                        edges.update({id:params.nodes+received_values[params.nodes][i]["Name"], from: params.nodes, to: received_values[params.nodes][i]["Name"]});
+                        nodes.update({id:received_values[params.nodes][i]["Name"], label:received_values[params.nodes][i]["Name"], color: {
+                            background: 'gray',
+                            border: 'red',
+                            highlight: {
+                                background: 'yellow',
+                                border: 'red'
+                            }
+                        }});
+
+                    }
+                    $("#showselected").append("<option disabled value=\"" +params.nodes+"\">"+params.nodes+"</option>");
+
+                }
+            }
+            catch (err) {
+//                    alert(err);
+            }
+        });
+    });
+</script>
+
+
+</body>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery-1.11.1.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}bootstrap.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}scripts.js"></script>
+<script type="text/javascript" language="javascript" src="{{ STATIC_URL }}dataTables.colVis.js"></script>
+
+</html>
+
+
+
+
+
