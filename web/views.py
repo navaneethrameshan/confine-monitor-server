@@ -60,10 +60,18 @@ def inter_node_trace(request, parameter):
     (nodes, representation) = getdata.get_inter_node_trace(node)
 
     if nodes and representation:
-        return render_to_response('inter_trace.html',{'server_ip': server_ip, 'server_port': server_port,'values': json.dumps(representation), 'nodes_py': json.dumps(nodes)},context_instance=RequestContext(request))
+        return render_to_response('inter_trace.html',{'server_ip': server_ip, 'server_port': server_port,'values': json.dumps(representation), 'nodes_py': json.dumps(nodes), 'nodes':nodes},context_instance=RequestContext(request))
     else:
         return HttpResponse("No Inter Node Connectivity Information yet!!")
 
+
+
+def all_inter_node_matrix(request, parameter):
+    server_ip = util.SERVER_IP
+    server_port = util.SERVER_PORT
+
+    (nodes, representation) = getdata.get_all_inter_trace()
+    return render_to_response('all_inter_node_matrix.html',{'server_ip': server_ip, 'server_port': server_port,'values': json.dumps(representation), 'nodes_py': json.dumps(nodes), 'nodes':nodes},context_instance=RequestContext(request))
 
 def async_aggr_node_attribute_json(request, parameter):
     '''

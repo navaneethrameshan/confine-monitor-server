@@ -37,6 +37,7 @@ urlpatterns = patterns('',
     url(r'^(networktrace/.{0,})$', 'web.views.network_trace'),
     url(r'^(internodetrace/.{2,})$', 'web.views.inter_node_trace'),
     url(r'^(allinternodetrace/.{0,})$', 'web.views.all_inter_node_trace'),
+    url(r'^(allinternodematrix/.{0,})$', 'web.views.all_inter_node_matrix'),
 
 
     # url(r'^web/', include('web.foo.urls')),

@@ -65,18 +65,52 @@
 <!--<label for="clustering">Enable Clustering:</label>-->
 <!--<input id="clustering" type="checkbox" onChange="draw()" checked="false">-->
 <br>
+{#<input type="button" onclick="focusRandom();" value="Focus on node." style="width:300px;" id="btnFocus"><br/>#}
+
+<select id="selected" onchange="node_selected()">
+    <option value="" disabled="disabled" selected="selected"> Select a Node to Focus</option>
+    {% autoescape on %}
+
+        {% for node, value in nodes.items %}
+            <option>{{node}}</option>
+        {% endfor %}
+
+    {% endautoescape %}
+
+</select>
 
 <div id="mygraph" ></div>
 
 <script type="text/javascript">
     //var received = {'300': ['100'], '200': ['100'], 'C': ['200', '300'], '100':['200']};
-    function draw(){
-        var received_values = {{values|safe}};
+
+    var graph=null;
+    var parent_node= null;
+
+    var received_values = {{values|safe}};
     var received_nodes = {{nodes_py|safe}};
-    var nodes = [];
+
+
+
+
+    function sortDropDownListByText(selectId) {
+        var foption = $('#'+ selectId + ' option:first');
+        var soptions = $('#'+ selectId + ' option:not(:first)').sort(function(a, b) {
+            return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+        });
+        $('#' + selectId).html(soptions).prepend(foption);
+
+    };
+
+
+    function draw(){
+
+       sortDropDownListByText('selected');
+
+
+        var nodes = [];
     var edges = [];
     var xcor = 0;
-    var parent_node;
     for (var node in  received_nodes){
 
         if(received_nodes[node] == 2){
@@ -149,15 +183,58 @@
         stabilize: false
 
     };
-    var graph = new vis.Network(container, data, options);
+    graph = new vis.Network(container, data, options);
 
     // add event listeners
     graph.on('select', function(params) {
-        document.getElementById('selection').innerHTML = 'Selection: ' +parent_node+'-->' + params.nodes +  '<br>' +"Name: "+received_values[parent_node][params.nodes]["Name"]+ '<br>'
+            document.getElementById('selection').innerHTML = 'LINK: ' +parent_node+' --> ' + params.nodes +  '<br>' +"Name: "+received_values[parent_node][params.nodes]["Name"]+ '<br>'
                 +"Avg Response time: "+received_values[parent_node][params.nodes]["Avg"]+ "ms"+'<br>' +"Min:"+received_values[parent_node][params.nodes]["Min"]
                 + '<br>' +"Max: "+received_values[parent_node][params.nodes]["Max"]+ '<br>' +"Packet loss(%): "+received_values[parent_node][params.nodes]["Loss"];
+
     });
+
+        graph.on("animationFinished", function() {
+        })
     }
+
+
+
+    function node_selected(){
+        var selected_node = $('#selected').val();
+
+        focusNode(selected_node);
+
+        if (received_values[parent_node][selected_node]){
+            document.getElementById('selection').innerHTML = 'LINK: ' +parent_node+' --> ' + selected_node + '<br>'
+                +"Avg Response time: "+received_values[parent_node][selected_node]["Avg"]+ "ms"+'<br>' +"Min:"+received_values[parent_node][selected_node]["Min"]
+                + '<br>' +"Max: "+received_values[parent_node][selected_node]["Max"]+ '<br>' +"Packet loss(%): "+received_values[parent_node][selected_node]["Loss"];
+        }
+        else
+            document.getElementById('selection').innerHTML = 'LINK: ' +parent_node+' --> ' + selected_node +  '<br>' + "No Connectivity";
+
+
+    }
+
+
+
+    function focusNode( selected_node) {
+        var nodeId = selected_node;
+        var scale = 0.8;
+        var easingFunction = "easeInOutQuad";
+
+        var options = {
+            // position: {x:positionx,y:positiony}, // this is not relevant when focusing on nodes
+            scale: scale,
+            offset: {x:0,y:-5},
+            animation: {
+                duration: 2500,
+                easingFunction: easingFunction
+            }
+        }
+
+        graph.focusOnNode(nodeId, options);
+    }
+
 </script>
 
 </body>
